@@ -95,7 +95,7 @@ After init with multi-agent mode:
 ## Also Works as Claude Plugin
 
 ```bash
-/plugin marketplace add cj-ways/skills
+/plugin marketplace add cj-ways/arcana
 /plugin install arcana@cj-ways-skills
 ```
 

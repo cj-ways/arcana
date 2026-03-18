@@ -20,9 +20,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cj-ways/skills.git"
+    "url": "git+https://github.com/cj-ways/arcana.git"
   },
-  "homepage": "https://github.com/cj-ways/skills#readme",
+  "homepage": "https://github.com/cj-ways/arcana#readme",
   "dependencies": {
     "commander": "^13.0.0",
     "inquirer": "^12.0.0",

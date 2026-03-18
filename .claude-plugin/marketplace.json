@@ -8,7 +8,7 @@
       "description": "Battle-tested Claude Code skills: agent audit, feature audit, code review, PR creation, dead code detection, knowledge persistence, deploy prep, project scaffolding.",
       "source": {
         "type": "github",
-        "repo": "cj-ways/skills"
+        "repo": "cj-ways/arcana"
       }
     }
   ]
