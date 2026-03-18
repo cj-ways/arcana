@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0] - 2026-03-18
+
+### Added
+- `security-check` skill — hardcoded secrets, common vulnerabilities, dependency audit
+- `generate-tests` skill — auto-detect framework, match existing patterns, generate tests
+- Gemini CLI support (`.gemini/skills/`) — init, add, sync, list, remove, doctor
+- `arcana sync --clean` flag — remove stale skills from mirrors not in canonical
+- Smart mirror targets — sync only creates dirs for agents you actually use
+
+### Changed
+- Multi-agent mode now includes Gemini (Claude + Codex + Cursor + Gemini)
+- Agent choices expanded: claude, codex, gemini, multi
+
 ## [1.1.0] - 2026-03-18
 
 ### Added

@@ -21,6 +21,7 @@ export async function runDoctor() {
     { label: ".claude/skills/ (project)", dir: join(cwd, ".claude", "skills"), level: "project" },
     { label: ".agents/skills/ (project)", dir: join(cwd, ".agents", "skills"), level: "project" },
     { label: ".cursor/skills/ (project)", dir: join(cwd, ".cursor", "skills"), level: "project" },
+    { label: ".gemini/skills/ (project)", dir: join(cwd, ".gemini", "skills"), level: "project" },
     { label: "~/.claude/skills/ (user)", dir: join(home, ".claude", "skills"), level: "user" },
     { label: "~/.agents/skills/ (user)", dir: join(home, ".agents", "skills"), level: "user" },
   ];
@@ -137,6 +138,7 @@ export async function runDoctor() {
   const mirrors = [
     join(cwd, ".claude", "skills"),
     join(cwd, ".cursor", "skills"),
+    join(cwd, ".gemini", "skills"),
   ];
 
   if (existsSync(canonical)) {

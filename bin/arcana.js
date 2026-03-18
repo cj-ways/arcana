@@ -37,7 +37,7 @@ try {
     .command("add [skills...]")
     .description("Add specific skill(s) to the current setup")
     .option("--all", "Add all available skills")
-    .addOption(new Option("--agent <agent>", "Target agent").choices(["claude", "codex", "multi"]).default("claude"))
+    .addOption(new Option("--agent <agent>", "Target agent").choices(["claude", "codex", "gemini", "multi"]).default("claude"))
     .addOption(new Option("--scope <scope>", "Install scope").choices(["project", "user"]).default("project"))
     .action(async (skills, opts) => {
       const { runAdd } = await import("../src/commands/add.js");
@@ -65,9 +65,10 @@ try {
     .description(
       "Multi-agent: sync canonical .agents/skills/ to agent-specific directories"
     )
-    .action(async () => {
+    .option("--clean", "Remove stale skills from mirrors that don't exist in canonical")
+    .action(async (opts) => {
       const { runSync } = await import("../src/commands/sync.js");
-      await runSync();
+      await runSync(opts);
     });
 
   program

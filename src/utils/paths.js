@@ -29,6 +29,11 @@ export function getTargetDirs(agent, scope) {
         skills: join(base, ".agents", "skills"),
         agents: null, // Codex doesn't have a separate agents dir
       };
+    case "gemini":
+      return {
+        skills: join(base, ".gemini", "skills"),
+        agents: null,
+      };
     case "multi":
       return {
         skills: join(base, ".agents", "skills"), // canonical
@@ -36,10 +41,13 @@ export function getTargetDirs(agent, scope) {
         mirrors: [
           join(base, ".claude", "skills"),
           join(base, ".cursor", "skills"),
+          join(base, ".gemini", "skills"),
+          // Note: .github/copilot/skills/ not mirrored — Copilot reads from
+          // .github/ which is version-controlled and shared via its own discovery.
         ],
       };
     default:
-      throw new Error(`Unknown agent: ${agent}. Use: claude, codex, or multi`);
+      throw new Error(`Unknown agent: ${agent}. Use: claude, codex, gemini, or multi`);
   }
 }
 

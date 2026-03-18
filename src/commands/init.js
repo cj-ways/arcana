@@ -81,7 +81,8 @@ export async function runInit() {
       choices: [
         { name: "Claude Code", value: "claude" },
         { name: "Codex CLI", value: "codex" },
-        { name: "Multi-agent (Claude + Codex + Cursor)", value: "multi" },
+        { name: "Gemini CLI", value: "gemini" },
+        { name: "Multi-agent (Claude + Codex + Cursor + Gemini)", value: "multi" },
       ],
       default: suggested,
     },
@@ -140,7 +141,7 @@ export async function runInit() {
   const dirs = getTargetDirs(agent, scope);
   const scopeLabel = scope === "user" ? "user level" : "project level";
   const agentLabel =
-    agent === "multi" ? "Multi-agent" : agent === "codex" ? "Codex" : "Claude";
+    agent === "multi" ? "Multi-agent" : agent === "gemini" ? "Gemini" : agent === "codex" ? "Codex" : "Claude";
 
   console.log(
     chalk.dim(`\nSetting up for ${agentLabel} at ${scopeLabel}...\n`)
