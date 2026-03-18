@@ -1,6 +1,6 @@
 {
   "name": "@cj-ways/arcana",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Universal agent skills CLI — install, manage, and sync battle-tested skills across Claude Code, Codex CLI, Cursor, and more.",
   "bin": {
     "arcana": "bin/arcana.js"
@@ -41,6 +41,7 @@
     "skills/",
     "agents/",
     ".claude-plugin/",
+    "SKILL-AUTHORING-REFERENCE.md",
     "README.md",
     "LICENSE"
   ]

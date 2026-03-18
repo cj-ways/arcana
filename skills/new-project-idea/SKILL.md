@@ -1,7 +1,8 @@
 ---
 name: new-project-idea
-description: "Analyze a project idea critically, then scaffold a full project with phased plan, CLAUDE.md, OpenSpec, and AI-optimized stack. Use when the user says 'new project', 'project idea', 'build me', 'scaffold', or 'start a new app'."
+description: 'Analyzes a project idea critically, then scaffolds a full project with phased plan, CLAUDE.md, OpenSpec, and AI-optimized stack. Manual via /new-project-idea.'
 argument-hint: "<project-idea>"
+disable-model-invocation: true
 ---
 
 # New Project Idea → Full Project Setup
@@ -58,7 +59,7 @@ Deviate from this stack ONLY when the project genuinely requires something diffe
 
 Before scaffolding, ask the user:
 1. **Project name** - offer 2-3 options (short, kebab-case, memorable)
-2. **Location** - check for existing project directories (Desktop/Additional Projects, ~/projects, etc.)
+2. **Location** - check common project directories (~/projects, ~/Desktop, etc.)
 3. **GitHub** - check `gh auth status`. If not logged in, ask them to auth or skip push.
 
 ---

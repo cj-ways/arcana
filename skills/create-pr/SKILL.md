@@ -1,6 +1,7 @@
 ---
 name: create-pr
-description: "Creates a pull/merge request with auto-generated title, description, and affected-area summary. Auto-detects GitHub vs GitLab from git remote.\n\nExamples:\n\n<example>\nContext: User wants to create a PR to the default branch\nuser: \"/create-pr\"\nassistant: \"I'll analyze your branch changes, detect whether this is GitHub or GitLab, and create a PR targeting the default branch with a summary of affected areas.\"\n<commentary>\nAuto-detects platform and default branch. Analyzes all commits on the current branch vs the target.\n</commentary>\n</example>\n\n<example>\nContext: User wants a PR targeting a specific branch\nuser: \"/create-pr staging\"\nassistant: \"I'll create a pull request targeting the staging branch.\"\n<commentary>\nOverrides the auto-detected default target branch.\n</commentary>\n</example>"
+description: 'Creates a pull request or merge request with auto-generated title, description, and affected-area summary. Auto-detects GitHub vs GitLab. Use when the user says "create a PR," "open a pull request," "submit for review," or "push and create PR." Manual via /create-pr.'
+argument-hint: '[target-branch]'
 ---
 
 # /create-pr — Create Pull/Merge Request with Change Summary

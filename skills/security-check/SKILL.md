@@ -2,6 +2,7 @@
 name: security-check
 description: 'Quick security scan — hardcoded secrets, common vulnerabilities, dependency issues. Use when the user asks to check security, scan for secrets, or audit for vulnerabilities. Manual via /security-check.'
 argument-hint: '[scope: secrets|vulns|deps|all]'
+allowed-tools: Grep, Read, Glob, Bash
 ---
 
 # Security Check
@@ -24,8 +25,12 @@ Use the Grep tool to scan for these patterns across the codebase:
 
 - **API keys**: `[A-Za-z0-9_]{20,}` near keywords `key`, `token`, `secret`, `password`, `api_key`
 - **AWS keys**: `AKIA[0-9A-Z]{16}`
-- **GitHub tokens**: `ghp_`, `gho_`, `ghs_`, `github_pat_`
-- **GitLab tokens**: `glpat-`
+- **GitHub tokens**: `ghp_`, `gho_`, `ghs_`, `ghu_`, `gha_`, `github_pat_`
+- **GitLab tokens**: `glpat-`, `gldt-`, `glrt-`
+- **Slack tokens**: `xoxb-` (bot), `xoxp-` (user), `xapp-` (app-level)
+- **Google Cloud / Firebase**: `AIza[0-9A-Za-z_-]{35}`
+- **Twilio**: `SK[a-f0-9]{32}`
+- **SendGrid**: `SG\.[a-zA-Z0-9_-]{22}\.[a-zA-Z0-9_-]{43}`
 - **Stripe keys**: `sk_live_`, `sk_test_`
 - **JWT secrets**: values assigned to `JWT_SECRET`, `SECRET_KEY`
 - **Private keys**: `-----BEGIN (RSA |EC |)PRIVATE KEY-----`
@@ -65,6 +70,19 @@ Scan with language awareness:
 
 **Command injection (any language):**
 - `exec()`, `spawn()`, `system()` with string concatenation from user input
+
+**ORM raw query injection:**
+- Sequelize: `sequelize.query()` or `model.query()` with string interpolation
+- Django: `.raw()` or `.extra()` with string concatenation
+- GORM (Go): `.Raw()` or `.Exec()` with `fmt.Sprintf`
+
+**SSRF (Server-Side Request Forgery):**
+- Unvalidated URL construction from user input passed to HTTP clients
+- `fetch()`, `axios()`, `http.get()`, `requests.get()` with user-controlled URL parts
+
+**Path traversal:**
+- `../` sequences in file operations with user-controlled input
+- `path.join()` or `os.path.join()` with user input without sanitization
 
 ### 3. Dependency Vulnerabilities (scope: `deps`)
 
@@ -133,3 +151,9 @@ If a category has zero findings, say so explicitly.
 - Use Grep and Read tools only — no Bash except for dependency audit commands.
 - If no issues are found, say so clearly. Do not invent findings.
 - Run quickly. This is a sanity check, not a penetration test.
+
+## Limitations
+
+- This is a grep-based heuristic scan, not a static analysis tool. For deeper analysis, use specialized tools (Semgrep, CodeQL, Snyk, govulncheck).
+- Secret detection relies on pattern matching. High-entropy random strings without known prefixes will be missed.
+- Vulnerability detection cannot trace data flow across function boundaries. It catches common patterns at the call site only.

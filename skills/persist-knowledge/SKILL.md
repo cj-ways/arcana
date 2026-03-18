@@ -1,6 +1,6 @@
 ---
 name: persist-knowledge
-description: 'Persists codebase patterns, conventions, or architectural knowledge to CLAUDE.md, MEMORY.md, or .claude/rules/. Auto-invoke when the user shares a global codebase pattern, convention, or rule that should be remembered across sessions. Manual via /persist-knowledge for full session scan.'
+description: 'Persists codebase patterns, conventions, or architectural knowledge to CLAUDE.md, MEMORY.md, or .claude/rules/. Auto-invokes when the user states a convention like "we always do X," "the pattern is," "from now on," or corrects a project-wide pattern. Manual via /persist-knowledge.'
 argument-hint: '[focus: patterns|decisions|memory|claude]'
 allowed-tools: Read, Edit, Glob, Grep, Write
 ---

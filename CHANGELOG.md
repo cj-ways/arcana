@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.3.0] - 2026-03-19
+
+### Added
+- `import-skill` skill — import external skills from GitHub/URL/local and adapt to Arcana quality standards
+- `SKILL-AUTHORING-REFERENCE.md` — evidence-based guide for writing agent skills (22 cited sources)
+- `allowed-tools` frontmatter to all skills that were missing it
+- `argument-hint` frontmatter to agent-audit, find-unused, create-pr, deploy-prep
+- `tools` restriction to code-reviewer agent (read-only enforcement)
+- Expanded secret detection patterns: Slack, Google Cloud, Twilio, SendGrid, updated GitHub/GitLab tokens
+- Expanded vulnerability detection: ORM raw query injection, SSRF, path traversal
+- Limitations section to security-check (transparency about grep-based heuristics)
+
+### Fixed
+- CRITICAL: Added `disable-model-invocation: true` to feature-audit and new-project-idea (prevent auto-triggering heavy workflows)
+- CRITICAL: Removed XML `<example>` tags from create-pr description (spec violation)
+- Rewrote all descriptions in third person per Anthropic best practices
+- Added trigger phrases to find-unused and persist-knowledge descriptions
+- Removed hardcoded "Desktop/Additional Projects" path from new-project-idea
+- Trimmed new-project-idea description (removed redundant trigger phrases since manual-only)
+
 ## [1.2.0] - 2026-03-18
 
 ### Added

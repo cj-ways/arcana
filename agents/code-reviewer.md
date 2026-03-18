@@ -20,6 +20,7 @@ assistant: \"I'll review the pull request changes.\"
 </example>"
 model: sonnet
 color: green
+tools: [Bash, Read, Grep, Glob]
 ---
 
 You are an expert code reviewer. You work across all languages and frameworks — TypeScript, Go, Python, Rust, Java, Ruby, C#, and others.

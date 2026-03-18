@@ -1,7 +1,8 @@
 ---
 name: feature-audit
-description: 'Interactive business audit for any feature — gaps, competitor analysis, improvements, roadmap. Works on any project. Manual via /feature-audit.'
+description: 'Performs an interactive business audit for any feature — gaps, competitor analysis, improvements, roadmap. Works on any project. Manual via /feature-audit.'
 argument-hint: "<feature-name>"
+disable-model-invocation: true
 ---
 
 # /feature-audit — Feature Business Audit & Brainstorm
