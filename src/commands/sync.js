@@ -22,8 +22,6 @@ export async function runSync(opts = {}) {
   // Smart mirror targets: only sync to directories whose parent exists
   const possibleTargets = [
     { dir: join(cwd, ".claude", "skills"), parent: join(cwd, ".claude") },
-    { dir: join(cwd, ".cursor", "skills"), parent: join(cwd, ".cursor") },
-    { dir: join(cwd, ".gemini", "skills"), parent: join(cwd, ".gemini") },
   ];
   let targets = possibleTargets
     .filter(t => existsSync(t.parent))

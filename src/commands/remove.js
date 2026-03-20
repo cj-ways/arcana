@@ -19,12 +19,8 @@ export async function runRemove(skills) {
   const searchDirs = [
     join(cwd, ".claude", "skills"),
     join(cwd, ".agents", "skills"),
-    join(cwd, ".cursor", "skills"),
-    join(cwd, ".gemini", "skills"),
     join(homedir(), ".claude", "skills"),
     join(homedir(), ".agents", "skills"),
-    join(homedir(), ".cursor", "skills"),
-    join(homedir(), ".gemini", "skills"),
   ];
   const agentDirs = [
     join(cwd, ".claude", "agents"),

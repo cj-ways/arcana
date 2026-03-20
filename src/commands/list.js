@@ -13,8 +13,6 @@ export async function runList() {
   const locations = [
     { label: ".claude/skills (project)", dir: join(cwd, ".claude", "skills") },
     { label: ".agents/skills (project)", dir: join(cwd, ".agents", "skills") },
-    { label: ".cursor/skills (project)", dir: join(cwd, ".cursor", "skills") },
-    { label: ".gemini/skills (project)", dir: join(cwd, ".gemini", "skills") },
     { label: "~/.claude/skills (user)", dir: join(home, ".claude", "skills") },
     { label: "~/.agents/skills (user)", dir: join(home, ".agents", "skills") },
   ];
