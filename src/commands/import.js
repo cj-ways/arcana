@@ -1,7 +1,6 @@
 import chalk from "chalk";
-import { existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync } from "fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join, basename } from "path";
-import { execSync } from "child_process";
 import { getTargetDirs, getAvailableSkills } from "../utils/paths.js";
 import { isInsideProject } from "../utils/detect.js";
 
@@ -54,11 +53,16 @@ function resolveSource(source, skillName) {
 }
 
 /**
- * Fetch content from a URL using curl (available everywhere).
+ * Fetch content from a URL using native fetch().
  */
-function fetchUrl(url) {
+async function fetchUrl(url) {
   try {
-    return execSync(`curl -sL --fail "${url}"`, { encoding: "utf-8", timeout: 15000 });
+    const response = await fetch(url, {
+      headers: { "User-Agent": "arcana-cli" },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) return null;
+    return await response.text();
   } catch {
     return null;
   }
@@ -67,12 +71,15 @@ function fetchUrl(url) {
 /**
  * List skills in a GitHub repo by checking common locations.
  */
-function listGitHubSkills(owner, repo) {
-  // Try GitHub API to list directories under skills/
+async function listGitHubSkills(owner, repo) {
   const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/skills`;
   try {
-    const response = execSync(`curl -sL --fail "${apiUrl}"`, { encoding: "utf-8", timeout: 10000 });
-    const entries = JSON.parse(response);
+    const response = await fetch(apiUrl, {
+      headers: { "User-Agent": "arcana-cli" },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!response.ok) return null;
+    const entries = await response.json();
     return entries
       .filter((e) => e.type === "dir")
       .map((e) => e.name);
@@ -84,22 +91,22 @@ function listGitHubSkills(owner, repo) {
 /**
  * Try to fetch a SKILL.md from a GitHub repo, trying main then master.
  */
-function fetchGitHubSkill(owner, repo, skillName) {
+async function fetchGitHubSkill(owner, repo, skillName) {
   for (const branch of ["main", "master"]) {
     // Try skills/<name>/SKILL.md (most common)
     const url1 = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/skills/${skillName}/SKILL.md`;
-    const content = fetchUrl(url1);
+    const content = await fetchUrl(url1);
     if (content) return { content, url: url1, branch };
 
     // Try <name>/SKILL.md (flat structure)
     const url2 = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${skillName}/SKILL.md`;
-    const content2 = fetchUrl(url2);
+    const content2 = await fetchUrl(url2);
     if (content2) return { content: content2, url: url2, branch };
 
     // Try root SKILL.md (single-skill repo)
     if (!skillName || skillName === repo) {
       const url3 = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/SKILL.md`;
-      const content3 = fetchUrl(url3);
+      const content3 = await fetchUrl(url3);
       if (content3) return { content: content3, url: url3, branch };
     }
   }
@@ -185,7 +192,7 @@ export async function runImport(source, opts) {
 
   else if (resolved.type === "url") {
     console.log(chalk.dim(`  Fetching ${resolved.url}...`));
-    content = fetchUrl(resolved.url);
+    content = await fetchUrl(resolved.url);
     if (!content) {
       console.log(chalk.red(`  Failed to fetch: ${resolved.url}`));
       process.exit(1);
@@ -195,7 +202,7 @@ export async function runImport(source, opts) {
 
   else if (resolved.type === "github-skill") {
     console.log(chalk.dim(`  Fetching ${resolved.owner}/${resolved.repo} → ${resolved.name}...`));
-    content = fetchUrl(resolved.url);
+    content = await fetchUrl(resolved.url);
     if (!content) {
       console.log(chalk.red(`  Failed to fetch: ${resolved.url}`));
       process.exit(1);
@@ -209,12 +216,12 @@ export async function runImport(source, opts) {
     if (resolved.skillName) {
       // Fetch specific skill
       console.log(chalk.dim(`  Fetching ${owner}/${repo} → ${resolved.skillName}...`));
-      const result = fetchGitHubSkill(owner, repo, resolved.skillName);
+      const result = await fetchGitHubSkill(owner, repo, resolved.skillName);
       if (!result) {
         console.log(chalk.red(`  Skill '${resolved.skillName}' not found in ${owner}/${repo}`));
         console.log(chalk.dim("  Tried: skills/<name>/SKILL.md, <name>/SKILL.md, SKILL.md"));
         // Try listing available skills
-        const available = listGitHubSkills(owner, repo);
+        const available = await listGitHubSkills(owner, repo);
         if (available && available.length > 0) {
           console.log(chalk.dim(`\n  Available skills in ${owner}/${repo}:`));
           for (const s of available) console.log(chalk.dim(`    - ${s}`));
@@ -226,11 +233,11 @@ export async function runImport(source, opts) {
     } else {
       // List available skills
       console.log(chalk.dim(`  Listing skills in ${owner}/${repo}...`));
-      const available = listGitHubSkills(owner, repo);
+      const available = await listGitHubSkills(owner, repo);
       if (!available || available.length === 0) {
         console.log(chalk.yellow(`  No skills/ directory found in ${owner}/${repo}`));
         // Try fetching root SKILL.md (single-skill repo)
-        const result = fetchGitHubSkill(owner, repo, repo);
+        const result = await fetchGitHubSkill(owner, repo, repo);
         if (result) {
           content = result.content;
           sourceLabel = `${owner}/${repo}`;
