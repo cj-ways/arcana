@@ -6,6 +6,9 @@
     "arcana": "bin/arcana.js"
   },
   "type": "module",
+  "scripts": {
+    "test": "node bin/arcana.js --version && node bin/arcana.js list && node bin/arcana.js doctor"
+  },
   "keywords": [
     "arcana",
     "agent-skills",
