@@ -62,15 +62,18 @@ Use anytime, not tied to a specific phase:
 | `code-reviewer` | Single-pass review. PASS / NOTES / NEEDS CHANGES. |
 | `review-team` | Spawns 3 parallel specialist reviewers for deep analysis. |
 
-## Extend with import-skill
+## Extend with import
 
-Arcana ships 13 skills. When you need something it doesn't have, `import-skill` is the bridge:
+Arcana ships 13 skills. When you need something it doesn't have, import it:
 
 ```bash
-arcana use import-skill   # see what it does
+arcana import anthropics/skills claude-api     # from GitHub
+arcana import owner/repo skill-name            # any repo with skills/
+arcana import ./my-local-skill                 # local path
+arcana import https://example.com/SKILL.md     # raw URL
 ```
 
-Import any skill from GitHub, a URL, or a local file. The skill gets adapted to Arcana's quality standards — proper frontmatter, gotchas near the top, constraint-based design, and allowed-tools declarations.
+Imported skills land in your skills directory. Then run `/import-skill <name>` to adapt them to Arcana's quality standards — proper frontmatter, tone, structure, gotchas, and allowed-tools.
 
 ## Commands
 

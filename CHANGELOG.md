@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.6.1 (2026-03-21)
+
+### Added
+- **`arcana import` CLI command** — fetch skills from GitHub repos (`owner/repo skill-name`), GitHub tree URLs, raw .md URLs, or local paths. Lists available skills, validates frontmatter, detects quality gaps, adds source attribution.
+- **Rewritten `import-skill` SKILL.md** — now focuses on quality adaptation pipeline (Step 1-5: locate → audit → assess → adapt → verify). Works on any already-installed skill, not just freshly imported ones.
+- **Import tests** — 9 tests covering GitHub fetch, local import, conflict detection, force overwrite, quality gap detection.
+
+### Changed
+- **`import-skill` description** — updated to reflect two-step flow: `arcana import` fetches, `/import-skill` adapts.
+- **README** — import section now shows CLI examples instead of just skill usage.
+- **CLI** — 10 commands (was 9), added `import` with `--force`, `--agent`, `--scope` options.
+
 ## v1.6.0 (2026-03-20)
 
 ### Breaking Changes

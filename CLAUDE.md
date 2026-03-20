@@ -13,8 +13,8 @@ You are the project owner, solution architect, lead developer, and release manag
 ## Architecture
 
 ### CLI (`bin/arcana.js`)
-- Entry point: Commander.js, 9 commands
-- Commands: `init`, `add`, `remove`, `list`, `sync`, `update`, `use`, `doctor`, `info`
+- Entry point: Commander.js, 10 commands
+- Commands: `init`, `add`, `remove`, `list`, `sync`, `update`, `import`, `use`, `doctor`, `info`
 - All commands in `src/commands/*.js`, utilities in `src/utils/*.js`
 - Dependencies: commander, inquirer, chalk, fs-extra (minimal, intentional)
 
@@ -46,7 +46,7 @@ You are the project owner, solution architect, lead developer, and release manag
 | find-unused | Dead code detection | Confidence tiers (SAFE/LIKELY/VERIFY) |
 | persist-knowledge | Save patterns to docs | Auto-invoke + manual modes |
 | agent-audit | Audit Claude Code config | Argument routing, research phase |
-| import-skill | Import external skills | Quality adaptation pipeline (draft — needs development) |
+| import-skill | Import + adapt external skills | CLI fetches (`arcana import`), skill adapts (`/import-skill`) |
 
 ### Agents
 - `code-reviewer` — Single-pass reviewer with false-positive suppression (model: sonnet, tools: read-only)

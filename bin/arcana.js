@@ -97,6 +97,17 @@ try {
     });
 
   program
+    .command("import [source] [skill-name]")
+    .description("Import a skill from GitHub, URL, or local path")
+    .option("--force", "Overwrite existing skill")
+    .addOption(new Option("--agent <agent>", "Target agent").choices(["claude", "codex", "multi"]).default("claude"))
+    .addOption(new Option("--scope <scope>", "Install scope").choices(["project", "user"]).default("project"))
+    .action(async (source, skillName, opts) => {
+      const { runImport } = await import("../src/commands/import.js");
+      await runImport(source, { ...opts, name: skillName });
+    });
+
+  program
     .command("info <skill>")
     .description("Show skill metadata (name, description, size)")
     .action(async (skill) => {

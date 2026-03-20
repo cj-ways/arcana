@@ -1,6 +1,6 @@
 {
   "name": "@cj-ways/arcana",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Curated agent skills for Claude Code and Codex CLI — 13 battle-tested skills backed by SkillsBench data.",
   "bin": {
     "arcana": "bin/arcana.js"
