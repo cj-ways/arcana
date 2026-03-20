@@ -97,6 +97,15 @@ Auto-detect the project type and run the appropriate audit command via Bash:
 
 Parse the output and summarize counts: critical / high / moderate / low.
 
+**3b. WebSearch for known CVEs (DO NOT SKIP)**
+
+After running local audit commands, use WebSearch to check for vulnerabilities that local tools may miss:
+1. For each direct dependency (not transitive), search: `"[package-name] CVE 2025 2026"`
+2. For any dependency flagged by the local audit, search: `"[package-name] vulnerability"` for additional context and remediation guidance
+3. Check for recently disclosed vulnerabilities that may not yet be in local advisory databases
+4. Report findings with CVE IDs, severity, affected versions, and links to advisories
+5. If a dependency has no known CVEs, do not report it — only surface actual findings
+
 ## Risk Classification
 
 | Level | Examples |
@@ -157,3 +166,30 @@ If a category has zero findings, say so explicitly.
 - This is a grep-based heuristic scan, not a static analysis tool. For deeper analysis, use specialized tools (Semgrep, CodeQL, Snyk, govulncheck).
 - Secret detection relies on pattern matching. High-entropy random strings without known prefixes will be missed.
 - Vulnerability detection cannot trace data flow across function boundaries. It catches common patterns at the call site only.
+
+## Context-Aware False Positive Guidance
+
+Not all pattern matches are equal. Before reporting a finding, assess its context:
+
+**Severity depends on location:**
+- `eval()` in a build script or dev tool → INFO (safe, not user-facing)
+- `eval()` in a request handler or user input processing → CRITICAL (exploitable)
+- Hardcoded API key in `src/` or `lib/` → CRITICAL (production code)
+- Hardcoded API key in `*.test.*` or `*.spec.*` → INFO (test fixture, usually intentional)
+- Hardcoded API key in `scripts/` or `tools/` → WARNING (dev tooling, still risky if committed)
+
+**Classify findings into tiers:**
+- **CRITICAL**: Actively exploitable in production. Requires immediate action. Examples: real secrets in source, SQL injection in request handlers, eval with user input.
+- **WARNING**: Potentially dangerous depending on deployment context. Requires review. Examples: innerHTML in admin-only UI, eval in build scripts, test secrets that look real.
+- **INFO**: Informational only, not exploitable in current context. Examples: deprecated patterns, test fixtures, dev-only code paths.
+
+When unsure, classify at WARNING (not CRITICAL) to avoid alarm fatigue, but do not suppress to INFO.
+
+## Common Agent Gotchas
+
+These are frequent mistakes agents make when executing this skill. Avoid them:
+
+1. **Flagging test fixtures as real secrets.** Test files intentionally contain fake API keys, tokens, and passwords for testing. Unless the value matches a known production pattern prefix (`AKIA`, `sk_live_`, `ghp_`), do not flag test file secrets as CRITICAL.
+2. **Flagging environment variable NAMES (not values) as leaks.** Code that references `process.env.STRIPE_SECRET_KEY` is reading a variable name, not leaking a secret. Only flag when an actual secret VALUE is hardcoded (e.g., `const key = "sk_live_abc123"`).
+3. **Missing secrets in non-standard locations.** Do not only scan `src/` and `.env`. Also check: `.env.local`, `.env.production`, `docker-compose.yml` (environment sections), CI config files (`.github/workflows/*.yml`, `.gitlab-ci.yml`), and `Makefile` / shell scripts.
+4. **Not checking sibling projects for shared secrets.** If the project is in a monorepo or shares a parent directory with other projects, secrets from one project may leak into another via shared config files or symlinks. Flag this as a review item if detected.

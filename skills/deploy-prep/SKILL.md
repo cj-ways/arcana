@@ -286,6 +286,37 @@ Run Steps 2-8 in parallel using Task agents for speed:
 
 Compile all findings in main context, then run Step 9 (risk assessment) and generate checklists.
 
+### Step 10: Risk Prioritization
+
+After compiling all findings, assign a **Risk Priority** to every checklist item:
+
+| Priority | Criteria | Examples |
+|----------|----------|----------|
+| **CRITICAL** | Deploy will break or cause data loss without this | Breaking API changes, DB migrations with destructive ops, new required env vars with no fallback, new service ports not configured |
+| **HIGH** | Deploy will partially fail or degrade without this | New services needing health checks, schema changes affecting queries, major dependency version bumps |
+| **MEDIUM** | Deploy succeeds but with debt or minor issues | Dependency updates, config file changes, non-breaking schema additions, CI/CD tweaks |
+| **LOW** | Can be done anytime after deploy | Documentation updates, minor refactors, cleanup of old feature flags, non-critical monitoring |
+
+Tag each checklist item with its priority: `[CRITICAL]`, `[HIGH]`, `[MEDIUM]`, `[LOW]`.
+Sort checklists by priority (CRITICAL first, LOW last) so the most important items are at the top.
+
+### Step 11: User Confirmation Before Output
+
+Before outputting the final checklists, present a summary for review:
+
+```
+## Deploy Prep Summary
+Found N total checklist items:
+- CRITICAL: X items (must be done before deploy)
+- HIGH: Y items (should be done around deploy time)
+- MEDIUM: Z items (can be done shortly after)
+- LOW: W items (can be done anytime)
+
+Shall I generate the full checklists? Any categories you want me to focus on or skip?
+```
+
+Wait for user confirmation before generating the detailed Pre-Release and Post-Release checklists. This avoids overwhelming the user with a 200-line checklist when they may only care about CRITICAL items.
+
 ## Rules
 
 - NEVER modify any files — this is a read-only analysis skill
@@ -334,3 +365,12 @@ Present the report in this structure:
 ```
 
 Do NOT commit or modify anything. Present the full report for user review.
+
+## Common Agent Gotchas
+
+These are frequent mistakes agents make when executing this skill. Avoid them:
+
+1. **Missing env vars referenced indirectly.** Not all env vars appear as literal `process.env.VAR_NAME`. Look for spread operators (`...process.env`), dynamic key access (`process.env[key]`), config wrappers that read env vars internally (e.g., `config.get('DATABASE_URL')` where the config module reads from `process.env`), and `.env` file parsing libraries. Grep for the env var pattern AND read config/settings modules to catch indirect references.
+2. **Not detecting renamed env vars.** If an old env var is removed and a new one is added (e.g., `DB_URL` replaced by `DATABASE_URL`), this is a migration that requires coordination: the old var must stay during rollout, the new var must be set, and the old one removed after full deploy. Flag renamed env vars explicitly.
+3. **Database migrations that need to run BEFORE vs AFTER deployment.** Additive migrations (new tables, new nullable columns) are safe to run before deploy. Destructive migrations (drop column, rename table, change type) must be coordinated: deploy code that handles both old and new schema first, then run migration, then remove old-schema code. Flag migration timing explicitly.
+4. **Ignoring feature flags that gate the new code.** If new code is behind a feature flag that defaults to OFF, the deployment is safe even without running migrations or setting new env vars immediately. Check for feature flag gates and note when they make a deploy item lower priority than it appears.

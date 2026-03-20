@@ -28,6 +28,18 @@ Before writing a single file, analyze the idea thoroughly and present findings t
 - **Is it worth creating?** What already exists? What's the gap? Be brutally honest.
 - **What are the risks?** Maintenance burden, API changes, scope creep, abandonment risk
 
+### 1b-2. Research what already exists (DO NOT SKIP)
+Use WebSearch to ground the feasibility assessment in real data instead of guessing:
+1. Search: `"does [idea] already exist?"` — find direct competitors or identical tools
+2. Search: `"[idea] competitors 2026"` — find the current landscape
+3. Search: `"[idea] open source alternative"` — check if an OSS solution already exists
+4. **Report findings to the user:**
+   - What already exists (with links/citations)
+   - What the actual gap is between existing solutions and the user's idea
+   - Whether the gap is big enough to justify building something new
+   - If something nearly identical exists, suggest forking/extending it instead
+- This step turns "Is it worth creating?" from a guess into an evidence-based assessment
+
 ### 1c. Enrich the idea
 - What is the user NOT thinking about that would make this significantly better?
 - Add 3-6 concrete enrichments with justification
@@ -127,7 +139,21 @@ Project context for OpenSpec: tech stack, architecture principles, domain info, 
 
 ---
 
-## Step 5: Git & GitHub
+## Step 5: Phase Plan Validation (DO NOT SKIP)
+
+Before scaffolding any files or pushing to Git, present the complete phase plan to the user for review:
+
+1. **Show the full plan summary**: list each phase with its goal, estimated scope, and key deliverables
+2. **Highlight key decisions**: stack choice, number of phases, Phase 1 scope, free-tier services selected
+3. **Ask explicitly**: "Does this plan look right? Should I adjust any phases, reorder, or change scope before I scaffold?"
+4. **Wait for user confirmation** before proceeding to Git setup
+5. If the user requests changes, update the plan FIRST, then re-present for confirmation
+
+This prevents wasted scaffolding work if the user disagrees with the direction.
+
+---
+
+## Step 6: Git & GitHub
 
 - Commit all scaffolding
 - Create GitHub repo (public unless user specifies otherwise)
@@ -136,7 +162,7 @@ Project context for OpenSpec: tech stack, architecture principles, domain info, 
 
 ---
 
-## Step 6: Summary
+## Step 7: Summary
 
 Present a clean summary:
 - Project location (local path)
@@ -156,3 +182,13 @@ Present a clean summary:
 - If the user's idea has serious problems, say so honestly. Don't build something doomed to fail.
 - The phase execution protocol is NON-NEGOTIABLE. Every project gets it.
 - Prefer free-tier services unless the user explicitly says they'll pay.
+
+## Common Agent Gotchas
+
+These are frequent mistakes agents make when executing this skill. Avoid them:
+
+1. **Suggesting a stack the user explicitly doesn't want.** Always check `$ARGUMENTS` for stack hints or preferences. If the user says "use Svelte" or "no Next.js", respect that. Do not default to the AI-optimized stack blindly.
+2. **Over-scoping Phase 1.** The MVP should be minimal, not feature-complete. Phase 1 is foundations: types, data model, basic infrastructure. If Phase 1 has more than 8-10 tasks, it is too big. Split it.
+3. **Creating files before the user confirms the plan.** Steps 1-5 are analysis and planning. Do NOT scaffold directories, write CLAUDE.md, or create any files until the user explicitly approves the phase plan in Step 5.
+4. **Not reading the existing directory structure.** The target project directory may already have files (e.g., user ran `create-next-app` manually, or there is a previous attempt). Always check with `ls` before creating anything. Adapt to what exists instead of overwriting.
+5. **Forgetting to add the project to MEMORY.md.** After setup, add an entry to the user's MEMORY.md (projects section) with the project name, path, and one-line description. This ensures future agent sessions have continuity and can find the project.

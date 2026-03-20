@@ -60,6 +60,21 @@ Read the source file and extract:
 - For each: parameter types, return type, side effects, error conditions, dependencies
 - If a specific function name was given, focus only on that
 
+**Complexity Assessment (DO NOT SKIP):**
+Before generating tests, evaluate each function's complexity:
+- **Line count**: Is it over 50 lines?
+- **Branch count**: Does it have more than 5 if/else/switch branches?
+- **Nesting depth**: Is it nested more than 3 levels deep?
+- **Dependency count**: Does it require mocking more than 3 external services?
+
+If a function is too complex (hits 2+ of the above thresholds), flag it:
+```
+WARNING: `functionName` is too complex to test effectively (52 lines, 7 branches, 4 mocks needed).
+Recommendation: Refactor into smaller, focused functions first, then test each.
+Suggested decomposition: [brief suggestion of how to split it]
+```
+Still generate the best tests you can, but make the refactoring suggestion explicit so the user can decide.
+
 ### Step 2: Match Existing Style
 
 If existing test files were found in auto-detection:
@@ -94,7 +109,20 @@ For each function/method, generate:
 - Test successful resolution
 - Test rejection/exception path
 
-### Step 4: Present and Write
+### Step 4: Test Quality Checklist (verify before presenting)
+
+Before showing tests to the user, review every generated test against this checklist:
+
+- [ ] **Coverage breadth**: Tests cover happy path, edge cases, AND error cases. If only happy path is covered, add error/edge cases before presenting.
+- [ ] **Behavior-focused names**: Each test name describes the expected behavior, not the implementation. Good: `"returns empty array when input is empty"`. Bad: `"calls filter method"`.
+- [ ] **No environment-dependent values**: No hardcoded ports, file paths, timestamps, or UUIDs that would break on a different machine or CI. Use relative paths, mock dates, and deterministic IDs.
+- [ ] **Minimal mocking**: Only mock external services, databases, file system, and network calls. If a utility function can be called directly, call it — do not mock it.
+- [ ] **Error paths covered**: Every function that can throw/reject has at least one test for the error case. Check for try/catch blocks, Promise rejections, and error returns.
+- [ ] **Independent tests**: No test depends on another test's state. No shared mutable variables. Each test sets up its own data.
+
+If any check fails, fix the generated tests before presenting them.
+
+### Step 5: Present and Write
 
 1. Show the complete test file contents to the user
 2. Ask for confirmation before writing
@@ -120,3 +148,12 @@ For each function/method, generate:
 - Do not over-test trivial code (simple getters, pass-through functions). Focus on logic.
 - Keep generated test files clean — no commented-out code, no TODOs, no placeholder tests.
 - Present tests to the user for review BEFORE writing. Do not write without confirmation.
+
+## Common Agent Gotchas
+
+These are frequent mistakes agents make when executing this skill. Avoid them:
+
+1. **Testing implementation instead of behavior (brittle tests).** Do not assert that a specific internal method was called, or that a specific intermediate variable has a value. Test the PUBLIC interface: given input X, expect output Y. If refactoring the internals breaks your tests but the behavior is unchanged, the tests are bad.
+2. **Using real API calls instead of mocks (flaky tests).** Never generate tests that hit real HTTP endpoints, real databases, or real file system paths. These will pass locally and fail in CI (or vice versa). Mock all external I/O. If the function makes a fetch call, mock fetch. If it reads a file, mock the file system.
+3. **Not matching the existing test file naming convention.** Check what the project already uses before choosing a filename. If existing tests use `*.spec.ts`, do not create `*.test.ts`. If they use `__tests__/` directories, do not create co-located files. Inconsistent naming conventions confuse both humans and CI test runners.
+4. **Forgetting to test error paths.** It is easy to generate 10 happy-path tests and zero error tests. Every function that can throw, reject, or return an error MUST have at least one test for that path. Check for try/catch, `.catch()`, error returns, and validation failures.
