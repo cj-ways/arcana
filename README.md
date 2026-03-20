@@ -1,13 +1,21 @@
 # Arcana
 
 [![npm version](https://img.shields.io/npm/v/@cj-ways/arcana)](https://www.npmjs.com/package/@cj-ways/arcana)
+[![CI](https://github.com/cj-ways/arcana/actions/workflows/ci.yml/badge.svg)](https://github.com/cj-ways/arcana/actions)
 [![license](https://img.shields.io/npm/l/@cj-ways/arcana)](https://github.com/cj-ways/arcana/blob/main/LICENSE)
+[![node](https://img.shields.io/node/v/@cj-ways/arcana)](https://nodejs.org)
 
-Universal agent skills CLI. Install, manage, and sync battle-tested skills across **Claude Code, Codex CLI, Cursor**, and any agent that reads SKILL.md.
+Curated agent skills for **Claude Code** and **Codex CLI**.
 
-13 skills + 1 agent. Stack-agnostic. Multi-agent ready.
+13 skills, 2 agents, 3 quality rules — all hand-authored against [SkillsBench](https://arxiv.org/abs/2602.12670) data (7,308 trajectories, +16.2pp improvement over no-skill baselines). Not scraped, not AI-generated.
 
-## Install
+## Why Arcana
+
+- **Quality over quantity.** 13 battle-tested skills backed by 22 cited sources. SkillsBench shows curated skills improve agent performance by +16.2pp — self-generated skills show -1.3pp (no benefit).
+- **Multi-agent sync.** One skill set, synced across Claude Code and Codex CLI. Edit once in `.agents/skills/`, mirror everywhere with `arcana sync`.
+- **Extensible.** Need a skill Arcana doesn't ship? `import-skill` pulls from GitHub, URLs, or local files and adapts them to Arcana's quality standards.
+
+## Quick Start
 
 ```bash
 npx @cj-ways/arcana init
@@ -19,6 +27,50 @@ Or install globally:
 npm install -g @cj-ways/arcana
 arcana init
 ```
+
+## Development Workflow
+
+Skills map to your development lifecycle:
+
+| Phase | Skill | What it does |
+|-------|-------|-------------|
+| Ideate | `/idea-audit` | Validate project idea, competitive analysis, scaffold |
+| Validate | `/feature-audit` | Interactive business audit — gaps, competitors, roadmap |
+| Design | `/v0-design` | Generate optimized v0.dev prompts for UI |
+| Test | `/generate-tests` | Auto-generate tests matching existing patterns |
+| Review | `/quick-review` | Fast single-pass review with false-positive suppression |
+| Review | `/deep-review` | 3 parallel specialist reviewers (security, correctness, architecture) |
+| Ship | `/create-pr` | PR/MR with auto-generated description (GitHub + GitLab) |
+| Ship | `/deploy-prep` | Release checklists — env vars, migrations, breaking changes |
+
+## Toolkit Skills
+
+Use anytime, not tied to a specific phase:
+
+| Skill | What it does |
+|-------|-------------|
+| `/security-check` | Scan for secrets, vulnerabilities, dependency issues |
+| `/find-unused` | Dead code detection with confidence tiers (SAFE / LIKELY / VERIFY) |
+| `/persist-knowledge` | Auto-save patterns and conventions to project docs |
+| `/agent-audit` | Audit agent configuration against latest best practices |
+| `/import-skill` | Bring external skills into the Arcana ecosystem |
+
+## Agents
+
+| Agent | What it does |
+|-------|-------------|
+| `code-reviewer` | Single-pass review. PASS / NOTES / NEEDS CHANGES. |
+| `review-team` | Spawns 3 parallel specialist reviewers for deep analysis. |
+
+## Extend with import-skill
+
+Arcana ships 13 skills. When you need something it doesn't have, `import-skill` is the bridge:
+
+```bash
+arcana use import-skill   # see what it does
+```
+
+Import any skill from GitHub, a URL, or a local file. The skill gets adapted to Arcana's quality standards — proper frontmatter, gotchas near the top, constraint-based design, and allowed-tools declarations.
 
 ## Commands
 
@@ -35,88 +87,34 @@ arcana doctor                   # Check installation health
 arcana info <skill>             # Show skill metadata
 ```
 
-## Init Flow
+## Multi-Agent Setup
 
-```
-$ arcana init
+After `arcana init` with multi-agent mode:
 
-? Where are you installing?
-  > Project level (this repo)
-  > User level (global, all projects)
-
-? Which agent(s)?
-  > Claude Code
-  > Codex CLI
-  > Multi-agent (Claude + Codex + Cursor)
-
-? Which skills?
-  > All (13 skills + 1 agent)
-  > Custom (pick specific)
-```
-
-### Quality Rules (Optional)
-
-During `arcana init`, you can optionally install Arcana's quality rules — research-first, evidence-based patterns that improve AI agent behavior across your project.
-
-```bash
-arcana init  # asks "Apply Arcana quality rules?"
-```
-
-Rules are installed to `.claude/rules/` as 3 focused files:
-- `arcana-quality.md` — verify before output, no false positives
-- `arcana-research.md` — research before acting, evidence-based
-- `arcana-methodology.md` — multi-perspective, dynamic analysis
-
-Run `/agent-audit rules` to check for conflicts with your existing project rules.
-
-### What each mode sets up
+1. Skills live in `.agents/skills/` (the canonical source)
+2. Run `arcana sync` to mirror to `.claude/skills/`
+3. Both Claude Code and Codex CLI see the same skills
 
 | Mode | Skills location | Mirrors | Config |
 |------|----------------|---------|--------|
 | Claude | `.claude/skills/` | -- | Auto-discovered |
 | Codex | `.agents/skills/` | -- | AGENTS.md updated |
-| Multi-agent | `.agents/skills/` (canonical) | `.claude/skills/` + `.cursor/skills/` | Both configs |
+| Multi | `.agents/skills/` (canonical) | `.claude/skills/` | Both configs |
 
-## Skills
+## Quality Rules
 
-| Skill | Description |
-|-------|-------------|
-| `agent-audit` | Audit Claude Code config against latest best practices |
-| `feature-audit` | Interactive business audit -- gaps, competitors, roadmap |
-| `new-project-idea` | Analyze idea critically, scaffold full project |
-| `find-unused` | Find dead code: unused exports, orphaned files, dead deps |
-| `persist-knowledge` | Auto-save patterns/conventions to CLAUDE.md |
-| `create-pr` | Create PR/MR with auto-generated description (GitHub + GitLab) |
-| `deploy-prep` | Release analysis with deployment checklists |
-| `deep-review` | Multi-perspective deep code review with 3 parallel reviewers |
-| `quick-review` | Fast single-pass review with false-positive suppression |
-| `v0-design` | Generate optimized v0.dev prompts for UI design |
-| `import-skill` | Import skills from GitHub, URLs, or local files |
-| `generate-tests` | Auto-generate tests matching existing patterns |
-| `security-check` | Security scan for secrets, vulns, dependencies |
+Optionally install 3 quality rules during `arcana init` that improve AI agent behavior:
 
-## Agent
-
-| Agent | Description |
-|-------|-------------|
-| `code-reviewer` | Zero-context multi-pass code review. PASS / NOTES / NEEDS CHANGES. |
+- **arcana-methodology.md** — multi-perspective, dynamic analysis
+- **arcana-quality.md** — verify before output, no false positives
+- **arcana-research.md** — research before acting, evidence-based
 
 ## Use Without Installing
 
-Print any skill to stdout without writing files:
-
 ```bash
-arcana use find-unused
-arcana use deploy-prep | pbcopy   # copy to clipboard
+arcana use find-unused              # preview a skill
+arcana use deploy-prep | pbcopy     # copy to clipboard
 ```
-
-## Multi-Agent Workflow
-
-After init with multi-agent mode:
-
-1. Edit skills in `.agents/skills/` (the canonical source)
-2. Run `arcana sync` to mirror to `.claude/skills/` + `.cursor/skills/`
-3. All agents see the same skills
 
 ## Also Works as Claude Plugin
 
