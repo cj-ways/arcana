@@ -3,6 +3,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join, basename } from "path";
 import { getTargetDirs, getAvailableSkills } from "../utils/paths.js";
 import { isInsideProject } from "../utils/detect.js";
+import { parseFrontmatter } from "../utils/frontmatter.js";
 
 /**
  * Resolve a source argument to a fetchable URL or local path.
@@ -111,28 +112,6 @@ async function fetchGitHubSkill(owner, repo, skillName) {
     }
   }
   return null;
-}
-
-/**
- * Parse frontmatter from SKILL.md content.
- */
-function parseFrontmatter(content) {
-  const match = content.match(/^---\n([\s\S]*?)\n---/);
-  if (!match) return {};
-  const fm = {};
-  for (const line of match[1].split("\n")) {
-    const kv = line.match(/^(\S+):\s*(.+)$/);
-    if (kv) {
-      let value = kv[2].trim();
-      // Strip surrounding quotes
-      if ((value.startsWith("'") && value.endsWith("'")) ||
-          (value.startsWith('"') && value.endsWith('"'))) {
-        value = value.slice(1, -1);
-      }
-      fm[kv[1]] = value;
-    }
-  }
-  return fm;
 }
 
 /**

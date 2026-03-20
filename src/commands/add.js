@@ -46,6 +46,10 @@ export async function runAdd(skills, opts) {
     console.log(chalk.yellow(`  ? Unknown skill: ${u}`));
   }
 
+  if (skillNames.length === 0 && agentNames.length === 0) {
+    process.exit(1);
+  }
+
   // Install skills
   if (skillNames.length > 0) {
     const results = copySkills(skillNames, dirs.skills, { force });
