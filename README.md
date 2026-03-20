@@ -54,6 +54,21 @@ $ arcana init
   > Custom (pick specific)
 ```
 
+### Quality Rules (Optional)
+
+During `arcana init`, you can optionally install Arcana's quality rules — research-first, evidence-based patterns that improve AI agent behavior across your project.
+
+```bash
+arcana init  # asks "Apply Arcana quality rules?"
+```
+
+Rules are installed to `.claude/rules/` as 3 focused files:
+- `arcana-quality.md` — verify before output, no false positives
+- `arcana-research.md` — research before acting, evidence-based
+- `arcana-methodology.md` — multi-perspective, dynamic analysis
+
+Run `/agent-audit rules` to check for conflicts with your existing project rules.
+
 ### What each mode sets up
 
 | Mode | Skills location | Mirrors | Config |

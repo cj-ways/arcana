@@ -40,6 +40,7 @@
     "src/",
     "skills/",
     "agents/",
+    "rules/",
     ".claude-plugin/",
     "SKILL-AUTHORING-REFERENCE.md",
     "README.md",

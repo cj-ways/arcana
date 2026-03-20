@@ -7,8 +7,11 @@ import {
   getTargetDirs,
   getAvailableSkills,
   getAvailableAgents,
+  getPackageRulesDir,
 } from "../utils/paths.js";
 import { copySkills, copyAgents, mirrorSkills } from "../utils/copy.js";
+import fsExtra from "fs-extra";
+const { copySync: fsCopySync, ensureDirSync } = fsExtra;
 import { appendAgentsMdBlock } from "./sync.js";
 
 function hasArcanaSkills() {
@@ -26,6 +29,21 @@ function hasArcanaSkills() {
     }
   }
   return false;
+}
+
+function copyRules(targetDir) {
+  const rulesDir = getPackageRulesDir();
+  if (!existsSync(rulesDir)) return [];
+  const results = [];
+  const files = readdirSync(rulesDir).filter((f) => f.endsWith(".md"));
+  ensureDirSync(targetDir);
+  for (const file of files) {
+    const src = join(rulesDir, file);
+    const dest = join(targetDir, file);
+    fsCopySync(src, dest, { overwrite: true });
+    results.push({ name: file, status: "installed" });
+  }
+  return results;
 }
 
 export async function runInit() {
@@ -137,6 +155,17 @@ export async function runInit() {
     return;
   }
 
+  // Ask about Arcana quality rules
+  const { installRules } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "installRules",
+      message:
+        "Apply Arcana quality rules? (recommended — establishes research-first, evidence-based AI patterns)",
+      default: true,
+    },
+  ]);
+
   // Install
   const dirs = getTargetDirs(agent, scope);
   const scopeLabel = scope === "user" ? "user level" : "project level";
@@ -183,15 +212,47 @@ export async function runInit() {
     console.log(chalk.dim("  ↳ Updated AGENTS.md with skill discovery block"));
   }
 
+  // Copy rules if requested
+  let rulesCount = 0;
+  if (installRules) {
+    const base = scope === "user" ? (await import("os")).homedir() : process.cwd();
+    const rulesTargetDir = join(base, ".claude", "rules");
+
+    // Check for existing rules before copying
+    const hadExistingRules =
+      existsSync(rulesTargetDir) &&
+      readdirSync(rulesTargetDir).filter((f) => f.endsWith(".md")).length > 0;
+
+    const rulesResults = copyRules(rulesTargetDir);
+    rulesCount = rulesResults.filter((r) => r.status === "installed").length;
+
+    for (const r of rulesResults) {
+      if (r.status === "installed") {
+        console.log(chalk.green(`  ✓ ${r.name} (rule)`));
+      } else {
+        console.log(chalk.red(`  ✗ ${r.name} — ${r.status}`));
+      }
+    }
+
+    if (hadExistingRules) {
+      console.log(
+        chalk.yellow(
+          "\n  ⚠ You have existing rules. Run /agent-audit rules to check for conflicts with Arcana rules."
+        )
+      );
+    }
+  }
+
   // Summary
   const installed = skillResults.filter((r) => r.status === "installed").length;
   const agentCount = dirs.agents
     ? selectedAgents.length
     : 0;
 
+  const rulesSuffix = rulesCount > 0 ? ` + ${rulesCount} rules` : "";
   console.log(
     chalk.bold(
-      `\n✦ Done. ${installed} skills + ${agentCount} agent installed.\n`
+      `\n✦ Done. ${installed} skills + ${agentCount} agent${rulesSuffix} installed.\n`
     )
   );
 

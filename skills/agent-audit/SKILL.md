@@ -28,12 +28,14 @@ Parse `$ARGUMENTS` to determine scope. Examples:
 | `/agent-audit skill:agent-audit` | Deep-dive ONLY this skill (meta-audit) |
 | `/agent-audit agents` | Deep-dive ALL agents — skip general audit |
 | `/agent-audit agent:code-reviewer` | Deep-dive ONLY the `code-reviewer` agent — skip everything else |
+| `/agent-audit rules` | Audit rules files — quality + conflict detection |
 
 **Routing logic:**
 - If argument starts with `skill:` → extract skill name → jump directly to **Skill Deep-Dive** for that one skill only. Skip Phases 1-2.
 - If argument starts with `agent:` → extract agent name → jump directly to **Agent Deep-Dive** for that one agent only. Skip Phases 1-2.
 - If argument is `skills` → discover all skills → run **Skill Deep-Dive** for each. Skip Phase 2 general audit.
 - If argument is `agents` → discover all agents → run **Agent Deep-Dive** for each. Skip Phase 2 general audit.
+- If argument is `rules` → jump directly to **Rules Conflict Detection**. Skip Phases 1-2.
 - If argument is a component name (`hooks`, `permissions`, etc.) → run Phase 1 research scoped to that topic + Phase 2 checklist for that component only.
 - If empty or `full` → run everything.
 
@@ -251,6 +253,50 @@ For EVERY agent being deep-dived, check ALL of the following:
 | Content | Clear workflow | PASS/FAIL | ... |
 | Security | No secrets | PASS/FAIL | ... |
 ```
+
+## Phase 3c: Rules Conflict Detection
+
+**Triggered by:** `rules`, or during `full` audit.
+
+### Rules Conflict Detection
+
+When auditing rules (either as part of `full` or `rules` scope):
+
+1. **Identify sources**: Classify each rules file:
+   - **Arcana rules**: files matching `arcana-*.md` pattern in `.claude/rules/`
+   - **User rules**: all other `.md` files in `.claude/rules/`
+   - **CLAUDE.md**: project root instructions
+
+2. **Read all rules files** and extract the key directives from each
+
+3. **Cross-check for semantic conflicts**:
+   - For each Arcana directive, check if any user rule contradicts it
+   - Example conflict: Arcana says "research before acting" but user rule says "be concise, no research"
+   - Example non-conflict: Arcana says "verify before output" and user says "use TypeScript strict" (different concerns)
+
+4. **Report findings with source labels**:
+   ```
+   📦 Arcana rules (3 files):
+     ✓ arcana-quality.md — no conflicts
+     ⚠ arcana-research.md — potential conflict with your rules
+       Arcana: "Research before acting"
+       Your rule (coding-style.md): "Keep responses concise and fast"
+       → These may conflict during complex analysis tasks
+
+   📁 Your project rules (2 files):
+     ✓ architecture.md — no issues
+     ✓ coding-style.md — reviewed (see conflict above)
+   ```
+
+5. **For each conflict**: Ask the user which should take priority. Do NOT auto-resolve.
+
+6. **Self-audit note**: When auditing Arcana's own skills, label them clearly:
+   ```
+   📦 Arcana skill: deep-review
+     ✓ Frontmatter valid
+     ⚠ Could benefit from `context: fork` (new Claude Code feature)
+   ```
+   Never say "Arcana's skill is wrong." Say "could benefit from [improvement]" or "consider updating."
 
 ## Phase 4: Report
 

@@ -15,6 +15,10 @@ export function getPackageAgentsDir() {
   return join(PACKAGE_ROOT, "agents");
 }
 
+export function getPackageRulesDir() {
+  return join(PACKAGE_ROOT, "rules");
+}
+
 export function getTargetDirs(agent, scope) {
   const base = scope === "user" ? homedir() : process.cwd();
 
