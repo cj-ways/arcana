@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.7.1 (2026-03-21)
+
+### Fixed
+- **CRITICAL: marketplace.json nested plugin version** — `plugins[0].version` was stuck at 1.5.0. Release script now uses `replaceAll` to catch all version fields including nested ones.
+- **Feature docs updated** — roadmap and todo were stale after 3 releases in one session. Now reflect v1.7.x state.
+
 ## v1.7.0 (2026-03-21)
 
 ### Added

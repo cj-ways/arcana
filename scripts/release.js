@@ -32,7 +32,7 @@ const files = [
   },
   {
     path: join(ROOT, ".claude-plugin", "marketplace.json"),
-    update: (content) => content.replace(/"version":\s*"[^"]*"/, `"version": "${version}"`),
+    update: (content) => content.replaceAll(/"version":\s*"[^"]*"/g, `"version": "${version}"`),
   },
 ];
 

@@ -1,6 +1,6 @@
 {
   "name": "arcana",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Battle-tested Claude Code skills — 14 skills + 2 agents for auditing, code review, PR creation, dead code detection, knowledge persistence, deployment prep, project scaffolding, security scanning, test generation, UI design prompts, skill importing, and skill discovery. Works on any project.",
   "author": {
     "name": "cj-ways",
