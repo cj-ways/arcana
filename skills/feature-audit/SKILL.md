@@ -112,27 +112,65 @@ Deep-dive into how competitors implement this exact feature:
 
 **If existing feature docs are found** (Stage 0), read ALL of them. This is a **re-audit** — focus on what changed or was missed.
 
+### Stage 1.5: Discover Feature-Specific Perspectives
+
+After autonomous research, before talking to the user — determine WHAT to audit.
+
+**13 Universal Perspectives (ALWAYS apply to every feature):**
+
+| # | Perspective | Core Question |
+|---|------------|---------------|
+| 1 | Functional Correctness | Does it do what it claims? All paths, all states? |
+| 2 | Error & Edge Cases | What happens when things go wrong? |
+| 3 | Performance & Scalability | How does it behave under load? |
+| 4 | Security & Privacy | Attack surface? Data leakage? Access control? |
+| 5 | Reliability & Fault Tolerance | What if a dependency fails? |
+| 6 | Usability / UX | Intuitive for end users AND developers? |
+| 7 | Accessibility | WCAG? Keyboard nav? Screen reader? |
+| 8 | Maintainability | Understandable? Deployable? Configurable? |
+| 9 | Testability | Can it be tested? Is it tested? |
+| 10 | Observability | Logging? Alerts? Can you debug production? |
+| 11 | Data Integrity | Validated? Consistent? Recoverable? |
+| 12 | Compatibility | Browsers? Platforms? API contracts? |
+| 13 | Cost Efficiency | Resource costs? Optimization opportunities? |
+
+**3 Conditional Perspectives (ask unless clearly irrelevant):**
+- Compliance & Regulatory
+- Documentation quality
+- Portability / Vendor lock-in
+
+**Dynamic Discovery — find feature-specific perspectives:**
+
+1. Use **WebSearch** to research: `"[feature-name] audit checklist"`, `"[feature-name] best practices 2026"`, `"[feature-name] common failures"`
+2. Extract perspectives that go BEYOND the 13 universal ones
+3. These are domain-specific angles only an expert in this feature type would think of
+
+Examples of dynamically discovered perspectives:
+- Auth → token lifecycle, session fixation, brute force protection, OAuth compliance, MFA patterns
+- Billing → revenue recognition, refund flows, dunning, tax compliance, fraud detection
+- Search → relevance ranking, index freshness, query parsing, facets, zero-results UX
+- Notifications → delivery guarantees, channel preferences, rate limiting, quiet hours, unsubscribe compliance
+
+**For complex features**, launch a background **Explore subagent** to deep-dive a specific perspective while the main conversation continues (e.g., security audit traces all auth flows while discussing UX with user).
+
 ### Stage 2: Open the conversation
 
 Once research is complete, start the interactive session:
 
 1. Present a brief summary of what you found (current state — 5-10 lines max)
-2. Share the ONE most interesting or surprising finding
-3. Ask the user ONE question about it
+2. List the perspectives you'll audit: "13 universal + [N] feature-specific: [list discovered perspectives]"
+3. Share the ONE most interesting or surprising finding
+4. Ask the user ONE question about it
 
 ### Stage 3: Interactive deep-dive (the core of the audit)
 
-Work through business dimensions conversationally. You DON'T have to cover every dimension if the conversation reveals some aren't relevant. Follow the energy.
+Work through perspectives conversationally. Prioritize by impact — start with perspectives where you found the most gaps. You DON'T have to cover every perspective if the conversation reveals some aren't relevant. Follow the energy.
 
-**Business dimensions to explore (as conversation topics, not a checklist):**
-- Core Functionality — full user journey, edge cases, status machine
-- Customer/User Experience — what users see, do, and understand
-- Admin/Ops Experience — what operators see, do, and manage
-- Ops & Monitoring — failure alerts, health checks, logs
-- Financial/Business Controls — fees, limits, audit trail (if applicable)
-- Resilience & Safety — external service failures, recovery, race conditions
-- Extensions & Growth — natural extensions, integrations, scaling
-- Analytics & BI — adoption, retention, revenue tracking
+**Perspective exploration order:**
+1. Start with the perspective where the biggest gap or risk was found
+2. Weave in feature-specific (dynamically discovered) perspectives naturally — they often reveal the most novel insights
+3. Universal perspectives as the backbone — cycle through them as the conversation allows
+4. Skip perspectives where the feature is clearly solid (acknowledge briefly and move on)
 
 **For each topic you raise:**
 1. Present what you found (concrete evidence from codebase + competitor research)
@@ -272,3 +310,15 @@ Key findings with sources.
 - **Only write after user confirms**
 - **ALWAYS verify** after writing docs — re-read source code, confirm every claim
 - **Adapt to the project** — don't assume any specific tech stack or structure
+- **Universal perspectives ALWAYS apply** — never skip functional correctness, security, or error handling
+- **Dynamic perspectives are additive** — they supplement, not replace, the 13 universal ones
+- **Use background subagents** for heavy perspective deep-dives while conversation continues
+
+## Gotchas
+
+1. **Suggesting improvements that already exist** — search the FULL codebase before claiming something is missing. Check sibling projects (admin panels, mobile apps) too.
+2. **Proposing "add monitoring" when it exists elsewhere** — monitoring might be in a separate service, Grafana dashboard, or Datadog config not visible in this repo.
+3. **Confusing conventions with bugs** — read CLAUDE.md first. What looks like a mistake might be an intentional pattern explained there.
+4. **Over-engineering for the project scale** — a student project doesn't need the same auth audit as a fintech platform. Match recommendations to the project's actual scale and audience.
+5. **Applying irrelevant perspectives** — "Financial Controls" is meaningless for an auth feature. The 13 universal perspectives are chosen because they ALWAYS apply. Dynamic ones must be justified.
+6. **Treating the 13 perspectives as a rigid checklist** — they are conversation starters, not a form to fill out. If security is clearly solid after 2 minutes, say so and move on. Spend time where the gaps are.
