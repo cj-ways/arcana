@@ -1,5 +1,30 @@
 # Changelog
 
+## v1.4.0 (2026-03-20)
+
+### Added
+- `deep-review` skill — multi-perspective code review with 3 parallel specialized reviewers
+- `quick-review` skill — fast single-pass review (code-reviewer agent converted to skill format)
+- `v0-design` skill — generate optimized v0.dev prompts for UI design
+- `review-team` agent — agent team that spawns security, correctness, and architecture reviewers
+- Effort levels (`effort:` frontmatter) on all 13 skills for optimal reasoning depth
+- Worktree isolation (`isolation: worktree`) on review skills for safe analysis
+- Project memory (`memory: project`) on review skills for cross-session learning
+- Gotchas sections added to 10 skills (40+ documented agent failure patterns)
+
+### Enhanced
+- `feature-audit` — 13 universal perspectives + dynamic feature-specific discovery via WebSearch
+- `new-project-idea` — WebSearch for competitive landscape + phase plan validation
+- `security-check` — CVE research via WebSearch + context-aware false positive guidance
+- `deploy-prep` — risk prioritization matrix (CRITICAL/HIGH/MEDIUM/LOW) + user confirmation
+- `find-unused` — confidence-based output tiers (SAFE TO DELETE / LIKELY UNUSED / VERIFY FIRST)
+- `generate-tests` — complexity assessment + test quality checklist
+- `persist-knowledge` — auto-invocation quality check + gotchas
+
+### Fixed
+- Plugin marketplace.json updated with required `owner` field
+- README updated: 7 → 13 skills, accurate descriptions
+
 ## [1.3.0] - 2026-03-19
 
 ### Added

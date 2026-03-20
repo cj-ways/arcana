@@ -3,6 +3,7 @@ name: generate-tests
 description: 'Generate unit tests for a file or function. Detects test framework and follows existing patterns. Use when the user asks to write tests, add tests, generate tests, or test a function. Manual via /generate-tests.'
 argument-hint: '<file-path> [function-name]'
 allowed-tools: Read, Grep, Glob, Bash, Edit, Write
+effort: medium
 ---
 
 # Generate Tests

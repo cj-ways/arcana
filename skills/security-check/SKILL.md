@@ -3,6 +3,7 @@ name: security-check
 description: 'Quick security scan — hardcoded secrets, common vulnerabilities, dependency issues. Use when the user asks to check security, scan for secrets, or audit for vulnerabilities. Manual via /security-check.'
 argument-hint: '[scope: secrets|vulns|deps|all]'
 allowed-tools: Grep, Read, Glob, Bash
+effort: medium
 ---
 
 # Security Check

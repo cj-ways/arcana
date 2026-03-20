@@ -4,6 +4,7 @@ description: 'Generates optimized v0.dev prompts for UI design — full pages, s
 argument-hint: "<app-description, feature, or component>"
 disable-model-invocation: true
 allowed-tools: ["Read", "Glob", "Grep", "Agent", "WebSearch", "WebFetch", "Write", "AskUserQuestion"]
+effort: medium
 ---
 
 # /v0-design — Generate v0.dev Design Prompts

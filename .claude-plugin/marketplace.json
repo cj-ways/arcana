@@ -1,11 +1,15 @@
 {
   "version": "1",
   "name": "Arcana",
+  "owner": {
+    "name": "cj-ways",
+    "email": "hello@cj-ways.com"
+  },
   "plugins": [
     {
       "name": "arcana",
-      "version": "1.0.0",
-      "description": "Battle-tested Claude Code skills: agent audit, feature audit, code review, PR creation, dead code detection, knowledge persistence, deploy prep, project scaffolding.",
+      "version": "1.4.0",
+      "description": "Battle-tested Claude Code skills: 13 skills + 2 agents for auditing, code review, PR creation, dead code detection, knowledge persistence, deploy prep, project scaffolding, security scanning, test generation, UI design prompts, and skill importing.",
       "source": {
         "type": "github",
         "repo": "cj-ways/arcana"

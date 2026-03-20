@@ -2,6 +2,7 @@
 name: create-pr
 description: 'Creates a pull request or merge request with auto-generated title, description, and affected-area summary. Auto-detects GitHub vs GitLab. Use when the user says "create a PR," "open a pull request," "submit for review," or "push and create PR." Manual via /create-pr.'
 argument-hint: '[target-branch]'
+effort: low
 ---
 
 # /create-pr — Create Pull/Merge Request with Change Summary

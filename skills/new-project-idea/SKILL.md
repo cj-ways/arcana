@@ -3,6 +3,7 @@ name: new-project-idea
 description: 'Analyzes a project idea critically, then scaffolds a full project with phased plan, CLAUDE.md, OpenSpec, and AI-optimized stack. Manual via /new-project-idea.'
 argument-hint: "<project-idea>"
 disable-model-invocation: true
+effort: high
 ---
 
 # New Project Idea → Full Project Setup

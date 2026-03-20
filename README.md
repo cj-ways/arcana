@@ -5,7 +5,7 @@
 
 Universal agent skills CLI. Install, manage, and sync battle-tested skills across **Claude Code, Codex CLI, Cursor**, and any agent that reads SKILL.md.
 
-7 skills + 1 agent. Stack-agnostic. Multi-agent ready.
+13 skills + 1 agent. Stack-agnostic. Multi-agent ready.
 
 ## Install
 
@@ -50,7 +50,7 @@ $ arcana init
   > Multi-agent (Claude + Codex + Cursor)
 
 ? Which skills?
-  > All (7 skills + 1 agent)
+  > All (13 skills + 1 agent)
   > Custom (pick specific)
 ```
 
@@ -73,6 +73,12 @@ $ arcana init
 | `persist-knowledge` | Auto-save patterns/conventions to CLAUDE.md |
 | `create-pr` | Create PR/MR with auto-generated description (GitHub + GitLab) |
 | `deploy-prep` | Release analysis with deployment checklists |
+| `deep-review` | Multi-perspective deep code review with 3 parallel reviewers |
+| `quick-review` | Fast single-pass review with false-positive suppression |
+| `v0-design` | Generate optimized v0.dev prompts for UI design |
+| `import-skill` | Import skills from GitHub, URLs, or local files |
+| `generate-tests` | Auto-generate tests matching existing patterns |
+| `security-check` | Security scan for secrets, vulns, dependencies |
 
 ## Agent
 

@@ -2,6 +2,7 @@
 name: find-unused
 description: 'Finds unused exports, dead functions/classes, orphaned files, and dead dependencies across any codebase. Use when the user mentions dead code, unused imports, cleaning up, or asks what can be deleted. Manual via /find-unused.'
 argument-hint: '[scope: all|exports|functions|files|deps]'
+effort: low
 ---
 
 # Find Unused

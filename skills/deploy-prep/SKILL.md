@@ -2,6 +2,7 @@
 name: deploy-prep
 description: 'Analyzes branch diff to generate deploy checklists — env vars, migrations, new services, dependencies, schema changes, breaking changes. Works across any tech stack. Manual via /deploy-prep [source] [target].'
 argument-hint: '[source-branch] [target-branch]'
+effort: medium
 ---
 
 # Deploy Prep

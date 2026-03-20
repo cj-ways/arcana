@@ -4,6 +4,7 @@ description: 'Imports an external agent skill from a GitHub repo, URL, or local 
 argument-hint: '<source> [skill-name]'
 disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebFetch
+effort: low
 ---
 
 # Import Skill — Adapt External Skills to Arcana Standards

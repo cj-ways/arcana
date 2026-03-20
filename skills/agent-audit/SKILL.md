@@ -3,6 +3,7 @@ name: agent-audit
 description: 'Audits Claude Code agent configuration against latest best practices. Works on any project. Manual via /agent-audit.'
 argument-hint: '[scope: full|hooks|permissions|claudeignore|claude-md|memory|skills|skill:<name>|agents|agent:<name>|rules]'
 disable-model-invocation: true
+effort: medium
 ---
 
 # Agent Configuration Audit

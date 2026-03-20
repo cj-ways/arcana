@@ -4,6 +4,9 @@ description: 'Fast single-pass code review with strong false-positive suppressio
 argument-hint: "[files or branch]"
 disable-model-invocation: true
 allowed-tools: ["Bash", "Read", "Grep", "Glob"]
+effort: medium
+isolation: worktree
+memory: project
 ---
 
 <command-name>quick-review</command-name>

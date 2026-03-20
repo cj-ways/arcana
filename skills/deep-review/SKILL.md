@@ -4,6 +4,9 @@ description: 'Multi-perspective deep code review using 3 specialized parallel re
 argument-hint: "[files or branch]"
 disable-model-invocation: true
 allowed-tools: ["Bash", "Read", "Grep", "Glob", "Agent"]
+effort: high
+isolation: worktree
+memory: project
 ---
 
 <command-name>deep-review</command-name>
