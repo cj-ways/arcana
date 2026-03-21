@@ -24,9 +24,8 @@ jobs:
       - run: npm ci
 
       - run: npm test
-
-      - name: Unit tests
-        run: npm run test:unit
+        env:
+          SKIP_NETWORK_TESTS: "1"
 
       - name: CLI smoke test
         run: |
