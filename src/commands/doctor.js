@@ -208,17 +208,27 @@ export async function runDoctor() {
         .slice(0, 12);
     }
 
+    // Cache source hashes once to avoid re-reading in nested loops
+    const sourceSkillHashes = {};
+    for (const skill of allSkills) {
+      const src = join(sourceSkillsDir, skill, "SKILL.md");
+      if (existsSync(src)) sourceSkillHashes[skill] = hash(readFileSync(src, "utf-8"));
+    }
+    const sourceAgentHashes = {};
+    for (const agent of allAgents) {
+      const src = join(sourceAgentsDir, `${agent}.md`);
+      if (existsSync(src)) sourceAgentHashes[agent] = hash(readFileSync(src, "utf-8"));
+    }
+
     for (const loc of foundLocations) {
       for (const skill of allSkills) {
-        const sourceFile = join(sourceSkillsDir, skill, "SKILL.md");
+        if (!sourceSkillHashes[skill]) continue;
         const installedFile = join(loc.dir, skill, "SKILL.md");
+        if (!existsSync(installedFile)) continue;
 
-        if (!existsSync(sourceFile) || !existsSync(installedFile)) continue;
-
-        const sourceHash = hash(readFileSync(sourceFile, "utf-8"));
         const installedHash = hash(readFileSync(installedFile, "utf-8"));
 
-        if (sourceHash !== installedHash) {
+        if (sourceSkillHashes[skill] !== installedHash) {
           console.log(chalk.yellow(`    WARN  ${skill} modified locally in ${loc.label}`));
           warns++;
           modified++;
@@ -231,15 +241,13 @@ export async function runDoctor() {
     for (const loc of agentLocations) {
       if (!existsSync(loc.dir)) continue;
       for (const agent of allAgents) {
-        const sourceFile = join(sourceAgentsDir, `${agent}.md`);
+        if (!sourceAgentHashes[agent]) continue;
         const installedFile = join(loc.dir, `${agent}.md`);
+        if (!existsSync(installedFile)) continue;
 
-        if (!existsSync(sourceFile) || !existsSync(installedFile)) continue;
-
-        const sourceHash = hash(readFileSync(sourceFile, "utf-8"));
         const installedHash = hash(readFileSync(installedFile, "utf-8"));
 
-        if (sourceHash !== installedHash) {
+        if (sourceAgentHashes[agent] !== installedHash) {
           console.log(chalk.yellow(`    WARN  ${agent} agent modified locally in ${loc.label}`));
           warns++;
           modified++;

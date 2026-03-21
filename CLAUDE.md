@@ -2,9 +2,9 @@
 
 ## What This Is
 
-Arcana (`@cj-ways/arcana`) is a curated agent skills CLI for Claude Code and Codex CLI. It ships 14 hand-authored skills, 2 agents, and 3 quality rules — all backed by SkillsBench data. Published on npm under `@cj-ways/arcana`. GitHub: `cj-ways/arcana`. MIT licensed.
+Arcana (`@cj-ways/arcana`) is a curated developer workflow skills CLI for Claude Code and Codex CLI. It ships 15 hand-authored skills, 2 agents, and 3 quality rules — all backed by SkillsBench data. Published on npm under `@cj-ways/arcana`. GitHub: `cj-ways/arcana`. MIT licensed.
 
-**Current version:** 1.8.0 (14 skills + 2 agents + 3 quality rules)
+**Current version:** 1.9.0 (15 skills + 2 agents + 3 quality rules)
 
 ## Your Role
 
@@ -19,7 +19,7 @@ You are the project owner, solution architect, lead developer, and release manag
 - Dependencies: commander, inquirer, chalk, fs-extra (minimal, intentional)
 
 ### Content (the actual product)
-- `skills/*/SKILL.md` — 14 skills (the core value)
+- `skills/*/SKILL.md` — 15 skills (the core value)
 - `agents/*.md` — 2 agents (code-reviewer, review-team)
 - `rules/*.md` — 3 quality rules (methodology, quality, research)
 - `migrations.json` — skill rename/removal migrations across versions
@@ -34,16 +34,17 @@ You are the project owner, solution architect, lead developer, and release manag
 | feature-audit | Interactive business audit | 13 perspectives + dynamic discovery, ONE QUESTION AT A TIME |
 | v0-design | v0.dev prompt generation | 5 modes (Greenfield, Redesign, Component, Multi-page, Design System) |
 | generate-tests | Auto-generate tests | Framework detection, complexity assessment |
-| quick-review | Fast code review | False-positive suppression |
+| quick-review | Fast code review | False-positive suppression, cross-skill handoff to deep-review |
 | deep-review | Multi-pass code review | 3 parallel agents (security, correctness, architecture) |
 | create-pr | Create PR/MR | GitHub + GitLab auto-detection |
-| deploy-prep | Release checklists | Risk prioritization matrix |
+| deep-fix | Structured debugging | Reproduce → isolate → hypothesize → verify → fix → regression test |
+| refactor-plan | Safe multi-file refactoring | Dependency graph mapping, atomic batches, test gates |
+| release-check | Release checklists | Risk prioritization matrix (renamed from deploy-prep in v1.9.0) |
 
 **Toolkit:**
 | Skill | Purpose | Key Feature |
 |-------|---------|-------------|
 | security-check | Security scan | Secrets, vulns, deps, CVE research |
-| find-unused | Dead code detection | Confidence tiers (SAFE/LIKELY/VERIFY) |
 | persist-knowledge | Save patterns to docs | Auto-invoke + manual modes |
 | agent-audit | Audit Claude Code config | Argument routing, research phase |
 | import-skill | Import + adapt external skills | CLI fetches (`arcana import`), skill adapts (`/import-skill`) |
@@ -88,7 +89,7 @@ src/utils/paths.js         — Path resolution, skill/agent discovery
 src/utils/detect.js        — Agent auto-detection (Claude, Codex)
 src/utils/copy.js          — File copying, conflict detection, markers
 src/utils/frontmatter.js   — Shared YAML frontmatter parser
-skills/*/SKILL.md          — 14 skill definitions
+skills/*/SKILL.md          — 15 skill definitions
 agents/*.md                — 2 agent definitions
 rules/*.md                 — 3 quality rules
 migrations.json            — Skill rename/removal migrations
@@ -129,6 +130,16 @@ SKILL-AUTHORING-REFERENCE.md — Authoring guide
 - No rollback (acceptable at current scale)
 
 ## Design Decisions
+
+### v1.9.0 Changes (2026-03-21)
+- **Dropped `find-unused`** — native toolchain (ESLint, TypeScript, Go compiler) handles dead code detection better
+- **Renamed `deploy-prep` → `release-check`** — clearer name, pairs with `security-check` naming pattern
+- **Added `deep-fix`** — structured debugging (reproduce → isolate → hypothesize → verify → fix → regression test)
+- **Added `refactor-plan`** — dependency-aware multi-file refactoring with atomic batches and test gates
+- **Cross-skill handoffs** — skills now suggest related skills when contextually relevant (quick-review → deep-review, deep-fix → generate-tests, etc.)
+- **Init completion message** — suggests `/quick-review` as first-try skill after install
+- **Portfolio focus** — confirmed as "developer workflow" niche specifically
+- **Deep-review code fixes** — EISDIR crash fix, remove imported skills support, fetch diagnostics, listGitHubSkills size limit
 
 ### v1.6.0 Changes (2026-03-20)
 - **Dropped Cursor/Gemini** — focus on Claude Code + Codex CLI

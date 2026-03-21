@@ -21,15 +21,14 @@ export async function runRemove(skills) {
   for (const name of skills) {
     let removed = false;
 
-    // Try as skill
-    if (allSkills.includes(name)) {
-      for (const dir of searchDirs) {
-        const target = join(dir, name);
-        if (existsSync(target)) {
-          removeSync(target);
-          console.log(chalk.green(`  ✓ Removed ${name} from ${dir}`));
-          removed = true;
-        }
+    // Try as skill (built-in or imported)
+    for (const dir of searchDirs) {
+      const target = join(dir, name);
+      const skillMd = join(target, "SKILL.md");
+      if (existsSync(skillMd)) {
+        removeSync(target);
+        console.log(chalk.green(`  ✓ Removed ${name} from ${dir}`));
+        removed = true;
       }
     }
 

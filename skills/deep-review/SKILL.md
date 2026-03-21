@@ -214,3 +214,8 @@ If ALL three reviewers report no issues, say:
 > **Deep review complete — no issues found across security, correctness, and architecture passes.**
 And still include the audit tables.
 
+### Cross-Skill Suggestions (append when relevant)
+- If architecture findings suggest structural problems beyond the diff, add: "Consider running `/feature-audit` for a full business and architecture analysis of this feature."
+- If security findings are critical, add: "Consider running `/security-check` for a full project-wide security scan beyond the changed files."
+- If the review is pre-release, add: "Run `/release-check` to generate deploy checklists for env vars, migrations, and infrastructure changes."
+

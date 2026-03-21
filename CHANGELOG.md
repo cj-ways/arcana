@@ -1,5 +1,37 @@
 # Changelog
 
+## v1.9.0 (2026-03-21)
+
+### Added
+- **`deep-fix` skill** — Structured debugging workflow: reproduce → isolate → hypothesize → verify → fix → regression test. Prevents the shotgun-fix pattern where agents edit randomly until tests pass.
+- **`refactor-plan` skill** — Dependency-aware multi-file refactoring with atomic batches and test gates between each batch. Maps the full dependency graph before touching code.
+- **Cross-skill handoffs** — Skills now suggest related skills when contextually relevant:
+  - `quick-review` → suggests `/deep-review` on NEEDS CHANGES with critical findings
+  - `deep-review` → suggests `/feature-audit`, `/security-check`, `/release-check` based on findings
+  - `generate-tests` → suggests `/quick-review` when untested error paths found
+  - `release-check` → suggests `/deep-review` for critical migrations, `/feature-audit` for new features
+  - `deep-fix` → suggests `/generate-tests` for regression coverage
+  - `refactor-plan` → suggests `/quick-review` or `/deep-review` after completion
+- **Init first-skill suggestion** — After `arcana init`, shows "Try it now: make a code change, then ask Claude to /quick-review"
+
+### Changed
+- **Renamed `deploy-prep` → `release-check`** — clearer name, pairs with `security-check` naming pattern
+- **`remove` command now handles imported skills** — Previously only removed built-in Arcana skills; now scans for any directory with SKILL.md in install locations
+- **Test suite: 326 → 336 tests** — new skills + updated references
+
+### Removed
+- **`find-unused` skill** — Dropped because native toolchain (ESLint `no-unused-vars`, TypeScript `noUnusedLocals`, Go compiler, `depcheck`) already handles dead code detection better than a grep-based skill
+
+### Fixed
+- **`arcana import ./dir` EISDIR crash** — importing a directory without SKILL.md now shows a clear error instead of crashing
+- **`listGitHubSkills` unbounded response** — added 512KB size limit before JSON parsing, consistent with `fetchUrl`
+- **Fetch failures now show diagnostic info** — error code/name logged in dim text (e.g., `ENOTFOUND`, `AbortError`) for debugging timeouts and rate limits
+- **GitHub branch validation** — added regex validation for branch names in tree URLs
+
+### Migrations
+- `deploy-prep` → `release-check` (automatic rename on `arcana update`)
+- `find-unused` removed (automatic cleanup on `arcana update`)
+
 ## v1.8.0 (2026-03-21)
 
 ### Fixed

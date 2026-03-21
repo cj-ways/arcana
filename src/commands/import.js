@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync, statSync } from "fs";
 import { join, basename, resolve, sep } from "path";
 import { getTargetDirs, getAvailableSkills } from "../utils/paths.js";
 import { isInsideProject } from "../utils/detect.js";
@@ -36,6 +36,7 @@ export function resolveSource(source, skillName) {
   if (treeMatch) {
     const [, owner, repo, branch, path] = treeMatch;
     if (!GITHUB_SLUG.test(owner) || !GITHUB_SLUG.test(repo)) return null;
+    if (!/^[\w./-]+$/.test(branch)) return null;
     if (path.includes("..")) return null;
     const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}/SKILL.md`;
     const name = basename(path);
@@ -71,6 +72,7 @@ async function fetchUrl(url) {
     const response = await fetch(url, {
       headers: { "User-Agent": "arcana-cli" },
       signal: AbortSignal.timeout(15000),
+      redirect: "error",
     });
     if (!response.ok) return null;
 
@@ -83,7 +85,9 @@ async function fetchUrl(url) {
     const text = await response.text();
     if (text.length > MAX_FETCH_SIZE) return null;
     return text;
-  } catch {
+  } catch (err) {
+    const code = err.cause?.code || err.name;
+    if (code) console.error(chalk.dim(`  (${code})`));
     return null;
   }
 }
@@ -99,7 +103,9 @@ async function listGitHubSkills(owner, repo) {
       signal: AbortSignal.timeout(10000),
     });
     if (!response.ok) return null;
-    const entries = await response.json();
+    const text = await response.text();
+    if (text.length > MAX_FETCH_SIZE) return null;
+    const entries = JSON.parse(text);
     return entries
       .filter((e) => e.type === "dir")
       .map((e) => e.name);
@@ -180,8 +186,8 @@ export async function runImport(source, opts) {
     const localPath = resolve(resolved.path);
     // Try as directory with SKILL.md
     const skillMdPath = existsSync(join(localPath, "SKILL.md")) ? join(localPath, "SKILL.md") : localPath;
-    if (!existsSync(skillMdPath)) {
-      console.log(chalk.red(`  File not found: ${skillMdPath}`));
+    if (!existsSync(skillMdPath) || statSync(skillMdPath).isDirectory()) {
+      console.log(chalk.red(`  No SKILL.md found at: ${localPath}`));
       process.exit(1);
     }
     content = readFileSync(skillMdPath, "utf-8");
@@ -326,7 +332,7 @@ export async function runImport(source, opts) {
   const targetPath = join(targetDir, "SKILL.md");
 
   // Add attribution comment (escape --> to prevent comment injection)
-  const safeLabel = sourceLabel.replace(/-->/g, "--&gt;");
+  const safeLabel = sourceLabel.replace(/-{2,}/g, "- -");
   const attribution = `<!-- Imported by Arcana from: ${safeLabel} -->\n`;
   const finalContent = attribution + content;
 

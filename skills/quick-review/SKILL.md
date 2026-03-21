@@ -143,6 +143,9 @@ End the review with one of:
 - **NOTES** -- minor issues found (low/medium severity only). Code can ship as-is but consider the suggestions.
 - **NEEDS CHANGES** -- critical or high severity issues found. These should be fixed before merging.
 
+If the verdict is **NEEDS CHANGES** with critical or high findings, add:
+> This review found significant issues. Consider running `/deep-review` for a full security + architecture + correctness audit before merging.
+
 ## Important Guidelines (Final Gate)
 1. **Be specific**: Reference exact file paths and describe the issue precisely.
 2. **Provide fixes**: For every issue, suggest a concrete fix or code snippet.

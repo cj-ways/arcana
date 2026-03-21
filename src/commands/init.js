@@ -12,7 +12,7 @@ import {
 import { copySkills, copyAgents, mirrorSkills, renameExistingSkill, renameExistingAgent } from "../utils/copy.js";
 import fsExtra from "fs-extra";
 const { copySync: fsCopySync, ensureDirSync } = fsExtra;
-import { appendAgentsMdBlock } from "./sync.js";
+import { appendAgentsMdBlock } from "../utils/agents-md.js";
 
 export function hasArcanaSkills() {
   const cwd = process.cwd();
@@ -238,7 +238,7 @@ export async function runInit() {
       message: "Which skills?",
       choices: [
         {
-          name: `All (${allSkills.length} skills + ${allAgents.length} agent)`,
+          name: `All (${allSkills.length} skills + ${allAgents.length} agent${allAgents.length !== 1 ? "s" : ""})`,
           value: "all",
         },
         { name: "Custom (pick specific skills)", value: "custom" },
@@ -398,6 +398,8 @@ export async function runInit() {
       `\n✦ Done. ${installed} skills + ${agentCount} agent${rulesSuffix} installed.\n`
     )
   );
+
+  console.log(chalk.dim("  Try it now: make a code change, then ask Claude to /quick-review\n"));
 
   if (agent === "multi") {
     console.log(

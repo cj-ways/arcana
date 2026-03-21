@@ -1,13 +1,13 @@
 ---
-name: deploy-prep
-description: 'Analyzes branch diff to generate deploy checklists — env vars, migrations, new services, dependencies, schema changes, breaking changes. Works across any tech stack. Manual via /deploy-prep [source] [target].'
+name: release-check
+description: 'Analyzes branch diff to generate deploy checklists — env vars, migrations, new services, dependencies, schema changes, breaking changes. Works across any tech stack. Manual via /release-check [source] [target].'
 argument-hint: '[source-branch] [target-branch]'
 allowed-tools: Bash, Read, Grep, Glob
 effort: medium
 disable-model-invocation: true
 ---
 
-# Deploy Prep
+# Release Check
 
 Analyzes the diff between two branches and produces actionable pre-release and post-release checklists. Auto-detects the project's tech stack and scans for env variables, migrations, DB schema changes, new services, dependency changes, API schema changes, and infrastructure requirements.
 
@@ -375,4 +375,8 @@ Present the report in this structure:
 ```
 
 Do NOT commit or modify anything. Present the full report for user review.
+
+### Cross-Skill Suggestions (append when relevant)
+- If CRITICAL migration or schema changes are found, add: "Consider running `/deep-review` on the migration files before deploying."
+- If the release includes significant new features, add: "Consider running `/feature-audit` to verify the feature is production-ready before release."
 

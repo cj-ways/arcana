@@ -32,16 +32,16 @@ function run(args) {
 
 describe("arcana add", () => {
   it("installs a skill to project scope", () => {
-    const { output, status } = run("add find-unused --scope project --agent claude");
+    const { output, status } = run("add deep-fix --scope project --agent claude");
     expect(status).toBe(0);
-    expect(output).toContain("✓ find-unused");
-    expect(fsExtra.existsSync(join(TMP, ".claude", "skills", "find-unused", "SKILL.md"))).toBe(true);
+    expect(output).toContain("✓ deep-fix");
+    expect(fsExtra.existsSync(join(TMP, ".claude", "skills", "deep-fix", "SKILL.md"))).toBe(true);
   });
 
   it("installs multiple skills", () => {
-    const { output, status } = run("add find-unused create-pr --scope project --agent claude");
+    const { output, status } = run("add deep-fix create-pr --scope project --agent claude");
     expect(status).toBe(0);
-    expect(output).toContain("✓ find-unused");
+    expect(output).toContain("✓ deep-fix");
     expect(output).toContain("✓ create-pr");
   });
 
@@ -60,44 +60,44 @@ describe("arcana add", () => {
   it("installs all skills with --all", () => {
     const { output, status } = run("add --all --scope project --agent claude");
     expect(status).toBe(0);
-    expect(output).toContain("✓ find-unused");
+    expect(output).toContain("✓ deep-fix");
     expect(output).toContain("✓ deep-review");
     expect(output).toContain("agent");
   });
 
   it("detects conflict with existing non-arcana skill", () => {
-    const customDir = join(TMP, ".claude", "skills", "find-unused");
+    const customDir = join(TMP, ".claude", "skills", "deep-fix");
     fsExtra.ensureDirSync(customDir);
     fsExtra.writeFileSync(join(customDir, "SKILL.md"), "---\nname: my-custom\n---\n# Custom");
 
-    const { output } = run("add find-unused --scope project --agent claude");
+    const { output } = run("add deep-fix --scope project --agent claude");
     expect(output).toContain("skipped");
   });
 
   it("--force overrides conflict", () => {
-    const customDir = join(TMP, ".claude", "skills", "find-unused");
+    const customDir = join(TMP, ".claude", "skills", "deep-fix");
     fsExtra.ensureDirSync(customDir);
     fsExtra.writeFileSync(join(customDir, "SKILL.md"), "---\nname: my-custom\n---\n# Custom");
 
-    const { output, status } = run("add find-unused --scope project --agent claude --force");
+    const { output, status } = run("add deep-fix --scope project --agent claude --force");
     expect(status).toBe(0);
-    expect(output).toContain("✓ find-unused");
+    expect(output).toContain("✓ deep-fix");
   });
 });
 
 describe("arcana remove", () => {
   it("removes an installed skill", () => {
-    run("add find-unused --scope project --agent claude");
-    expect(fsExtra.existsSync(join(TMP, ".claude", "skills", "find-unused"))).toBe(true);
+    run("add deep-fix --scope project --agent claude");
+    expect(fsExtra.existsSync(join(TMP, ".claude", "skills", "deep-fix"))).toBe(true);
 
-    const { output, status } = run("remove find-unused");
+    const { output, status } = run("remove deep-fix");
     expect(status).toBe(0);
-    expect(output).toContain("Removed find-unused");
-    expect(fsExtra.existsSync(join(TMP, ".claude", "skills", "find-unused"))).toBe(false);
+    expect(output).toContain("Removed deep-fix");
+    expect(fsExtra.existsSync(join(TMP, ".claude", "skills", "deep-fix"))).toBe(false);
   });
 
   it("exits non-zero for non-installed skill", () => {
-    const { output, status } = run("remove find-unused");
+    const { output, status } = run("remove deep-fix");
     expect(status).not.toBe(0);
     expect(output).toContain("not found");
   });
@@ -114,22 +114,22 @@ describe("arcana list", () => {
     const { output, status } = run("list");
     expect(status).toBe(0);
     expect(output).toContain("Arcana Skills");
-    expect(output).toContain("find-unused");
+    expect(output).toContain("deep-fix");
     expect(output).toContain("deep-review");
   });
 
   it("shows installed status after adding", () => {
-    run("add find-unused --scope project --agent claude");
+    run("add deep-fix --scope project --agent claude");
     const { output } = run("list");
-    expect(output).toContain("✓ find-unused");
+    expect(output).toContain("✓ deep-fix");
   });
 });
 
 describe("arcana use", () => {
   it("prints skill content to stdout (exit 0)", () => {
-    const { output, status } = run("use find-unused");
+    const { output, status } = run("use deep-fix");
     expect(status).toBe(0);
-    expect(output).toContain("name: find-unused");
+    expect(output).toContain("name: deep-fix");
     expect(output).toContain("description:");
   });
 
@@ -149,9 +149,9 @@ describe("arcana use", () => {
 
 describe("arcana info", () => {
   it("shows skill metadata (exit 0)", () => {
-    const { output, status } = run("info find-unused");
+    const { output, status } = run("info deep-fix");
     expect(status).toBe(0);
-    expect(output).toContain("find-unused");
+    expect(output).toContain("deep-fix");
     expect(output).toContain("Type:");
     expect(output).toContain("skill");
     expect(output).toContain("Lines:");
@@ -181,20 +181,20 @@ describe("arcana doctor", () => {
   });
 
   it("finds installed skills after adding", () => {
-    run("add find-unused --scope project --agent claude");
+    run("add deep-fix --scope project --agent claude");
     const { output } = run("doctor");
-    expect(output).toContain("find-unused");
+    expect(output).toContain("deep-fix");
     expect(output).toContain("PASS");
   });
 });
 
 describe("arcana update", () => {
   it("updates installed skills (exit 0)", () => {
-    run("add find-unused --scope project --agent claude");
+    run("add deep-fix --scope project --agent claude");
     const { output, status } = run("update");
     expect(status).toBe(0);
     expect(output).toContain("Arcana Update");
-    expect(output).toContain("find-unused");
+    expect(output).toContain("deep-fix");
   });
 
   it("runs without error even with no project-level skills", () => {

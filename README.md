@@ -5,13 +5,13 @@
 [![license](https://img.shields.io/npm/l/@cj-ways/arcana)](https://github.com/cj-ways/arcana/blob/main/LICENSE)
 [![node](https://img.shields.io/node/v/@cj-ways/arcana)](https://nodejs.org)
 
-Curated agent skills for **Claude Code** and **Codex CLI**.
+Curated developer workflow skills for **Claude Code** and **Codex CLI**.
 
-14 skills, 2 agents, 3 quality rules — all hand-authored against [SkillsBench](https://arxiv.org/abs/2602.12670) data (7,308 trajectories, +16.2pp improvement over no-skill baselines). Not scraped, not AI-generated.
+15 skills, 2 agents, 3 quality rules — all hand-authored against [SkillsBench](https://arxiv.org/abs/2602.12670) data (7,308 trajectories, +16.2pp improvement over no-skill baselines). Not scraped, not AI-generated.
 
 ## Why Arcana
 
-- **Quality over quantity.** 14 battle-tested skills backed by 22 cited sources. SkillsBench shows curated skills improve agent performance by +16.2pp — self-generated skills show -1.3pp (no benefit).
+- **Quality over quantity.** 15 battle-tested skills backed by 22 cited sources. SkillsBench shows curated skills improve agent performance by +16.2pp — self-generated skills show -1.3pp (no benefit).
 - **Multi-agent sync.** One skill set, synced across Claude Code and Codex CLI. Edit once in `.agents/skills/`, mirror everywhere with `arcana sync`.
 - **Extensible.** Need a skill Arcana doesn't ship? `import-skill` pulls from GitHub, URLs, or local files and adapts them to Arcana's quality standards.
 
@@ -40,8 +40,10 @@ Skills map to your development lifecycle:
 | Test | `/generate-tests` | Auto-generate tests matching existing patterns |
 | Review | `/quick-review` | Fast single-pass review with false-positive suppression |
 | Review | `/deep-review` | 3 parallel specialist reviewers (security, correctness, architecture) |
+| Debug | `/deep-fix` | Structured debugging — reproduce, isolate, hypothesize, verify, fix |
+| Refactor | `/refactor-plan` | Safe multi-file refactoring with dependency mapping and test gates |
 | Ship | `/create-pr` | PR/MR with auto-generated description (GitHub + GitLab) |
-| Ship | `/deploy-prep` | Release checklists — env vars, migrations, breaking changes |
+| Ship | `/release-check` | Release checklists — env vars, migrations, breaking changes |
 
 ## Toolkit Skills
 
@@ -50,7 +52,6 @@ Use anytime, not tied to a specific phase:
 | Skill | What it does |
 |-------|-------------|
 | `/security-check` | Scan for secrets, vulnerabilities, dependency issues |
-| `/find-unused` | Dead code detection with confidence tiers (SAFE / LIKELY / VERIFY) |
 | `/persist-knowledge` | Auto-save patterns and conventions to project docs |
 | `/agent-audit` | Audit agent configuration against latest best practices |
 | `/import-skill` | Bring external skills into the Arcana ecosystem |
@@ -65,7 +66,7 @@ Use anytime, not tied to a specific phase:
 
 ## Extend with import
 
-Arcana ships 14 skills. When you need something it doesn't have, import it:
+Arcana ships 15 skills. When you need something it doesn't have, import it:
 
 ```bash
 arcana import anthropics/skills claude-api     # from GitHub
@@ -117,8 +118,8 @@ Optionally install 3 quality rules during `arcana init` that improve AI agent be
 ## Use Without Installing
 
 ```bash
-arcana use find-unused              # preview a skill
-arcana use deploy-prep | pbcopy     # copy to clipboard
+arcana use deep-fix                 # preview a skill
+arcana use release-check | pbcopy   # copy to clipboard
 ```
 
 ## Also Works as Claude Plugin

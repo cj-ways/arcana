@@ -10,10 +10,10 @@ const skills = getAvailableSkills();
 const agents = getAvailableAgents();
 
 const expected = [
-  "agent-audit", "create-pr", "deep-review", "deploy-prep",
-  "feature-audit", "find-unused", "generate-tests", "idea-audit",
-  "import-skill", "persist-knowledge", "quick-review", "security-check",
-  "skill-scout", "v0-design",
+  "agent-audit", "create-pr", "deep-fix", "deep-review",
+  "feature-audit", "generate-tests", "idea-audit",
+  "import-skill", "persist-knowledge", "quick-review", "refactor-plan",
+  "release-check", "security-check", "skill-scout", "v0-design",
 ];
 
 describe("skill frontmatter compliance", () => {

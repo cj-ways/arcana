@@ -156,4 +156,5 @@ If any check fails, fix the generated tests before presenting them.
 - Do not over-test trivial code (simple getters, pass-through functions). Focus on logic.
 - Keep generated test files clean — no commented-out code, no TODOs, no placeholder tests.
 - Present tests to the user for review BEFORE writing. Do not write without confirmation.
+- After generating tests, if coverage revealed untested error paths or complex logic, suggest: "Consider running `/quick-review` to verify the tested code for correctness issues."
 

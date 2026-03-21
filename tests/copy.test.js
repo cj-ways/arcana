@@ -18,26 +18,26 @@ afterEach(() => {
 describe("copySkills", () => {
   it("installs a valid skill", () => {
     const target = join(TMP, "skills");
-    const results = copySkills(["find-unused"], target);
+    const results = copySkills(["deep-fix"], target);
 
     expect(results).toHaveLength(1);
-    expect(results[0]).toEqual({ name: "find-unused", status: "installed" });
-    expect(fsExtra.existsSync(join(target, "find-unused", "SKILL.md"))).toBe(true);
+    expect(results[0]).toEqual({ name: "deep-fix", status: "installed" });
+    expect(fsExtra.existsSync(join(target, "deep-fix", "SKILL.md"))).toBe(true);
   });
 
   it("adds arcana marker to installed skill", () => {
     const target = join(TMP, "skills");
-    copySkills(["find-unused"], target);
+    copySkills(["deep-fix"], target);
 
-    const content = fsExtra.readFileSync(join(target, "find-unused", "SKILL.md"), "utf-8");
+    const content = fsExtra.readFileSync(join(target, "deep-fix", "SKILL.md"), "utf-8");
     expect(content).toContain("<!-- arcana-managed -->");
   });
 
   it("marker is placed after frontmatter, not inside it", () => {
     const target = join(TMP, "skills");
-    copySkills(["find-unused"], target);
+    copySkills(["deep-fix"], target);
 
-    const content = fsExtra.readFileSync(join(target, "find-unused", "SKILL.md"), "utf-8");
+    const content = fsExtra.readFileSync(join(target, "deep-fix", "SKILL.md"), "utf-8");
     const fmEnd = content.indexOf("---", content.indexOf("---") + 3);
     const markerPos = content.indexOf("<!-- arcana-managed -->");
     expect(markerPos).toBeGreaterThan(fmEnd);
@@ -52,36 +52,36 @@ describe("copySkills", () => {
 
   it("detects conflict with non-arcana skill", () => {
     const target = join(TMP, "skills");
-    const customDir = join(target, "find-unused");
+    const customDir = join(target, "deep-fix");
     fsExtra.ensureDirSync(customDir);
     fsExtra.writeFileSync(join(customDir, "SKILL.md"), "---\nname: my-custom-skill\n---\n# Custom");
 
-    const results = copySkills(["find-unused"], target);
+    const results = copySkills(["deep-fix"], target);
     expect(results[0].status).toBe("conflict");
   });
 
   it("overwrites conflict when force is true", () => {
     const target = join(TMP, "skills");
-    const customDir = join(target, "find-unused");
+    const customDir = join(target, "deep-fix");
     fsExtra.ensureDirSync(customDir);
     fsExtra.writeFileSync(join(customDir, "SKILL.md"), "---\nname: my-custom-skill\n---\n# Custom");
 
-    const results = copySkills(["find-unused"], target, { force: true });
+    const results = copySkills(["deep-fix"], target, { force: true });
     expect(results[0].status).toBe("installed");
   });
 
   it("overwrites arcana-managed skill without conflict", () => {
     const target = join(TMP, "skills");
     // First install
-    copySkills(["find-unused"], target);
+    copySkills(["deep-fix"], target);
     // Second install should not conflict
-    const results = copySkills(["find-unused"], target);
+    const results = copySkills(["deep-fix"], target);
     expect(results[0].status).toBe("installed");
   });
 
   it("handles multiple skills at once", () => {
     const target = join(TMP, "skills");
-    const results = copySkills(["find-unused", "create-pr", "nonexistent"], target);
+    const results = copySkills(["deep-fix", "create-pr", "nonexistent"], target);
 
     expect(results).toHaveLength(3);
     expect(results[0].status).toBe("installed");
@@ -123,23 +123,23 @@ describe("copyAgents", () => {
 describe("addMarker (via copySkills)", () => {
   it("does not duplicate marker on re-install", () => {
     const target = join(TMP, "skills");
-    copySkills(["find-unused"], target);
-    copySkills(["find-unused"], target);
+    copySkills(["deep-fix"], target);
+    copySkills(["deep-fix"], target);
 
-    const content = fsExtra.readFileSync(join(target, "find-unused", "SKILL.md"), "utf-8");
+    const content = fsExtra.readFileSync(join(target, "deep-fix", "SKILL.md"), "utf-8");
     const markerCount = (content.match(/<!-- arcana-managed -->/g) || []).length;
     expect(markerCount).toBe(1);
   });
 
   it("preserves content with --- in code blocks", () => {
     const target = join(TMP, "skills");
-    copySkills(["deploy-prep"], target);
+    copySkills(["release-check"], target);
 
-    const content = fsExtra.readFileSync(join(target, "deploy-prep", "SKILL.md"), "utf-8");
+    const content = fsExtra.readFileSync(join(target, "release-check", "SKILL.md"), "utf-8");
     // Should have marker
     expect(content).toContain("<!-- arcana-managed -->");
     // Frontmatter should still be valid (name field present)
-    expect(content).toMatch(/^---\nname: deploy-prep/);
+    expect(content).toMatch(/^---\nname: release-check/);
   });
 });
 
@@ -209,12 +209,12 @@ describe("copyAgents — conflict detection", () => {
 describe("legacy name-match detection (known limitation)", () => {
   it("treats skill with matching arcana name but no marker as arcana-managed", () => {
     const target = join(TMP, "skills");
-    const customDir = join(target, "find-unused");
+    const customDir = join(target, "deep-fix");
     fsExtra.ensureDirSync(customDir);
     // Name matches an Arcana skill name — legacy detection fires
-    fsExtra.writeFileSync(join(customDir, "SKILL.md"), "---\nname: find-unused\n---\n# User custom content");
+    fsExtra.writeFileSync(join(customDir, "SKILL.md"), "---\nname: deep-fix\n---\n# User custom content");
 
-    const results = copySkills(["find-unused"], target);
+    const results = copySkills(["deep-fix"], target);
     // Known behavior: treated as arcana-managed, gets overwritten
     expect(results[0].status).toBe("installed");
   });
@@ -323,11 +323,11 @@ describe("mirrorSkills", () => {
 describe("post-marker frontmatter integrity", () => {
   it("installed skill frontmatter is still parseable after marker injection", () => {
     const target = join(TMP, "skills");
-    copySkills(["find-unused"], target);
+    copySkills(["deep-fix"], target);
 
-    const content = fsExtra.readFileSync(join(target, "find-unused", "SKILL.md"), "utf-8");
+    const content = fsExtra.readFileSync(join(target, "deep-fix", "SKILL.md"), "utf-8");
     const fm = parseFrontmatter(content);
-    expect(fm.name).toBe("find-unused");
+    expect(fm.name).toBe("deep-fix");
     expect(fm.description).toBeDefined();
     expect(fm["allowed-tools"]).toBeDefined();
   });

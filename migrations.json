@@ -6,6 +6,18 @@
       "from": "new-project-idea",
       "to": "idea-audit",
       "since": "1.6.0"
+    },
+    {
+      "type": "rename",
+      "from": "deploy-prep",
+      "to": "release-check",
+      "since": "1.9.0"
+    },
+    {
+      "type": "remove",
+      "from": "find-unused",
+      "reason": "replaced by native toolchain (ESLint, TypeScript, Go compiler, depcheck)",
+      "since": "1.9.0"
     }
   ]
 }
