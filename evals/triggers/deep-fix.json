@@ -1,0 +1,208 @@
+{
+  "skill": "deep-fix",
+  "description": "Layer 1 trigger pack for root-cause-driven debugging requests that need reproduction, proof, fix, and regression coverage.",
+  "shouldTrigger": [
+    {
+      "id": "should-trigger-1",
+      "set": "train",
+      "prompt": "Find the real bug in this flaky payment flow, prove the root cause, fix it, and add a regression test.",
+      "reason": "Root-cause-first debugging and verified fix request.",
+      "expectedSkills": [
+        "deep-fix"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-2",
+      "set": "train",
+      "prompt": "We tried two patches and the incident keeps happening. Do a deep fix.",
+      "reason": "Root-cause-first debugging and verified fix request.",
+      "expectedSkills": [
+        "deep-fix"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-3",
+      "set": "train",
+      "prompt": "Debug this non-obvious cache invalidation issue end to end.",
+      "reason": "Root-cause-first debugging and verified fix request.",
+      "expectedSkills": [
+        "deep-fix"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-4",
+      "set": "train",
+      "prompt": "Reproduce and fix this sporadic 500 in checkout with proof.",
+      "reason": "Root-cause-first debugging and verified fix request.",
+      "expectedSkills": [
+        "deep-fix"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-5",
+      "set": "train",
+      "prompt": "I need a root-cause-first fix for this race condition.",
+      "reason": "Root-cause-first debugging and verified fix request.",
+      "expectedSkills": [
+        "deep-fix"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-6",
+      "set": "train",
+      "prompt": "This bug keeps resurfacing. Isolate why before editing anything.",
+      "reason": "Root-cause-first debugging and verified fix request.",
+      "expectedSkills": [
+        "deep-fix"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-7",
+      "set": "validation",
+      "prompt": "Diagnose this cryptic production error and ship a verified fix.",
+      "reason": "Root-cause-first debugging and verified fix request.",
+      "expectedSkills": [
+        "deep-fix"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-8",
+      "set": "validation",
+      "prompt": "Deep fix this auth loop and add the guard that prevents regression.",
+      "reason": "Root-cause-first debugging and verified fix request.",
+      "expectedSkills": [
+        "deep-fix"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-9",
+      "set": "validation",
+      "prompt": "Track down why invoices double-send and fix the actual cause.",
+      "reason": "Root-cause-first debugging and verified fix request.",
+      "expectedSkills": [
+        "deep-fix"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-10",
+      "set": "validation",
+      "prompt": "Investigate, prove, and fix this intermittent worker crash.",
+      "reason": "Root-cause-first debugging and verified fix request.",
+      "expectedSkills": [
+        "deep-fix"
+      ],
+      "allowAdditionalSkills": false
+    }
+  ],
+  "shouldNotTrigger": [
+    {
+      "id": "should-not-trigger-1",
+      "set": "train",
+      "prompt": "Audit our upgrade funnel end to end: competitor patterns, product gaps, UX friction, and a roadmap for what to build next.",
+      "reason": "Routes to /feature-audit: Broad feature analysis with gaps, competitor context, and roadmap.",
+      "expectedSkills": [
+        "feature-audit"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-2",
+      "set": "train",
+      "prompt": "Be brutally honest about this startup idea, and if it survives scaffold the project plan and CLAUDE.md for me.",
+      "reason": "Routes to /idea-audit: Project idea evaluation plus scaffolding request.",
+      "expectedSkills": [
+        "idea-audit"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-3",
+      "set": "train",
+      "prompt": "Review this diff for runtime bugs, security issues, and broken logic. Keep false positives low.",
+      "reason": "Routes to /quick-review: Fast code review of a diff or PR.",
+      "expectedSkills": [
+        "quick-review"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-4",
+      "set": "train",
+      "prompt": "Do a deep pre-release review of this branch with security, correctness, and architecture lenses.",
+      "reason": "Routes to /deep-review: Heavy multi-perspective code review request.",
+      "expectedSkills": [
+        "deep-review"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-5",
+      "set": "train",
+      "prompt": "Generate unit tests for src/orders.js and follow the repo's Vitest style.",
+      "reason": "Routes to /generate-tests: Explicit test-generation request.",
+      "expectedSkills": [
+        "generate-tests"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-6",
+      "set": "train",
+      "prompt": "Analyze this branch diff and give me a deploy checklist: env vars, migrations, new workers, and breaking changes.",
+      "reason": "Routes to /release-check: Deploy or ship-readiness checklist request.",
+      "expectedSkills": [
+        "release-check"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-7",
+      "set": "validation",
+      "prompt": "Create a draft PR for this branch with a concise title, summary, and affected areas.",
+      "reason": "Routes to /create-pr: Explicit request to open or draft a PR or MR.",
+      "expectedSkills": [
+        "create-pr"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-8",
+      "set": "validation",
+      "prompt": "Scout the best external skills for this repo and explain which ones we should import first.",
+      "reason": "Routes to /skill-scout: Scout external skill catalogs for relevant imports.",
+      "expectedSkills": [
+        "skill-scout"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-9",
+      "set": "validation",
+      "prompt": "Give me a v0.dev prompt for redesigning the analytics dashboard.",
+      "reason": "Routes to /v0-design: Explicit request for a v0.dev design prompt.",
+      "expectedSkills": [
+        "v0-design"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-10",
+      "set": "validation",
+      "prompt": "Turn this imported skill into Arcana quality: rewrite the frontmatter, structure, and missing sections.",
+      "reason": "Routes to /import-skill: Adapt an imported skill to Arcana quality standards.",
+      "expectedSkills": [
+        "import-skill"
+      ],
+      "allowAdditionalSkills": false
+    }
+  ]
+}

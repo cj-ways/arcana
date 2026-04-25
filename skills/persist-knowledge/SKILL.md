@@ -4,6 +4,9 @@ description: 'Persists codebase patterns, conventions, or architectural knowledg
 argument-hint: '[focus: patterns|decisions|memory|claude]'
 allowed-tools: Read, Edit, Glob, Grep, Write
 effort: low
+phase: utility
+feedback-profile: advisory
+catalog-order: 120
 ---
 
 # Persist Knowledge
@@ -200,4 +203,3 @@ Before writing anything, understand where each type of finding belongs:
 
 1. Summary table (findings -> target -> action)
 2. Suggested commit message (if files were modified)
-

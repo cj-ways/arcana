@@ -1,0 +1,77 @@
+{
+  "name": "refactor-plan-service-split",
+  "skill": "refactor-plan",
+  "description": "Safely rename a shared function across multiple files without changing behavior.",
+  "prompt": "Rename calcTotal to calculateOrderTotal across this codebase safely. Keep behavior unchanged, update every call site, and report the completed refactor.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "service-renamed",
+      "description": "Renames the exported function in the service module",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "src/services/order-total.js",
+      "mustBeModified": true,
+      "contentMatches": [
+        "/export function calculateOrderTotal\\(/"
+      ],
+      "contentExcludes": [
+        "calcTotal("
+      ]
+    },
+    {
+      "id": "call-site-updated",
+      "description": "Updates controller call sites to the new name",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "src/controllers/orders.js",
+      "mustBeModified": true,
+      "contentMatches": [
+        "/calculateOrderTotal\\(/"
+      ],
+      "contentExcludes": [
+        "calcTotal("
+      ]
+    },
+    {
+      "id": "tests-updated",
+      "description": "Updates tests to reference the renamed function",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "tests/orders.test.js",
+      "mustBeModified": true,
+      "contentMatches": [
+        "/calculateOrderTotal\\(/"
+      ],
+      "contentExcludes": [
+        "calcTotal("
+      ]
+    },
+    {
+      "id": "refactor-report",
+      "description": "Produces the refactoring report",
+      "dimension": "route",
+      "type": "output-contains",
+      "outputIncludes": [
+        "## Refactoring Report"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "no-behavior-change-claim",
+      "description": "Should not claim that the refactor changed product behavior",
+      "dimension": "outcome",
+      "type": "output-contains",
+      "outputIncludes": [
+        "breaking behavior change"
+      ]
+    }
+  ]
+}

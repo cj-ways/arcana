@@ -5,6 +5,9 @@ argument-hint: "<refactoring description>"
 disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write, Agent
 effort: high
+phase: refactor
+feedback-profile: execution
+catalog-order: 60
 ---
 
 # Refactor Plan — Safe Multi-File Refactoring

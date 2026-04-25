@@ -5,6 +5,9 @@ argument-hint: "[files or branch]"
 disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob, Agent
 effort: high
+phase: review
+feedback-profile: diagnostic
+catalog-order: 80
 isolation: worktree
 memory: project
 ---
@@ -218,4 +221,3 @@ And still include the audit tables.
 - If architecture findings suggest structural problems beyond the diff, add: "Consider running `/feature-audit` for a full business and architecture analysis of this feature."
 - If security findings are critical, add: "Consider running `/security-check` for a full project-wide security scan beyond the changed files."
 - If the review is pre-release, add: "Run `/release-check` to generate deploy checklists for env vars, migrations, and infrastructure changes."
-

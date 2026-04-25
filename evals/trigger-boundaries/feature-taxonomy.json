@@ -1,0 +1,74 @@
+{
+  "name": "feature-taxonomy",
+  "description": "Cross-skill boundary suite for the same feature topics. Verifies that audit, design, and pressure-test requests on overlapping domains route to different Arcana skills for the right reason.",
+  "topics": [
+    {
+      "id": "invite-approvals",
+      "set": "train",
+      "description": "Team invite approvals measured as diagnosis, design, and proposal challenge on the same domain.",
+      "cases": [
+        {
+          "id": "audit-current-state",
+          "prompt": "Audit our team invite approval flow end to end: trust gaps, admin friction, cross-surface issues, and the highest-leverage improvements.",
+          "reason": "Broad current-state analysis across multiple lanes should route to feature-audit.",
+          "expectedSkills": [
+            "feature-audit"
+          ],
+          "allowAdditionalSkills": false
+        },
+        {
+          "id": "design-future-state",
+          "prompt": "Design how team invite approvals should work in our product before implementation. Compare approaches and turn the winner into a spec.",
+          "reason": "Solution design and approach comparison for one feature should route to feature-design.",
+          "expectedSkills": [
+            "feature-design"
+          ],
+          "allowAdditionalSkills": false
+        },
+        {
+          "id": "challenge-proposal",
+          "prompt": "Pressure-test this proposal for team invite approvals: managers auto-approve invites under 5 seats, and everything else waits 7 days before expiring.",
+          "reason": "Adversarial review of one concrete proposal should route to pressure-test.",
+          "expectedSkills": [
+            "pressure-test"
+          ],
+          "allowAdditionalSkills": false
+        }
+      ]
+    },
+    {
+      "id": "subscription-cancellation",
+      "set": "validation",
+      "description": "Subscription cancellation measured as diagnosis, design, and proposal challenge on the same domain.",
+      "cases": [
+        {
+          "id": "audit-current-state",
+          "prompt": "Run a full audit of our subscription cancellation flow: user trust, retention friction, support load, competitive expectations, and roadmap priorities.",
+          "reason": "Broad diagnosis and prioritization of the existing feature should route to feature-audit.",
+          "expectedSkills": [
+            "feature-audit"
+          ],
+          "allowAdditionalSkills": false
+        },
+        {
+          "id": "design-future-state",
+          "prompt": "Help me decide how the subscription cancellation flow should work before we build it. Compare two viable directions and write the recommended design spec.",
+          "reason": "Behavior design before implementation should route to feature-design.",
+          "expectedSkills": [
+            "feature-design"
+          ],
+          "allowAdditionalSkills": false
+        },
+        {
+          "id": "challenge-proposal",
+          "prompt": "Pressure-test this cancellation proposal: hide the cancel action behind chat support for annual plans and offer only downgrade paths in-product.",
+          "reason": "Challenge one proposed direction and its tradeoffs, so it should route to pressure-test.",
+          "expectedSkills": [
+            "pressure-test"
+          ],
+          "allowAdditionalSkills": false
+        }
+      ]
+    }
+  ]
+}

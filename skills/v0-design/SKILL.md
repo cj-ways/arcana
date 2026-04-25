@@ -5,6 +5,9 @@ argument-hint: "<app-description, feature, component, or design-system>"
 disable-model-invocation: true
 allowed-tools: Read, Glob, Grep, Agent, WebSearch, WebFetch, Write, AskUserQuestion
 effort: medium
+phase: design
+feedback-profile: advisory
+catalog-order: 35
 ---
 
 # /v0-design — Generate v0.dev Design Prompts

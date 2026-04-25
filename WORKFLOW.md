@@ -5,16 +5,16 @@ How to use Arcana's skills through a real development lifecycle.
 ## The Flow
 
 ```
-Ideate → Validate → Design → Test → Review → Ship
+Plan → Analyze → Design → Test → Fix → Refactor → Review → Release
 ```
 
 Each phase has a skill. You don't need all of them every time — pick what fits.
 
-## Phase 1: Ideate
+## Phase 1: Plan
 
 **Skill:** `/idea-audit`
 
-You have a project idea. Before writing code, validate it.
+You have a project idea. Before writing code, pressure-test it.
 
 ```
 /idea-audit "A CLI tool that manages AI agent skills across multiple coding assistants"
@@ -29,7 +29,7 @@ What it does:
 
 **When to skip:** You already know what you're building and have a plan.
 
-## Phase 2: Validate
+## Phase 2: Analyze
 
 **Skill:** `/feature-audit <feature>`
 
@@ -46,12 +46,31 @@ What it does:
 - Researches how competitors handle the same feature
 - Walks through 13 universal perspectives (security, UX, reliability, etc.)
 - Discovers feature-specific angles via web research
-- Interactive — debates with you, one question at a time
+- Can stay interactive when you want to unpack findings or priorities in dialogue
 - Produces documentation and a roadmap
 
 **When to skip:** Quick bug fixes or trivial changes.
 
-## Phase 3: Design
+## Phase 3: Design The Behavior
+
+**Skill:** `/feature-design <feature-or-workflow>`
+
+You know the product area. Now decide how the feature should actually work before writing code.
+
+```
+/feature-design "team invite approvals"
+/feature-design "subscription pause flow"
+```
+
+What it does:
+- Clarifies the design problem and constraints
+- Compares 2-3 viable approaches when the design is still open
+- Asks one focused question at a time when needed
+- Produces a concrete design direction and draft spec
+
+**When to skip:** The work is still “what is weak or missing overall?” Use `/feature-audit` first. Or the direction is already stable and you only need UI prompts.
+
+## Phase 4: Design The UI
 
 **Skill:** `/v0-design`
 
@@ -70,7 +89,7 @@ What it does:
 
 **When to skip:** Backend-only work, or you're designing manually.
 
-## Phase 4: Test
+## Phase 5: Test
 
 **Skill:** `/generate-tests`
 
@@ -89,7 +108,43 @@ What it does:
 
 **When to skip:** You prefer writing tests manually, or TDD (write tests first).
 
-## Phase 5: Review
+## Phase 6: Fix
+
+**Skill:** `/deep-fix`
+
+Something is broken or a previous fix attempt failed. Slow down and debug with discipline.
+
+```
+/deep-fix "TypeError in auth middleware when refresh token expires"
+```
+
+What it does:
+- Reproduces the failure before editing code
+- Isolates the bad state and traces it to the source
+- Forces a testable hypothesis before applying a fix
+- Adds regression coverage after the fix lands
+
+**When to skip:** Trivial typo fixes where the cause is already obvious.
+
+## Phase 7: Refactor
+
+**Skill:** `/refactor-plan`
+
+You need to change structure across multiple files without leaving the repo half-broken.
+
+```
+/refactor-plan "extract provider-specific billing logic into separate modules"
+```
+
+What it does:
+- Maps the change surface before editing
+- Breaks work into dependency-aware batches
+- Uses tests between batches to keep the repo stable
+- Avoids sweeping edits that fail halfway through
+
+**When to skip:** Small, local refactors with no cross-file dependency risk.
+
+## Phase 8: Review
 
 **Skills:** `/quick-review` or `/deep-review`
 
@@ -111,9 +166,9 @@ Launches 3 parallel specialist reviewers (security, correctness, architecture). 
 - Routine changes, small PRs → `/quick-review`
 - Security-critical code, major refactors, pre-release → `/deep-review`
 
-## Phase 6: Ship
+## Phase 9: Release
 
-**Skills:** `/create-pr` then `/deploy-prep`
+**Skills:** `/create-pr` then `/release-check`
 
 **Create the PR:**
 ```
@@ -124,24 +179,18 @@ Auto-generates title, description, and affected-area summary. Detects GitHub vs 
 
 **Prepare the deploy:**
 ```
-/deploy-prep
-/deploy-prep develop main
+/release-check
+/release-check develop main
 ```
 Analyzes the diff for env vars, migrations, new services, dependencies, schema changes, breaking changes. Produces pre-release and post-release checklists with risk prioritization.
 
-## Toolkit Skills
+## Utility Skills
 
 These aren't tied to a phase — use them anytime:
 
 **`/security-check`** — Run before any release, or when you suspect vulnerabilities.
 ```
 /security-check
-```
-
-**`/find-unused`** — After refactors, or periodic cleanup.
-```
-/find-unused
-/find-unused deps
 ```
 
 **`/persist-knowledge`** — When you discover a pattern worth saving. Also auto-triggers when you state conventions like "we always do X."
@@ -154,33 +203,44 @@ These aren't tied to a phase — use them anytime:
 
 **`/import-skill`** — Bring in a skill from outside Arcana and adapt it to Arcana's quality standards.
 
+**`/skill-scout`** — Research the broader skills ecosystem and recommend outside skills worth importing for the current project.
+
 ## Example: Full Lifecycle
 
 ```
-# 1. Validate the idea
+# 1. Plan the idea
 /idea-audit "real-time collaborative markdown editor"
 
 # 2. Scaffold and start building...
 
-# 3. Audit the core feature
+# 3. Analyze the core feature
 /feature-audit editor
 
-# 4. Design the UI
+# 4. Design how the feature should work
+/feature-design "collaborative editing permissions and invite flow"
+
+# 5. Design the UI
 /v0-design "collaborative editor with live cursors and presence"
 
-# 5. Write code, then generate tests
+# 6. Write code, then generate tests
 /generate-tests src/editor/
 
-# 6. Review before merge
+# 7. Fix a bug or unstable area if needed
+/deep-fix "presence disconnects after reconnect"
+
+# 8. Refactor if the feature needs structural cleanup
+/refactor-plan "separate presence transport from editor domain logic"
+
+# 9. Review before merge
 /quick-review
 
-# 7. Create the PR
+# 10. Create the PR
 /create-pr
 
-# 8. Prepare for deploy
-/deploy-prep
+# 11. Prepare for deploy
+/release-check
 
-# 9. Security scan before release
+# 12. Security scan before release
 /security-check
 ```
 

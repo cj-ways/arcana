@@ -1,5 +1,43 @@
-import { describe, it, expect } from "vitest";
-import { resolveSource, validateFrontmatter } from "../src/commands/import.js";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
+import {
+  MAX_FETCH_SIZE,
+  fetchGitHubSkill,
+  fetchGitHubTree,
+  fetchUrl,
+  listGitHubSkills,
+  resolveSource,
+  validateFrontmatter,
+  extractSkillPaths,
+  resolveSkillPath,
+} from "../src/commands/import.js";
+
+function createResponse({
+  ok = true,
+  status = 200,
+  statusText = "OK",
+  text = "",
+  headers = {},
+} = {}) {
+  return {
+    ok,
+    status,
+    statusText,
+    headers: {
+      get(name) {
+        return headers[name.toLowerCase()] ?? headers[name] ?? null;
+      },
+    },
+    text: vi.fn().mockResolvedValue(text),
+  };
+}
+
+beforeEach(() => {
+  vi.restoreAllMocks();
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe("resolveSource", () => {
   it("resolves local path starting with ./", () => {
@@ -35,6 +73,7 @@ describe("resolveSource", () => {
     expect(result.repo).toBe("repo");
     expect(result.branch).toBe("main");
     expect(result.name).toBe("my-skill");
+    expect(result.path).toBe("skills/my-skill");
   });
 
   it("strips query strings from GitHub tree URL", () => {
@@ -140,5 +179,189 @@ describe("validateFrontmatter", () => {
   it("rejects name with underscores", () => {
     const issues = validateFrontmatter({ name: "my_skill", description: "ok" });
     expect(issues.some((i) => i.includes("not lowercase-kebab-case"))).toBe(true);
+  });
+});
+
+describe("extractSkillPaths", () => {
+  it("extracts skill directories from recursive Git trees", () => {
+    const paths = extractSkillPaths([
+      { path: "skills/quick-review/SKILL.md", type: "blob" },
+      { path: "skills/.curated/gh-address-comments/SKILL.md", type: "blob" },
+      { path: "skills/.experimental/create-plan/SKILL.md", type: "blob" },
+      { path: "README.md", type: "blob" },
+      { path: "skills", type: "tree" },
+    ]);
+
+    expect(paths).toEqual([
+      ".curated/gh-address-comments",
+      ".experimental/create-plan",
+      "quick-review",
+    ]);
+  });
+
+  it("includes root-level SKILL.md for single-skill repos", () => {
+    const paths = extractSkillPaths([{ path: "SKILL.md", type: "blob" }]);
+    expect(paths).toEqual(["."]);
+  });
+});
+
+describe("resolveSkillPath", () => {
+  const availablePaths = [
+    "quick-review",
+    ".curated/gh-address-comments",
+    ".experimental/create-plan",
+  ];
+
+  it("resolves an exact nested path", () => {
+    expect(resolveSkillPath(".curated/gh-address-comments", availablePaths)).toBe(".curated/gh-address-comments");
+  });
+
+  it("resolves a unique basename match", () => {
+    expect(resolveSkillPath("create-plan", availablePaths)).toBe(".experimental/create-plan");
+  });
+
+  it("resolves basename matches in curated catalogs", () => {
+    expect(resolveSkillPath("gh-address-comments", availablePaths)).toBe(".curated/gh-address-comments");
+  });
+
+  it("returns null when no match exists", () => {
+    expect(resolveSkillPath("nonexistent", availablePaths)).toBeNull();
+  });
+});
+
+describe("fetchUrl", () => {
+  it("returns null on GitHub API rate limiting", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      createResponse({
+        ok: false,
+        status: 429,
+        statusText: "Too Many Requests",
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const content = await fetchUrl("https://api.github.com/repos/owner/repo", null);
+    expect(content).toBeNull();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns null when fetch times out", async () => {
+    const error = new Error("The operation was aborted due to timeout");
+    error.name = "TimeoutError";
+    const fetchMock = vi.fn().mockRejectedValue(error);
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.stubGlobal("fetch", fetchMock);
+
+    const content = await fetchUrl("https://example.com/SKILL.md", null);
+    expect(content).toBeNull();
+    expect(errorSpy).toHaveBeenCalled();
+  });
+
+  it("rejects oversized responses by content-length", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      createResponse({
+        headers: { "content-length": String(MAX_FETCH_SIZE + 1) },
+        text: "ignored",
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const content = await fetchUrl("https://example.com/SKILL.md", null);
+    expect(content).toBeNull();
+  });
+});
+
+describe("GitHub import helpers", () => {
+  it("lists skills from a mocked recursive tree without network access", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      createResponse({
+        text: JSON.stringify({
+          truncated: false,
+          tree: [
+            { path: "skills/quick-review/SKILL.md", type: "blob" },
+            { path: "skills/.curated/gh-address-comments/SKILL.md", type: "blob" },
+          ],
+        }),
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const paths = await listGitHubSkills("owner", "repo");
+    expect(paths).toEqual([".curated/gh-address-comments", "quick-review"]);
+  });
+
+  it("returns null when the recursive tree response is rate-limited", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        createResponse({
+          ok: false,
+          status: 429,
+          statusText: "Too Many Requests",
+        }),
+      )
+      .mockResolvedValueOnce(
+        createResponse({
+          ok: false,
+          status: 429,
+          statusText: "Too Many Requests",
+        }),
+      )
+      .mockResolvedValueOnce(
+        createResponse({
+          ok: false,
+          status: 429,
+          statusText: "Too Many Requests",
+        }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const tree = await fetchGitHubTree("owner", "repo", "main");
+    expect(tree).toBeNull();
+
+    const paths = await listGitHubSkills("owner", "repo");
+    expect(paths).toBeNull();
+  });
+
+  it("fetches a nested GitHub skill via recursive tree discovery", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        createResponse({ ok: false, status: 404, statusText: "Not Found" }),
+      )
+      .mockResolvedValueOnce(
+        createResponse({ ok: false, status: 404, statusText: "Not Found" }),
+      )
+      .mockResolvedValueOnce(
+        createResponse({
+          text: JSON.stringify({
+            truncated: false,
+            tree: [
+              {
+                path: "skills/.curated/gh-address-comments/SKILL.md",
+                type: "blob",
+              },
+            ],
+          }),
+        }),
+      )
+      .mockResolvedValueOnce(
+        createResponse({
+          text: "---\nname: gh-address-comments\ndescription: Test\n---\n# Body",
+        }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await fetchGitHubSkill(
+      "openai",
+      "skills",
+      "gh-address-comments",
+    );
+
+    expect(result).toMatchObject({
+      branch: "main",
+      path: ".curated/gh-address-comments",
+    });
+    expect(result.content).toContain("name: gh-address-comments");
   });
 });

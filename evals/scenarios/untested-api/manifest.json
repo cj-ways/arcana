@@ -1,43 +1,89 @@
 {
   "name": "untested-api",
   "skill": "generate-tests",
-  "description": "Express API with one tested file and one untested file. Skill should generate tests for the untested file matching the existing test style.",
+  "description": "Untested order module with one existing Vitest example. The evaluator checks whether the agent adds missing tests without rewriting the existing file.",
+  "prompt": "Generate tests for src/orders.js. Create the missing test file under tests/, match the existing Vitest style from tests/users.test.js, and do not modify tests/users.test.js.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
   "expected": [
     {
       "id": "test-file-created",
       "description": "A test file for orders.js should be created",
+      "dimension": "outcome",
       "type": "file-created",
+      "file": "tests/orders.test.js",
       "mustFind": true
     },
     {
-      "id": "test-happy-path",
-      "description": "Test for successful order creation (201 response)",
-      "type": "test-case",
+      "id": "test-create-order-success",
+      "description": "Generated tests cover successful order creation",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "tests/orders.test.js",
+      "mustBeModified": true,
+      "contentMatches": [
+        "/describe\\(['\\\"]createOrder['\\\"]/",
+        "/expect\\(order\\.status\\)\\.toBe\\(['\\\"]pending['\\\"]\\)/"
+      ],
       "mustFind": true
     },
     {
-      "id": "test-validation-error",
-      "description": "Test for missing required fields (400 response)",
-      "type": "test-case",
+      "id": "test-create-order-validation",
+      "description": "Generated tests cover at least one invalid createOrder path",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "tests/orders.test.js",
+      "contentMatchesAny": [
+        "/toThrow\\(['\\\"]userId is required['\\\"]\\)/",
+        "/toThrow\\(['\\\"]items must be a non-empty array['\\\"]\\)/",
+        "/toThrow\\(['\\\"]Invalid item price['\\\"]\\)/"
+      ],
       "mustFind": true
     },
     {
-      "id": "test-not-found",
-      "description": "Test for order not found (404 response)",
-      "type": "test-case",
+      "id": "test-not-found-path",
+      "description": "Generated tests cover an order not found path",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "tests/orders.test.js",
+      "contentMatchesAny": [
+        "/getOrderById\\(999\\)/",
+        "/cancelOrder\\(999\\)/"
+      ],
+      "contentMatches": [
+        "/toBeNull\\(\\)/"
+      ],
       "mustFind": true
     },
     {
       "id": "matches-existing-style",
-      "description": "Generated tests use vitest (matching existing test file), not jest or mocha",
-      "type": "style-match",
+      "description": "Generated tests use Vitest-style imports and structure",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": "tests/orders.test.js",
+      "contentMatches": [
+        "/from ['\\\"]vitest['\\\"]/",
+        "/describe\\(/",
+        "/it\\(/"
+      ],
+      "contentExcludes": [
+        "jest",
+        "mocha"
+      ],
       "mustFind": true
     }
   ],
   "falsePositives": [
     {
       "id": "fp-no-rewrite-existing",
-      "description": "Should not rewrite or modify the existing users.test.js",
+      "description": "Should not rewrite or modify the existing users.test.js file",
+      "dimension": "process",
+      "type": "file-unchanged",
       "file": "tests/users.test.js",
       "mustNotFlag": true
     }

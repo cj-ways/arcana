@@ -1,0 +1,58 @@
+{
+  "name": "v0-design-admin-redesign",
+  "skill": "v0-design",
+  "description": "Generate and write v0 design prompts for an admin billing dashboard redesign.",
+  "prompt": "Generate v0.dev prompts for redesigning the admin billing dashboard described in brief.md. Write the result to docs/v0-prompts.md.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "prompt-file-created",
+      "description": "Creates the v0 prompts file",
+      "dimension": "outcome",
+      "type": "file-created",
+      "file": "docs/v0-prompts.md"
+    },
+    {
+      "id": "prompt-structure",
+      "description": "Writes the required v0 prompt structure",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": "docs/v0-prompts.md",
+      "contentIncludes": [
+        "# v0.dev Design Prompts",
+        "## Context Message",
+        "## Iteration Prompts",
+        "## Page 1:"
+      ]
+    },
+    {
+      "id": "billing-context",
+      "description": "Keeps the prompt grounded in the billing dashboard context",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "docs/v0-prompts.md",
+      "contentIncludesAny": [
+        "billing dashboard",
+        "admin billing",
+        "invoice"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "no-generic-output",
+      "description": "Should not produce an empty placeholder prompt file",
+      "dimension": "route",
+      "type": "output-contains",
+      "outputIncludes": [
+        "Need more information before generating prompts"
+      ]
+    }
+  ]
+}

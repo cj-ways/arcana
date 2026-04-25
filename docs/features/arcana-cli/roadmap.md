@@ -1,32 +1,187 @@
 # Arcana CLI — Roadmap
 
-> Last updated: 2026-03-21
+> Last updated: 2026-04-16
 
-## Planned
+## Current Direction
 
-### Skills
+Arcana should compete on measured quality, trust, and portability — not raw skill count or marketplace size.
+
+The first-party skill set remains the reference set, but the product moat should be:
+
+- provable skill quality
+- safe adoption of external skills
+- explicit host capability boundaries
+- low-drift docs, metadata, and contributor workflows
+
+## Phase 1 — Measurement and Trust Foundation
+
+Phase 1 focused on making Arcana's core claim testable and trustworthy before expanding the catalog or agent surface.
+
+**Status:** Completed 2026-04-16
+
+## Phase 1 Workstreams
+
+### 1. Skill scorecards and release gates
+
+**Status:** Implemented 2026-04-16
+
+Arcana says quality matters more than quantity. That claim needs a stronger proof system than the current eval runner provides.
+
+**Exact repo changes**
+
+- Extend `evals/run-eval.js` to support `with skill` vs `no skill` baselines
+- Add repeated-run aggregation and result summaries instead of single-run snapshots
+- Expand `evals/README.md` into a manifest v2 spec with route, process, and outcome scoring
+- Extend `scripts/new-skill.js` and `src/utils/skill-scaffold.js` so new first-party skills get eval scaffolding automatically
+- Add a per-skill scorecard artifact under `evals/` so releases can compare before/after results
+
+**Success criteria**
+
+- Every first-party skill has at least one runnable scenario
+- Arcana can answer "did this skill get better?" with data
+- Releases can gate on score movement instead of intuition
+
+### 2. Import governance and trust surface
+
+**Status:** Implemented 2026-04-09
+
+Arcana should become the safe way to adopt outside skills, not just the convenient way.
+
+**Exact repo changes**
+
+- Add imported-skill registry metadata stored with source, ref, checksum, import date, and Arcana version
+- Extend `src/commands/import.js` and `src/commands/update.js` to preserve and surface that metadata
+- Add review mode and risk summary before import or overwrite of imported skills
+- Extend `info` and `doctor` to report provenance, local modifications, and trust state for imported skills
+
+**Success criteria**
+
+- Every imported skill has traceable provenance
+- Users can review what changed before overwriting an imported skill
+- Arcana can distinguish first-party trust guarantees from imported-skill trust state
+
+### 3. Product truth cleanup
+
+**Status:** Implemented 2026-04-16
+
+Docs, boundaries, and workflow guidance should always describe the product that actually ships.
+
+**Exact repo changes**
+
+- Fix remaining stale docs such as lifecycle language, hardcoded counts, and outdated boundaries
+- Make `WORKFLOW.md` align with the current skill taxonomy and keep it from drifting again
+- Update feature docs to reflect local-first feedback and explicit opt-in transcript analysis
+- Keep generated docs and manual docs aligned through checks or generation where practical
+
+**Success criteria**
+
+- A new user can read docs without learning outdated behavior
+- The roadmap, boundaries, and workflow docs agree with the actual product
+- Drift becomes a release blocker, not a cleanup chore
+
+### 4. Day-2 UX and machine-readable surfaces
+
+**Status:** Implemented 2026-04-16
+
+Arcana onboarding is already solid. The weaker area is ongoing use, scripting, and trust-building during change previews.
+
+**Exact repo changes**
+
+- Add `--json` to `list`, `info`, and `doctor`
+- Add `--dry-run` to `init`, `add`, and `sync`
+- Add `--verbose` or `--debug` for import and sync troubleshooting
+- Audit error messages so each one suggests a next action
+
+**Success criteria**
+
+- Arcana is scriptable in CI and local automation
+- Users can preview mutations before applying them
+- Import and sync failures become easier to debug without reading source code
+
+### 5. Host strategy and capability matrix
+
+**Status:** Implemented 2026-04-16
+
+Arcana's advanced feedback automation currently goes deeper in Claude Code than in Codex. That is acceptable only if the boundary is explicit.
+
+**Exact repo changes**
+
+- Add a capability matrix to the docs showing Claude-only vs cross-agent behavior
+- Keep Claude-specific automation explicit in command help and docs
+- Avoid marketing symmetric support where advanced features are host-specific
+
+**Success criteria**
+
+- Users know what works in Claude Code, Codex CLI, or both before installing
+- Arcana can deepen Claude integration without confusing Codex users
+
+### Backlog After Phase 1
 
 **Real-world testing of `import-skill` quality pipeline** — Approved
 The CLI import command and adaptation skill both work. Needs iteration on edge cases from real usage: skills with `---` in content, non-standard frontmatter, oversized skills, multi-file skills with references/.
 
-### Testing
+**Feedback-to-eval case promotion depth** — Implemented 2026-04-16
+Repeated user feedback now triages into concrete eval candidates locally, and reviewed drafts can be promoted into committed first-party scenarios through `arcana feedback-promote` after placeholder and fixture validation.
 
-**Layer 2 eval execution** — Approved
-Framework and 3 scenarios exist in `evals/`. Needs actual `--run` execution against Claude to validate detection rates and establish baselines. Run 3+ times per scenario for reliability.
+## Phase 2 — Quality Operations Loop
 
-### CLI Polish
+Phase 2 focuses on turning post-release signals into maintainable product improvements instead of leaving them as disconnected reports.
 
-**`--verbose`/`--debug` flag** — Proposed
-Global flag that shows fetch URLs, HTTP status, and detailed errors. Useful for debugging import failures and network issues.
+**Status:** Completed 2026-04-16
 
-**`--dry-run` for init, add, sync** — Proposed
-Preview changes before applying. Builds trust with new users.
+## Phase 2 Workstreams
 
-**`--json` output for list, info, doctor** — Proposed
-Enable CI integration and scripting.
+### 1. Feedback-to-eval promotion
 
-**Error messages audit** — Proposed
-Ensure all errors suggest a fix action.
+**Status:** Implemented 2026-04-16
+
+Phase 1 made repeated complaints visible. Phase 2 needs to turn them into concrete eval work products that can be reviewed and promoted.
+
+**Exact repo changes**
+
+- Extend `arcana feedback-triage` to generate local draft eval packs for repeated complaints
+- Preserve source examples, recommendations, and suggested assertion hints with each draft
+- Keep promotion local-first so maintainers review before moving drafts into `evals/scenarios/`
+
+**Success criteria**
+
+- Repeated feedback no longer stops at a JSON or terminal report
+- Maintainers get concrete draft packs they can promote into real scenarios
+- The quality loop produces artifacts, not just dashboards
+
+### 2. Imported-skill adaptation verification
+
+**Status:** Implemented 2026-04-16
+
+Arcana can import and adapt external skills, but it still needs a stronger way to measure whether the adapted version is actually better than the raw import.
+
+**Exact repo changes**
+
+- Add an import-adaptation eval harness that compares raw imported content against the adapted Arcana version
+- Create a small fixture set of real imported skills with common adaptation gaps
+- Surface adaptation quality summaries alongside import provenance and review flows
+
+**Success criteria**
+
+- Arcana can answer whether adaptation improved clarity, structure, and safety
+- Imported-skill quality claims become measurable instead of anecdotal
+
+### 3. Release-facing quality summaries
+
+**Status:** Implemented 2026-04-16
+
+The repo now has scorecards, triggers, and triage artifacts. Releases still need a single operator-facing summary that condenses those signals.
+
+**Exact repo changes**
+
+- Add a generated release-quality summary over scorecards, trigger runs, and feedback-derived local cases
+- Keep the summary local-first and artifact-backed so it works in CI and local release checks
+- Make regressions or missing evidence obvious before publishing
+
+**Success criteria**
+
+- Release readiness is readable in one place
+- Missing trigger runs, stale scorecards, or unreviewed feedback-derived draft cases are visible before ship
 
 ---
 
@@ -56,7 +211,7 @@ Ensure all errors suggest a fix action.
 
 **Doctor integrity check** — Hash installed skills against package source.
 
-**Layer 2 eval framework** — 3 scenarios (security-check, find-unused, generate-tests).
+**Layer 2 eval framework** — Initially shipped with 3 scenarios; the `find-unused` scenario was later removed when that skill was dropped.
 
 **Layer 1 unit tests** — 177 tests across 7 suites. Vitest. CI on Node 20/22.
 
@@ -93,7 +248,7 @@ Focus on Claude Code + Codex CLI first.
 
 ## Competitive Intelligence
 
-> Updated: 2026-03-21
+> Updated: 2026-04-08
 
 - **Ecosystem scale**: 350,000+ skills in 2 months. 85% of tested skills made output worse (40/47). Industry consensus: 20-30 curated skills max.
 - **Security crisis**: 13.4% of scanned skills have critical issues (Snyk). ClawHub incident: 1,184 malicious skills. Arcana's hand-authored, npm-provenance approach is a genuine differentiator.
@@ -106,6 +261,8 @@ Focus on Claude Code + Codex CLI first.
 
 ## Audit History
 
+- 2026-04-16: Phase 1 completed. Added host capability matrix, feedback-to-eval triage workflow, actionable CLI next-step hints, and synced roadmap statuses to the shipped code.
+- 2026-04-08: Feature re-audit. Reset product direction around measured quality, import governance, truth cleanup, day-2 UX, and explicit host strategy. Phase 1 plan approved and persisted.
 - 2026-03-20: Initial feature audit. 13 universal + 4 feature-specific perspectives. Full competitive landscape. Shipped v1.6.0 with all roadmap items.
 - 2026-03-21: Re-audit. 16 findings (9 fixed, 3 noted, 4 pass). Shipped v1.7.0 (skill-scout), v1.7.1 (version fix). Codebase in strong shape — remaining items are polish.
 - 2026-03-21: Deep self-audit. 12 fixes: agents rewritten as thin wrappers (skills: field), Gotchas added to create-pr + agent-audit, doc drift fixed (version, counts, dead links), competitive intel updated (350K ecosystem, name conflict, security crisis), code quality fixes (dead check, marker consistency), disable-model-invocation on 4 skills.

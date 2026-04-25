@@ -3,6 +3,7 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
 import {
+  getPackageMigrationsPath,
   getPackageSkillsDir,
   getPackageAgentsDir,
   getPackageRulesDir,
@@ -11,6 +12,7 @@ import {
   getAvailableAgents,
   getAllInstallLocations,
 } from "../src/utils/paths.js";
+import { getAgentCatalog, getSkillCatalog } from "../src/utils/catalog.js";
 
 describe("getPackageSkillsDir", () => {
   it("returns a directory that exists", () => {
@@ -27,6 +29,15 @@ describe("getPackageAgentsDir", () => {
 describe("getPackageRulesDir", () => {
   it("returns a directory that exists", () => {
     expect(existsSync(getPackageRulesDir())).toBe(true);
+  });
+});
+
+describe("getPackageMigrationsPath", () => {
+  it("returns the shipped migrations.json path", () => {
+    expect(existsSync(getPackageMigrationsPath())).toBe(true);
+    expect(getPackageMigrationsPath()).toBe(
+      join(getPackageSkillsDir(), "..", "migrations.json"),
+    );
   });
 });
 
@@ -90,6 +101,20 @@ describe("getAllInstallLocations", () => {
     expect(locs.skills).toHaveLength(4);
   });
 
+  it("filters to project locations when requested", () => {
+    const locs = getAllInstallLocations({ scope: "project" });
+    expect(locs.skills).toHaveLength(2);
+    expect(locs.agents).toHaveLength(1);
+    expect(locs.skills.every((loc) => loc.level === "project")).toBe(true);
+  });
+
+  it("filters to user locations when requested", () => {
+    const locs = getAllInstallLocations({ scope: "user" });
+    expect(locs.skills).toHaveLength(2);
+    expect(locs.agents).toHaveLength(1);
+    expect(locs.skills.every((loc) => loc.level === "user")).toBe(true);
+  });
+
   it("returns 2 agent locations", () => {
     const locs = getAllInstallLocations();
     expect(locs.agents).toHaveLength(2);
@@ -107,22 +132,10 @@ describe("getAllInstallLocations", () => {
 });
 
 describe("getAvailableSkills", () => {
-  const expected = [
-    "agent-audit", "create-pr", "deep-fix", "deep-review",
-    "feature-audit", "generate-tests", "idea-audit",
-    "import-skill", "persist-knowledge", "quick-review", "refactor-plan",
-    "release-check", "security-check", "skill-scout", "v0-design",
-  ];
-
-  it("includes all expected skills", () => {
-    const skills = getAvailableSkills();
-    for (const s of expected) {
-      expect(skills).toContain(s);
-    }
-  });
-
-  it("skill count matches expected list", () => {
-    expect(getAvailableSkills()).toHaveLength(expected.length);
+  it("matches the catalog inventory", () => {
+    expect([...getAvailableSkills()].sort()).toEqual(
+      getSkillCatalog().map((skill) => skill.name).sort(),
+    );
   });
 
   it("includes idea-audit (renamed from new-project-idea)", () => {
@@ -133,14 +146,17 @@ describe("getAvailableSkills", () => {
 });
 
 describe("getAvailableAgents", () => {
-  it("returns 2 agents", () => {
-    const agents = getAvailableAgents();
-    expect(agents).toHaveLength(2);
+  it("matches the catalog inventory", () => {
+    expect([...getAvailableAgents()].sort()).toEqual(
+      getAgentCatalog().map((agent) => agent.name).sort(),
+    );
   });
 
-  it("includes code-reviewer and review-team", () => {
+  it("includes code-reviewer, feature-auditor, feature-designer, and review-team", () => {
     const agents = getAvailableAgents();
     expect(agents).toContain("code-reviewer");
+    expect(agents).toContain("feature-auditor");
+    expect(agents).toContain("feature-designer");
     expect(agents).toContain("review-team");
   });
 });

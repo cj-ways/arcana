@@ -1,0 +1,208 @@
+{
+  "skill": "feature-design",
+  "description": "Layer 1 trigger pack for designing one feature or workflow before implementation: compare approaches, narrow scope, ask one focused question at a time when needed, and produce a concrete design spec.",
+  "shouldTrigger": [
+    {
+      "id": "should-trigger-1",
+      "set": "train",
+      "prompt": "Design our team invite approval workflow before we code it. Compare a couple of directions and turn the winner into a spec.",
+      "reason": "Feature design request for an existing product with explicit approach comparison and spec output.",
+      "expectedSkills": [
+        "feature-design"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-2",
+      "set": "train",
+      "prompt": "Help me brainstorm how subscription pause should work inside our product. Ask one focused question at a time and recommend the best direction.",
+      "reason": "Collaborative design of one existing feature before implementation.",
+      "expectedSkills": [
+        "feature-design"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-3",
+      "set": "train",
+      "prompt": "I need a feature design for admin approval of payouts: goals, non-goals, approaches, and the chosen flow.",
+      "reason": "Explicit request to design one workflow and document the decision.",
+      "expectedSkills": [
+        "feature-design"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-4",
+      "set": "train",
+      "prompt": "Turn this rough idea for delegated workspace access into a concrete design doc before anyone starts implementing it.",
+      "reason": "Requests a design-stage artifact for an existing product feature.",
+      "expectedSkills": [
+        "feature-design"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-5",
+      "set": "train",
+      "prompt": "Compare 2-3 ways to build subscription recovery in our app and tell me which design we should commit to.",
+      "reason": "Approach comparison and recommendation for one feature design decision.",
+      "expectedSkills": [
+        "feature-design"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-6",
+      "set": "train",
+      "prompt": "Let's design the reporting-permissions workflow step by step before we write code.",
+      "reason": "Interactive feature-design request inside an existing product.",
+      "expectedSkills": [
+        "feature-design"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-7",
+      "set": "validation",
+      "prompt": "Run /feature-design for enterprise invite approvals. Keep it interactive until you have enough to write the spec.",
+      "reason": "Explicit invocation of the feature-design skill.",
+      "expectedSkills": [
+        "feature-design"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-8",
+      "set": "validation",
+      "prompt": "Before implementation, design the account-freeze flow for fraud reviews and give me the recommended direction plus open questions.",
+      "reason": "Design request for one operational feature before coding.",
+      "expectedSkills": [
+        "feature-design"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-9",
+      "set": "validation",
+      "prompt": "I do not want a broad audit. I want help deciding how the new cancellation flow should work and what the approved spec should say.",
+      "reason": "Explicitly rules out feature-audit and asks for design direction plus spec output.",
+      "expectedSkills": [
+        "feature-design"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-10",
+      "set": "validation",
+      "prompt": "Help me narrow this feature idea into a shippable design with scope, non-goals, edge cases, and rollout notes.",
+      "reason": "Matches the design-stage workflow for one feature in an existing product.",
+      "expectedSkills": [
+        "feature-design"
+      ],
+      "allowAdditionalSkills": false
+    }
+  ],
+  "shouldNotTrigger": [
+    {
+      "id": "should-not-trigger-1",
+      "set": "train",
+      "prompt": "Audit our upgrade funnel end to end: competitor patterns, product gaps, UX friction, and a roadmap for what to build next.",
+      "reason": "Routes to /feature-audit: broad analysis of an existing feature across many lanes.",
+      "expectedSkills": [
+        "feature-audit"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-2",
+      "set": "train",
+      "prompt": "Be brutally honest about this startup idea, and if it survives scaffold the project plan and CLAUDE.md for me.",
+      "reason": "Routes to /idea-audit: new project idea evaluation plus scaffolding.",
+      "expectedSkills": [
+        "idea-audit"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-3",
+      "set": "train",
+      "prompt": "Pressure-test this rollout plan for default transcript uploads. I want the real holes before we ship, not a polite summary.",
+      "reason": "Routes to /pressure-test: adversarial analysis of one proposal.",
+      "expectedSkills": [
+        "pressure-test"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-4",
+      "set": "train",
+      "prompt": "Give me a v0.dev prompt for redesigning the analytics dashboard.",
+      "reason": "Routes to /v0-design: UI prompt generation rather than product behavior design.",
+      "expectedSkills": [
+        "v0-design"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-5",
+      "set": "train",
+      "prompt": "Review this diff for runtime bugs, security issues, and broken logic. Keep false positives low.",
+      "reason": "Routes to /quick-review: code review of a diff or PR.",
+      "expectedSkills": [
+        "quick-review"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-6",
+      "set": "train",
+      "prompt": "Find the real bug in this flaky payment flow, prove the root cause, fix it, and add a regression test.",
+      "reason": "Routes to /deep-fix: debugging plus implementation and proof.",
+      "expectedSkills": [
+        "deep-fix"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-7",
+      "set": "validation",
+      "prompt": "Generate unit tests for src/orders.js and follow the repo's Vitest style.",
+      "reason": "Routes to /generate-tests: explicit test-generation request.",
+      "expectedSkills": [
+        "generate-tests"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-8",
+      "set": "validation",
+      "prompt": "Analyze this branch diff and give me a deploy checklist: env vars, migrations, new workers, and breaking changes.",
+      "reason": "Routes to /release-check: release-readiness checklist request.",
+      "expectedSkills": [
+        "release-check"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-9",
+      "set": "validation",
+      "prompt": "Scout the best external skills for this repo and explain which ones we should import first.",
+      "reason": "Routes to /skill-scout: external skill discovery, not feature design.",
+      "expectedSkills": [
+        "skill-scout"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-10",
+      "set": "validation",
+      "prompt": "Turn this imported skill into Arcana quality: rewrite the frontmatter, structure, and missing sections.",
+      "reason": "Routes to /import-skill: skill adaptation workflow, not feature design.",
+      "expectedSkills": [
+        "import-skill"
+      ],
+      "allowAdditionalSkills": false
+    }
+  ]
+}

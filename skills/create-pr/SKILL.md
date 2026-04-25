@@ -4,6 +4,9 @@ description: 'Creates a pull request or merge request with auto-generated title,
 argument-hint: '[target-branch]'
 allowed-tools: Bash, Read, Grep, Glob
 effort: low
+phase: release
+feedback-profile: execution
+catalog-order: 90
 disable-model-invocation: true
 ---
 

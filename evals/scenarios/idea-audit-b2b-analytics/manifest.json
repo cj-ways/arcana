@@ -1,0 +1,61 @@
+{
+  "name": "idea-audit-b2b-analytics",
+  "skill": "idea-audit",
+  "description": "Analyze a product idea and produce the pre-scaffolding phase plan summary.",
+  "prompt": "Analyze the project idea in idea.md and produce the phase plan summary you would present before scaffolding. Do not create files yet.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "phase-plan",
+      "description": "Produces a multi-phase plan summary",
+      "dimension": "outcome",
+      "type": "output-contains",
+      "outputIncludesAny": [
+        "Phase 1",
+        "Phase 2"
+      ]
+    },
+    {
+      "id": "required-files",
+      "description": "Mentions the mandatory planning artifacts",
+      "dimension": "process",
+      "type": "output-contains",
+      "outputIncludesAny": [
+        "CLAUDE.md",
+        "PLAN.md"
+      ]
+    },
+    {
+      "id": "approval-gate",
+      "description": "Asks for confirmation before scaffolding",
+      "dimension": "route",
+      "type": "output-contains",
+      "outputIncludes": [
+        "Does this plan look right?"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "workspace-clean",
+      "description": "Should not scaffold or edit files before approval",
+      "dimension": "process",
+      "type": "workspace-clean"
+    },
+    {
+      "id": "no-scaffold-claim",
+      "description": "Should not claim that the project has already been scaffolded",
+      "dimension": "outcome",
+      "type": "output-contains",
+      "outputIncludes": [
+        "I already scaffolded"
+      ]
+    }
+  ]
+}

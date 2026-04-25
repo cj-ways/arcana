@@ -1,0 +1,61 @@
+{
+  "name": "deep-fix-regression",
+  "skill": "deep-fix",
+  "description": "Fix a production bug where empty email lists cause a crash and add regression coverage.",
+  "prompt": "A production bug report says getPrimaryEmail throws when user.emails is empty. Fix the bug in src/user.js, add regression coverage in tests/user.test.js, and report the root cause.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "guard-added",
+      "description": "Adds a null-safe guard in the implementation",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "src/user.js",
+      "mustBeModified": true,
+      "contentMatches": [
+        "/if \\(!user\\.emails \\|\\| user\\.emails\\.length === 0\\) \\{?\\s*return null;?/s"
+      ]
+    },
+    {
+      "id": "regression-test-added",
+      "description": "Adds regression coverage for the empty list case",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "tests/user.test.js",
+      "mustBeModified": true,
+      "contentMatchesAny": [
+        "/empty email list/",
+        "/emails: \\[\\]/"
+      ],
+      "contentMatches": [
+        "/toBeNull\\(\\)/"
+      ]
+    },
+    {
+      "id": "report-produced",
+      "description": "Uses the Deep Fix report format",
+      "dimension": "route",
+      "type": "output-contains",
+      "outputIncludes": [
+        "## Deep Fix Report"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "no-skip",
+      "description": "Should not claim the bug could not be reproduced without attempting a fix",
+      "dimension": "process",
+      "type": "output-contains",
+      "outputIncludes": [
+        "Could not reproduce"
+      ]
+    }
+  ]
+}

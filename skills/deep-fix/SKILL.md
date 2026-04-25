@@ -5,6 +5,9 @@ argument-hint: "<error-message, file, or bug description>"
 disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write, Agent, WebSearch
 effort: high
+phase: fix
+feedback-profile: execution
+catalog-order: 50
 ---
 
 # Deep Fix — Structured Debugging

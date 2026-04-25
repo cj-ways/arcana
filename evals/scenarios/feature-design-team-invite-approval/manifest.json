@@ -1,0 +1,120 @@
+{
+  "name": "feature-design-team-invite-approval",
+  "skill": "feature-design",
+  "description": "Design a team invite approval workflow for an existing B2B product and turn it into a concrete design memo.",
+  "prompt": "Design the team invite approval feature described in brief.md and constraints.md. This is a feature-design request for an existing product, not a broad audit and not implementation. Do not ask follow-up questions. Compare at least two viable approaches, recommend one, and write the final design memo to artifacts/team-invite-approval-design.md. Leave brief.md and constraints.md unchanged.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.35,
+      "outcome": 0.45
+    }
+  },
+  "expected": [
+    {
+      "id": "design-file-created",
+      "description": "Writes the design memo into a deterministic artifact file.",
+      "dimension": "route",
+      "type": "file-created",
+      "file": "artifacts/team-invite-approval-design.md"
+    },
+    {
+      "id": "design-structure",
+      "description": "Uses the documented feature-design memo structure.",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/team-invite-approval-design.md",
+      "contentIncludes": [
+        "## Design Frame",
+        "## Approaches",
+        "## Recommended Direction",
+        "## Draft Spec"
+      ]
+    },
+    {
+      "id": "approach-comparison",
+      "description": "Compares at least two viable approaches before choosing a direction.",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/team-invite-approval-design.md",
+      "contentIncludes": [
+        "### Approach 1",
+        "### Approach 2"
+      ],
+      "contentIncludesAny": [
+        "Tradeoffs",
+        "tradeoffs"
+      ]
+    },
+    {
+      "id": "approval-state-and-billing",
+      "description": "Design accounts for approval state handling and the seat-billing constraint.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/team-invite-approval-design.md",
+      "contentIncludesAny": [
+        "pending",
+        "approval",
+        "seat"
+      ],
+      "contentMatchesAny": [
+        "/billing/i",
+        "/do not consume.*seat/i",
+        "/pending.*seat/i"
+      ]
+    },
+    {
+      "id": "operational-constraints",
+      "description": "Includes auditability, expiry, and manual-override concerns from the brief.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/team-invite-approval-design.md",
+      "contentIncludesAny": [
+        "audit log",
+        "override",
+        "expire",
+        "7 days"
+      ]
+    },
+    {
+      "id": "cross-surface-coverage",
+      "description": "Design mentions the related invite, admin, or mobile surfaces instead of treating the workflow as one isolated screen.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/team-invite-approval-design.md",
+      "contentIncludesAny": [
+        "invite email",
+        "admin",
+        "mobile",
+        "acceptance screen",
+        "notification"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "no-brief-edits",
+      "description": "Should not rewrite the source brief while producing the design memo.",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "brief.md"
+    },
+    {
+      "id": "no-constraints-edits",
+      "description": "Should not rewrite the source constraints while producing the design memo.",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "constraints.md"
+    },
+    {
+      "id": "not-a-feature-audit-report",
+      "description": "Should not default to the feature-audit report structure.",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": "artifacts/team-invite-approval-design.md",
+      "contentIncludes": [
+        "## Highest-Leverage Gaps"
+      ]
+    }
+  ]
+}

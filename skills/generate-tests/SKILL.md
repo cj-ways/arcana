@@ -4,6 +4,9 @@ description: 'Generate unit tests for a file or function. Detects test framework
 argument-hint: '<file-path> [function-name]'
 allowed-tools: Read, Grep, Glob, Bash, Edit, Write
 effort: medium
+phase: test
+feedback-profile: execution
+catalog-order: 40
 ---
 
 # Generate Tests
@@ -157,4 +160,3 @@ If any check fails, fix the generated tests before presenting them.
 - Keep generated test files clean — no commented-out code, no TODOs, no placeholder tests.
 - Present tests to the user for review BEFORE writing. Do not write without confirmation.
 - After generating tests, if coverage revealed untested error paths or complex logic, suggest: "Consider running `/quick-review` to verify the tested code for correctness issues."
-

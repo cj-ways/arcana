@@ -1,0 +1,52 @@
+{
+  "name": "import-skill-cleanup",
+  "skill": "import-skill",
+  "description": "Adapt a low-quality imported skill to Arcana packaging standards.",
+  "prompt": "Audit imported/legacy-skill/SKILL.md against Arcana standards, present the assessment, then adapt the file in place.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "assessment-table",
+      "description": "Produces the adaptation assessment section before rewriting",
+      "dimension": "route",
+      "type": "output-contains",
+      "outputIncludes": [
+        "## Adaptation Assessment: legacy-skill"
+      ]
+    },
+    {
+      "id": "frontmatter-fixed",
+      "description": "Adds required Arcana frontmatter and structure",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "imported/legacy-skill/SKILL.md",
+      "mustBeModified": true,
+      "contentIncludes": [
+        "allowed-tools:",
+        "## Gotchas",
+        "## Validation"
+      ],
+      "contentExcludes": [
+        "I can help you",
+        "You can use this skill"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "no-vague-dismissal",
+      "description": "Should not dismiss the skill as unusable without adapting it",
+      "dimension": "process",
+      "type": "output-contains",
+      "outputIncludes": [
+        "too vague to be useful"
+      ]
+    }
+  ]
+}

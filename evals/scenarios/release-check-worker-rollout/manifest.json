@@ -1,0 +1,100 @@
+{
+  "name": "release-check-worker-rollout",
+  "skill": "release-check",
+  "description": "Analyze a branch diff that adds a background worker, migration, env var, and dependency bump.",
+  "workdir": "repo",
+  "setupCommands": [
+    "cp -R ../setup/base/. .",
+    "git init",
+    "git branch -M main",
+    "git config user.email 'eval@example.com'",
+    "git config user.name 'Arcana Eval'",
+    "git add .",
+    "git commit -m 'base'",
+    "git checkout -b feature/invoice-worker",
+    "cp -R ../setup/head/. .",
+    "git add .",
+    "git commit -m 'add invoice reminder worker'"
+  ],
+  "prompt": "Analyze the current branch diff against main and write the full release checklist to artifacts/release-checklist.md without modifying the existing application files.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "checklist-file-created",
+      "description": "Writes the release checklist to a deterministic artifact file",
+      "dimension": "route",
+      "type": "file-created",
+      "file": "artifacts/release-checklist.md"
+    },
+    {
+      "id": "pre-release-checklist",
+      "description": "Produces the pre-release checklist structure",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": "artifacts/release-checklist.md",
+      "contentIncludes": [
+        "## Pre-Release Checklist",
+        "## Release Analysis Report"
+      ]
+    },
+    {
+      "id": "env-var-detected",
+      "description": "Calls out the new queue env var",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/release-checklist.md",
+      "contentIncludes": [
+        "QUEUE_URL"
+      ]
+    },
+    {
+      "id": "migration-detected",
+      "description": "Calls out the migration file",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/release-checklist.md",
+      "contentIncludes": [
+        "20260408_add_invoice_jobs.sql"
+      ]
+    },
+    {
+      "id": "worker-and-dependency-detected",
+      "description": "Calls out the new worker/service and dependency change",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/release-checklist.md",
+      "contentIncludesAny": [
+        "invoice-worker",
+        "worker"
+      ],
+      "contentMatchesAny": [
+        "/bullmq/i"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "no-application-edits",
+      "description": "Should not rewrite application files while generating the checklist",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "src/server.js"
+    },
+    {
+      "id": "no-empty-release",
+      "description": "Should not say the release has no notable concerns",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/release-checklist.md",
+      "contentIncludes": [
+        "No release concerns"
+      ]
+    }
+  ]
+}

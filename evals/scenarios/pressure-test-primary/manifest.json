@@ -1,0 +1,136 @@
+{
+  "name": "pressure-test-primary",
+  "skill": "pressure-test",
+  "description": "Pressure-test a product-policy proposal that overreaches on transcript uploads and release blocking.",
+  "prompt": "Pressure-test the proposal in proposal.md using evidence.md as the available source material. Do not browse and do not ask follow-up questions. Write the final memo to artifacts/pressure-test-report.md using the skill's standard structure. Leave proposal.md and evidence.md unchanged.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "report-file-created",
+      "description": "Writes the pressure-test memo into a deterministic artifact file.",
+      "dimension": "route",
+      "type": "file-created",
+      "file": "artifacts/pressure-test-report.md"
+    },
+    {
+      "id": "memo-structure",
+      "description": "Uses the documented pressure-test memo structure.",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": "artifacts/pressure-test-report.md",
+      "contentIncludes": [
+        "## What Holds Up",
+        "## Highest-Leverage Risks",
+        "## Missing Evidence",
+        "## Recommendation"
+      ]
+    },
+    {
+      "id": "weighted-findings-format",
+      "description": "Shows weighted findings instead of free-form criticism.",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/pressure-test-report.md",
+      "contentIncludes": [
+        "Priority:",
+        "What would change my mind:"
+      ]
+    },
+    {
+      "id": "privacy-consent-risk",
+      "description": "Flags the privacy or consent problem in default transcript uploads.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/pressure-test-report.md",
+      "contentIncludesAny": [
+        "privacy",
+        "consent",
+        "trust"
+      ],
+      "contentMatchesAny": [
+        "/transcript/i",
+        "/upload/i",
+        "/opt-in/i"
+      ]
+    },
+    {
+      "id": "release-gate-calibration",
+      "description": "Pushes back on blocking releases from a single negative rating.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/pressure-test-report.md",
+      "contentIncludesAny": [
+        "single rating",
+        "one rating",
+        "sample size",
+        "calibration"
+      ],
+      "contentMatchesAny": [
+        "/block/i",
+        "/gate/i",
+        "/release/i"
+      ]
+    },
+    {
+      "id": "balanced-recommendation",
+      "description": "Acknowledges the upside but recommends a narrower rollout.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/pressure-test-report.md",
+      "contentIncludesAny": [
+        "feedback loop",
+        "faster learning",
+        "higher signal"
+      ],
+      "contentMatchesAny": [
+        "/pilot/i",
+        "/opt-in/i",
+        "/proceed with changes/i"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "proposal-unchanged",
+      "description": "Should not rewrite the proposal while producing the memo.",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "proposal.md"
+    },
+    {
+      "id": "evidence-unchanged",
+      "description": "Should not rewrite the evidence pack while producing the memo.",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "evidence.md"
+    },
+    {
+      "id": "no-all-clear",
+      "description": "Should not claim the proposal has no material gaps.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/pressure-test-report.md",
+      "contentIncludes": [
+        "No material gaps found"
+      ]
+    },
+    {
+      "id": "no-fake-feedback-gap",
+      "description": "Should not hallucinate that Arcana has no existing feedback or scoring path.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/pressure-test-report.md",
+      "contentMatchesAny": [
+        "/there is no feedback system/i",
+        "/Arcana has no feedback/i",
+        "/there are no scorecards/i"
+      ]
+    }
+  ]
+}

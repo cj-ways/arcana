@@ -20,15 +20,25 @@ No SSO, SCIM, team management, or private registries.
 
 **Why:** Wrong stage. Single-maintainer project focused on skill quality.
 
-## No Telemetry
+## No Silent Telemetry
 
-No usage data, crash reports, or analytics.
+No automatic remote usage collection, transcript upload, or hidden analytics.
 
-**Why:** Unnecessary at current scale.
+Local-first feedback storage and optional transcript analysis are allowed only through explicit user action or opt-in.
+
+**Why:** Trust matters more than data volume at Arcana's current stage.
+
+## Not an Implicit Trust Transfer Layer
+
+Imported skills can be convenient, but Arcana does not treat them as first-party just because they were installed through `arcana import`.
+
+Imported skills keep their own local provenance metadata, trust state, and overwrite review flow.
+
+**Why:** Safe adoption of outside skills requires clear source tracking and explicit overwrite decisions.
 
 ## No Auto-Generated Skills
 
-All 14 skills are manually authored.
+All shipped skills are manually authored.
 
 **Why:** SkillsBench: self-generated skills = -1.3pp. Hand-authored = +16.2pp.
 

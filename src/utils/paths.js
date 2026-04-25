@@ -1,4 +1,4 @@
-import { join, resolve } from "path";
+import { join } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { homedir } from "os";
@@ -25,6 +25,10 @@ export function getPackageAgentsDir() {
 
 export function getPackageRulesDir() {
   return join(PACKAGE_ROOT, "rules");
+}
+
+export function getPackageMigrationsPath() {
+  return join(PACKAGE_ROOT, "migrations.json");
 }
 
 export function getTargetDirs(agent, scope) {
@@ -54,14 +58,17 @@ export function getTargetDirs(agent, scope) {
   }
 }
 
+function filterLocations(locations, scope) {
+  if (scope === "all") return locations;
+  return locations.filter((loc) => loc.level === scope);
+}
+
 /**
- * Get all install locations for skills and agents.
+ * Get install locations for skills and agents.
  * Used by list, remove, doctor, update to avoid duplicating path arrays.
  */
-export function getAllInstallLocations() {
-  const cwd = process.cwd();
-  const home = homedir();
-  return {
+export function getAllInstallLocations({ scope = "all", cwd = process.cwd(), home = homedir() } = {}) {
+  const allLocations = {
     skills: [
       { label: ".claude/skills (project)", dir: join(cwd, ".claude", "skills"), level: "project" },
       { label: ".agents/skills (project)", dir: join(cwd, ".agents", "skills"), level: "project" },
@@ -73,11 +80,16 @@ export function getAllInstallLocations() {
       { label: "~/.claude/agents (user)", dir: join(home, ".claude", "agents"), level: "user" },
     ],
   };
+
+  return {
+    skills: filterLocations(allLocations.skills, scope),
+    agents: filterLocations(allLocations.agents, scope),
+  };
 }
 
 export function getAvailableSkills() {
   if (_cachedSkills) return _cachedSkills;
-  const skillsDir = join(PACKAGE_ROOT, "skills");
+  const skillsDir = getPackageSkillsDir();
   if (!existsSync(skillsDir)) return [];
   _cachedSkills = readdirSync(skillsDir).filter((name) => {
     const dir = join(skillsDir, name);
@@ -90,7 +102,7 @@ export function getAvailableSkills() {
 
 export function getAvailableAgents() {
   if (_cachedAgents) return _cachedAgents;
-  const agentsDir = join(PACKAGE_ROOT, "agents");
+  const agentsDir = getPackageAgentsDir();
   if (!existsSync(agentsDir)) return [];
   _cachedAgents = readdirSync(agentsDir)
     .filter((name) => name.endsWith(".md") && statSync(join(agentsDir, name)).isFile())

@@ -1,0 +1,7 @@
+{
+  "name": "storefront",
+  "private": true,
+  "scripts": {
+    "test": "echo \"tests omitted in eval fixture\""
+  }
+}

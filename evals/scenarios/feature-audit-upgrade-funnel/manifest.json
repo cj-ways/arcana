@@ -1,0 +1,114 @@
+{
+  "name": "feature-audit-upgrade-funnel",
+  "skill": "feature-audit",
+  "description": "Run a standard-effort one-shot audit of a subscription upgrade funnel using a feature brief and competitor notes.",
+  "prompt": "Audit the subscription upgrade funnel described in feature.md using competitors.md as market context. Use effort:medium. The user has already clarified that trial-to-paid conversion and upgrade trust are the core goals. Do not ask follow-up questions. Write a standard audit to artifacts/upgrade-funnel-audit.md and leave the source briefs unchanged.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "audit-file-created",
+      "description": "Writes the audit into a deterministic report artifact",
+      "dimension": "route",
+      "type": "file-created",
+      "file": "artifacts/upgrade-funnel-audit.md"
+    },
+    {
+      "id": "audit-frame",
+      "description": "Declares the requested and selected effort in the audit frame",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": "artifacts/upgrade-funnel-audit.md",
+      "contentIncludes": [
+        "## Audit Frame",
+        "Requested effort: medium",
+        "Selected effort: medium"
+      ]
+    },
+    {
+      "id": "standard-structure",
+      "description": "Uses the standard one-shot audit structure",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/upgrade-funnel-audit.md",
+      "contentIncludes": [
+        "## Highest-Leverage Gaps",
+        "## What Looks Strong",
+        "## Priority Order",
+        "## Recommendation"
+      ]
+    },
+    {
+      "id": "competitive-intelligence",
+      "description": "Includes competitor context when competitor notes are part of the evidence base",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/upgrade-funnel-audit.md",
+      "contentIncludes": [
+        "## Competitive Intelligence"
+      ],
+      "contentIncludesAny": [
+        "Atlas CRM",
+        "Beacon Desk"
+      ]
+    },
+    {
+      "id": "conversion-focus",
+      "description": "Keeps the audit focused on upgrade conversion",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/upgrade-funnel-audit.md",
+      "contentIncludesAny": [
+        "conversion",
+        "trial-to-paid",
+        "upgrade funnel"
+      ],
+      "contentMatchesAny": [
+        "/mobile/i",
+        "/annual/i",
+        "/checkout/i"
+      ]
+    },
+    {
+      "id": "trust-friction-gap",
+      "description": "Identifies trust or clarity friction from the brief",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/upgrade-funnel-audit.md",
+      "contentIncludesAny": [
+        "clarity",
+        "trust",
+        "cancellation"
+      ],
+      "contentMatchesAny": [
+        "/friction/i",
+        "/comparison/i",
+        "/annual/i"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "no-brief-edits",
+      "description": "Should not rewrite the source brief while producing the audit",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "feature.md"
+    },
+    {
+      "id": "no-empty-question",
+      "description": "Should not bounce back with the default opening question",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/upgrade-funnel-audit.md",
+      "contentIncludes": [
+        "What feature should I audit?"
+      ]
+    }
+  ]
+}

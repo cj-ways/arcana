@@ -1,0 +1,87 @@
+{
+  "name": "agent-audit-config",
+  "skill": "agent-audit",
+  "description": "Audit a deliberately flawed Claude Code agent setup against a local best-practices reference.",
+  "prompt": "Audit the agent configuration in this repository against docs/latest-best-practices.md. Write the full audit report and implementation plan to artifacts/agent-audit-report.md. Do not modify the existing configuration files.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "report-file-created",
+      "description": "Writes the audit into a deterministic report artifact",
+      "dimension": "route",
+      "type": "file-created",
+      "file": "artifacts/agent-audit-report.md"
+    },
+    {
+      "id": "report-heading",
+      "description": "Uses the documented audit report structure with a score and priority-ordered recommendations",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": "artifacts/agent-audit-report.md",
+      "contentIncludes": [
+        "## Agent Configuration Audit Report",
+        "### Recommendations (Priority Ordered)"
+      ],
+      "contentMatchesAny": [
+        "/score/i"
+      ]
+    },
+    {
+      "id": "reviewer-agent-issue",
+      "description": "Flags the overly broad reviewer agent configuration",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/agent-audit-report.md",
+      "contentIncludesAny": [
+        "reviewer.md",
+        "reviewer agent"
+      ],
+      "contentMatchesAny": [
+        "/Write/i",
+        "/write access/i",
+        "/read-only/i"
+      ]
+    },
+    {
+      "id": "rules-conflict",
+      "description": "Calls out the conflicting review rules",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/agent-audit-report.md",
+      "contentIncludesAny": [
+        "reviews.md",
+        "escalation.md"
+      ],
+      "contentMatchesAny": [
+        "/conflict/i",
+        "/contradict/i",
+        "/subagent/i"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "config-files-unchanged",
+      "description": "Should not rewrite the audited agent config while producing the report",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": ".claude/agents/reviewer.md"
+    },
+    {
+      "id": "no-all-clear",
+      "description": "Should not claim the configuration is already up to date",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/agent-audit-report.md",
+      "contentIncludes": [
+        "All clear — configuration is up to date"
+      ]
+    }
+  ]
+}

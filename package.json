@@ -1,15 +1,26 @@
 {
   "name": "@cj-ways/arcana",
-  "version": "1.9.0",
-  "description": "Curated agent skills for Claude Code and Codex CLI — 14 battle-tested skills backed by SkillsBench data.",
+  "version": "1.10.0",
+  "description": "Curated developer workflow skills for Claude Code and Codex CLI — hand-authored skills backed by SkillsBench data.",
   "bin": {
     "arcana": "bin/arcana.js"
   },
   "type": "module",
   "scripts": {
-    "test": "vitest run && node bin/arcana.js --version && node bin/arcana.js list && node bin/arcana.js doctor",
-    "test:smoke": "node bin/arcana.js --version && node bin/arcana.js list && node bin/arcana.js doctor",
-    "test:unit": "vitest run",
+    "eval:gate": "node evals/run-eval.js --run --runs 3 --write-scorecards --gate-scorecards",
+    "eval:boundaries": "node evals/run-trigger-boundary.js --run --runs 3",
+    "eval:imports": "node evals/run-import-adaptation.js",
+    "eval:release-summary": "node evals/build-release-summary.js",
+    "eval:scorecards": "node evals/run-eval.js --run --runs 3 --write-scorecards",
+    "eval:triggers": "node evals/run-trigger-eval.js --run --runs 3",
+    "generate:docs": "node scripts/sync-generated-content.js",
+    "new:skill": "node scripts/new-skill.js",
+    "verify:drift": "node scripts/sync-generated-content.js --check",
+    "test": "SKIP_NETWORK_TESTS=1 vitest run && npm run verify:drift && node scripts/run-smoke.js && node scripts/run-package-smoke.js",
+    "test:package": "node scripts/run-package-smoke.js",
+    "test:smoke": "node scripts/run-smoke.js",
+    "test:unit": "SKIP_NETWORK_TESTS=1 vitest run && npm run verify:drift",
+    "test:network": "vitest run tests/import.test.js",
     "test:watch": "vitest"
   },
   "keywords": [

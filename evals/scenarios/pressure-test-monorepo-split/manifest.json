@@ -1,0 +1,139 @@
+{
+  "name": "pressure-test-monorepo-split",
+  "skill": "pressure-test",
+  "description": "Pressure-test an architecture proposal to split Arcana into multiple npm packages before the pain is proven.",
+  "prompt": "Pressure-test the proposal in proposal.md using repository-notes.md as the available source material. Do not browse and do not ask follow-up questions. Write the final memo to artifacts/monorepo-split-report.md using the skill's standard structure. Leave proposal.md and repository-notes.md unchanged.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "report-file-created",
+      "description": "Writes the pressure-test memo into a deterministic artifact file.",
+      "dimension": "route",
+      "type": "file-created",
+      "file": "artifacts/monorepo-split-report.md"
+    },
+    {
+      "id": "memo-structure",
+      "description": "Uses the documented pressure-test memo structure.",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": "artifacts/monorepo-split-report.md",
+      "contentIncludes": [
+        "## What Holds Up",
+        "## Highest-Leverage Risks",
+        "## Missing Evidence",
+        "## Recommendation"
+      ]
+    },
+    {
+      "id": "weighted-findings-format",
+      "description": "Shows weighted findings instead of free-form criticism.",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/monorepo-split-report.md",
+      "contentIncludes": [
+        "Priority:",
+        "What would change my mind:"
+      ]
+    },
+    {
+      "id": "versioning-drift-risk",
+      "description": "Identifies the extra release or drift burden created by splitting too early.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/monorepo-split-report.md",
+      "contentIncludesAny": [
+        "versioning",
+        "release coordination",
+        "cross-package",
+        "drift"
+      ],
+      "contentMatchesAny": [
+        "/docs/i",
+        "/testing/i",
+        "/sync/i"
+      ]
+    },
+    {
+      "id": "prioritization-risk",
+      "description": "Flags that the split is not yet justified by measured pain or user demand.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/monorepo-split-report.md",
+      "contentIncludesAny": [
+        "measured pain",
+        "proven need",
+        "user demand",
+        "premature"
+      ],
+      "contentMatchesAny": [
+        "/small repo/i",
+        "/modest/i",
+        "/not yet/i",
+        "/defer/i"
+      ]
+    },
+    {
+      "id": "balanced-recommendation",
+      "description": "Acknowledges the upside but recommends waiting for stronger evidence.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/monorepo-split-report.md",
+      "contentIncludesAny": [
+        "clearer boundaries",
+        "lighter installs",
+        "reuse"
+      ],
+      "contentMatchesAny": [
+        "/defer/i",
+        "/later/i",
+        "/after/i",
+        "/proceed with changes/i"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "proposal-unchanged",
+      "description": "Should not rewrite the proposal while producing the memo.",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "proposal.md"
+    },
+    {
+      "id": "notes-unchanged",
+      "description": "Should not rewrite the repository notes while producing the memo.",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "repository-notes.md"
+    },
+    {
+      "id": "no-all-clear",
+      "description": "Should not claim the split is obviously the right move today.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/monorepo-split-report.md",
+      "contentIncludes": [
+        "No material gaps found"
+      ]
+    },
+    {
+      "id": "no-fake-foundation-gap",
+      "description": "Should not hallucinate that the repo lacks tests or documentation entirely.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/monorepo-split-report.md",
+      "contentMatchesAny": [
+        "/no tests/i",
+        "/there is no documentation/i",
+        "/the repo has no docs/i"
+      ]
+    }
+  ]
+}

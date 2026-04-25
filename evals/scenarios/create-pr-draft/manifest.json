@@ -1,0 +1,98 @@
+{
+  "name": "create-pr-draft",
+  "skill": "create-pr",
+  "description": "Draft a pull request summary for a branch with committed feature work against main.",
+  "workdir": "repo",
+  "setupCommands": [
+    "cp -R ../setup/base/. .",
+    "git init",
+    "git branch -M main",
+    "git config user.email 'eval@example.com'",
+    "git config user.name 'Arcana Eval'",
+    "git add .",
+    "git commit -m 'base'",
+    "git checkout -b feature/manual-review-holds",
+    "git remote add origin git@github.com:acme/storefront.git",
+    "cp -R ../setup/head/. .",
+    "git add .",
+    "git commit -m 'add manual review hold flow'"
+  ],
+  "prompt": "Prepare a pull request draft from the current branch to main. Write the reviewable draft to artifacts/pr-draft.md with the title, summary, affected areas, and pre-merge checklist, but do not push, create a remote PR, or modify the existing source files.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "draft-file-created",
+      "description": "Writes the PR draft to a deterministic artifact file",
+      "dimension": "route",
+      "type": "file-created",
+      "file": "artifacts/pr-draft.md"
+    },
+    {
+      "id": "pr-structure",
+      "description": "Uses the documented PR summary structure",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": "artifacts/pr-draft.md",
+      "contentIncludes": [
+        "## Summary",
+        "## Changes",
+        "## Affected Areas",
+        "## Pre-merge Checklist"
+      ]
+    },
+    {
+      "id": "mentions-order-risk-work",
+      "description": "References the order review risk changes",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/pr-draft.md",
+      "contentIncludesAny": [
+        "manual review",
+        "manual_review",
+        "fraud score",
+        "risk"
+      ],
+      "contentMatchesAny": [
+        "/orders/i",
+        "/fraud/i"
+      ]
+    },
+    {
+      "id": "target-branch",
+      "description": "Identifies the main branch as the target",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/pr-draft.md",
+      "contentMatchesAny": [
+        "/target branch:\\s*main/i",
+        "/base branch:\\s*main/i",
+        "/into main/i"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "no-code-edits",
+      "description": "Should not rewrite the application code while preparing the draft",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "src/orders.js"
+    },
+    {
+      "id": "no-empty-pr",
+      "description": "Should not say there are no commits to summarize",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/pr-draft.md",
+      "contentIncludes": [
+        "No commits to include"
+      ]
+    }
+  ]
+}

@@ -5,6 +5,9 @@ argument-hint: '[scope: full|hooks|permissions|claudeignore|claude-md|memory|ski
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Agent, WebSearch, WebFetch
 effort: medium
+phase: utility
+feedback-profile: diagnostic
+catalog-order: 130
 ---
 
 # Agent Configuration Audit

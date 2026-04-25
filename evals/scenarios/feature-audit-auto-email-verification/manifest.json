@@ -1,0 +1,82 @@
+{
+  "name": "feature-audit-auto-email-verification",
+  "skill": "feature-audit",
+  "description": "Verify that a narrow, quick feature audit resolves auto effort to low and stays compact.",
+  "prompt": "Run a quick feature audit of the email verification resend flow described in feature.md. Use effort:auto. Keep it lean, focus on the top 2 highest-leverage gaps, do not ask follow-up questions, and do not do competitor research. Write the audit to artifacts/email-verification-audit.md and leave the source brief unchanged.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "audit-file-created",
+      "description": "Writes the compact audit into a deterministic report artifact",
+      "dimension": "route",
+      "type": "file-created",
+      "file": "artifacts/email-verification-audit.md"
+    },
+    {
+      "id": "audit-frame",
+      "description": "Shows that auto effort resolved to low",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": "artifacts/email-verification-audit.md",
+      "contentIncludes": [
+        "## Audit Frame",
+        "Requested effort: auto",
+        "Selected effort: low"
+      ]
+    },
+    {
+      "id": "compact-structure",
+      "description": "Uses the compact audit structure for a low-effort pass",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/email-verification-audit.md",
+      "contentIncludes": [
+        "## Highest-Leverage Gaps",
+        "## What Looks Strong",
+        "## Next Step"
+      ]
+    },
+    {
+      "id": "focused-findings",
+      "description": "Finds meaningful resend-flow gaps from the brief",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/email-verification-audit.md",
+      "contentIncludesAny": [
+        "cooldown",
+        "resend",
+        "deliverability",
+        "confirmation"
+      ],
+      "contentMatchesAny": [
+        "/Priority:\\s*(Critical|High|Medium)/i",
+        "/Recommended move:/i"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "no-competitor-section",
+      "description": "Should stay compact and skip competitive intelligence for a quick low-effort audit",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/email-verification-audit.md",
+      "contentIncludes": [
+        "## Competitive Intelligence"
+      ]
+    },
+    {
+      "id": "no-brief-edits",
+      "description": "Should not rewrite the source brief while producing the audit",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "feature.md"
+    }
+  ]
+}

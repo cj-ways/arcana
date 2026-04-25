@@ -4,6 +4,9 @@ description: 'Analyzes branch diff to generate deploy checklists — env vars, m
 argument-hint: '[source-branch] [target-branch]'
 allowed-tools: Bash, Read, Grep, Glob
 effort: medium
+phase: release
+feedback-profile: execution
+catalog-order: 100
 disable-model-invocation: true
 ---
 
@@ -14,7 +17,7 @@ Analyzes the diff between two branches and produces actionable pre-release and p
 ## Arguments
 
 ```
-/deploy-prep [source-branch] [target-branch]
+/release-check [source-branch] [target-branch]
 ```
 
 - `source-branch`: Branch being released (default: auto-detect default branch via `git symbolic-ref refs/remotes/origin/HEAD`, or fall back to `dev`/`develop`/`main`)
@@ -379,4 +382,3 @@ Do NOT commit or modify anything. Present the full report for user review.
 ### Cross-Skill Suggestions (append when relevant)
 - If CRITICAL migration or schema changes are found, add: "Consider running `/deep-review` on the migration files before deploying."
 - If the release includes significant new features, add: "Consider running `/feature-audit` to verify the feature is production-ready before release."
-

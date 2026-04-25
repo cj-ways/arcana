@@ -1,0 +1,100 @@
+{
+  "name": "feature-audit-extra-billing-recovery",
+  "skill": "feature-audit",
+  "description": "Verify that an explicit extra-effort feature audit keeps the full deep-audit structure and cross-surface reasoning.",
+  "prompt": "Audit the billing recovery feature described in feature.md, admin.md, mobile.md, and competitors.md. Use effort:extra. Treat this as a high-stakes cross-surface feature. Do not ask follow-up questions. Write the final audit to artifacts/billing-recovery-audit.md and leave the source files unchanged.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "audit-file-created",
+      "description": "Writes the extra-effort audit to a deterministic artifact",
+      "dimension": "route",
+      "type": "file-created",
+      "file": "artifacts/billing-recovery-audit.md"
+    },
+    {
+      "id": "audit-frame-extra",
+      "description": "Declares that requested and selected effort are extra",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": "artifacts/billing-recovery-audit.md",
+      "contentIncludes": [
+        "## Audit Frame",
+        "Requested effort: extra",
+        "Selected effort: extra"
+      ]
+    },
+    {
+      "id": "deep-structure",
+      "description": "Uses the deep-audit structure expected for high and extra effort",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/billing-recovery-audit.md",
+      "contentIncludes": [
+        "## Audit Lanes",
+        "## Highest-Leverage Gaps",
+        "## Competitive Intelligence",
+        "## Priority Order",
+        "## Recommendation"
+      ]
+    },
+    {
+      "id": "cross-surface-coverage",
+      "description": "Reflects cross-surface evidence from admin and mobile surfaces",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/billing-recovery-audit.md",
+      "contentIncludesAny": [
+        "admin",
+        "operator",
+        "mobile"
+      ]
+    },
+    {
+      "id": "trust-and-recovery-gaps",
+      "description": "Finds meaningful billing recovery gaps around trust, failure handling, or retries",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/billing-recovery-audit.md",
+      "contentIncludesAny": [
+        "retry",
+        "trust",
+        "payment failure",
+        "recovery"
+      ],
+      "contentMatchesAny": [
+        "/Priority:\\s*(Critical|High|Medium)/i",
+        "/Recommended move:/i"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "no-source-edits-feature",
+      "description": "Should not edit the supplied billing feature brief",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "feature.md"
+    },
+    {
+      "id": "no-source-edits-admin",
+      "description": "Should not edit the supplied admin brief",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "admin.md"
+    },
+    {
+      "id": "no-source-edits-mobile",
+      "description": "Should not edit the supplied mobile brief",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "mobile.md"
+    }
+  ]
+}

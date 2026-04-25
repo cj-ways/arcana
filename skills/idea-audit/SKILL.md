@@ -5,6 +5,9 @@ argument-hint: "<project-idea>"
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Agent, WebSearch, WebFetch, Write, AskUserQuestion
 effort: high
+phase: plan
+feedback-profile: advisory
+catalog-order: 10
 ---
 
 # New Project Idea → Full Project Setup
@@ -192,4 +195,3 @@ Present a clean summary:
 - If the user's idea has serious problems, say so honestly. Don't build something doomed to fail.
 - The phase execution protocol is NON-NEGOTIABLE. Every project gets it.
 - Prefer free-tier services unless the user explicitly says they'll pay.
-

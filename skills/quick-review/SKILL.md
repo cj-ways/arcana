@@ -5,6 +5,9 @@ argument-hint: "[files or branch]"
 disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob
 effort: medium
+phase: review
+feedback-profile: diagnostic
+catalog-order: 70
 isolation: worktree
 memory: project
 ---
@@ -152,4 +155,3 @@ If the verdict is **NEEDS CHANGES** with critical or high findings, add:
 3. **If no significant issues are found**, say so clearly rather than manufacturing concerns. Clean code deserves a clean review.
 4. **Check the diff, not just the final state**: Sometimes the issue is what was removed, not what was added.
 5. **Verify before flagging**: Before claiming an injection, check if the interpolated value is user input or an internal constant. Before claiming a missing null check, verify the lookup can actually return null. Before claiming a missing field, check if a wildcard or spread includes it.
-

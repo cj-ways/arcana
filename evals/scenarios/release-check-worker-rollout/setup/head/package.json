@@ -1,0 +1,8 @@
+{
+  "name": "billing-platform",
+  "private": true,
+  "dependencies": {
+    "bullmq": "^5.7.1",
+    "express": "^4.19.2"
+  }
+}

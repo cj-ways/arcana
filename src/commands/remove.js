@@ -2,17 +2,23 @@ import chalk from "chalk";
 import fsExtra from "fs-extra";
 const { removeSync, existsSync } = fsExtra;
 import { join } from "path";
-import { getAvailableSkills, getAvailableAgents, getAllInstallLocations } from "../utils/paths.js";
+import { getAvailableAgents, getAllInstallLocations } from "../utils/paths.js";
+import { exitWithMessage, printNextSteps } from "../utils/cli-errors.js";
 
-export async function runRemove(skills) {
+export async function runRemove(skills, opts = {}) {
   if (!skills || skills.length === 0) {
-    console.error(chalk.yellow("Usage: arcana remove <skill-name> [skill-name...]"));
-    process.exit(1);
+    exitWithMessage("Usage: arcana remove <skill-name> [skill-name...]", {
+      color: "yellow",
+      steps: [
+        "Run `arcana list --scope all` to see what is installed.",
+        "Try `arcana remove deep-fix --scope project` for a project install.",
+      ],
+    });
   }
 
-  const allSkills = getAvailableSkills();
   const allAgents = getAvailableAgents();
-  const { skills: skillLocs, agents: agentLocs } = getAllInstallLocations();
+  const scope = opts.scope || "project";
+  const { skills: skillLocs, agents: agentLocs } = getAllInstallLocations({ scope });
   const searchDirs = skillLocs.map((l) => l.dir);
   const agentDirs = agentLocs.map((l) => l.dir);
 
@@ -52,6 +58,13 @@ export async function runRemove(skills) {
   }
 
   if (!anyRemoved) {
+    printNextSteps(
+      [
+        "Run `arcana list --scope all` to confirm the installed name and scope.",
+        "If the skill was imported or installed elsewhere, retry with `--scope all`.",
+      ],
+      { stream: "error" },
+    );
     process.exit(1);
   }
 }

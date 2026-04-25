@@ -5,6 +5,9 @@ argument-hint: '[focus: all|security|testing|workflow|ops]'
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob, Bash, Agent, WebSearch, WebFetch
 effort: high
+phase: utility
+feedback-profile: advisory
+catalog-order: 150
 ---
 
 # Skill Scout — Find Skills Your Project Actually Needs

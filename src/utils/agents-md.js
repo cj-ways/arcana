@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync, appendFileSync, readdirSync } from "fs";
 import { join } from "path";
 
-export function appendAgentsMdBlock(cwd) {
+export function appendAgentsMdBlock(cwd, { dryRun = false } = {}) {
   const agentsPath = join(cwd, "AGENTS.md");
   const skillsDir = join(cwd, ".agents", "skills");
 
@@ -27,9 +27,15 @@ ${skillList}
 
   if (existsSync(agentsPath)) {
     const content = readFileSync(agentsPath, "utf-8");
-    if (content.includes("Agent Skills (Arcana)")) return; // already present
-    appendFileSync(agentsPath, block);
+    if (content.includes("Agent Skills (Arcana)")) return { path: agentsPath, status: "current", skillCount: skillList ? skillList.split("\n").length : 0 };
+    if (!dryRun) {
+      appendFileSync(agentsPath, block);
+    }
+    return { path: agentsPath, status: "appended", skillCount: skillList ? skillList.split("\n").length : 0 };
   } else {
-    writeFileSync(agentsPath, `# AGENTS.md\n${block}`);
+    if (!dryRun) {
+      writeFileSync(agentsPath, `# AGENTS.md\n${block}`);
+    }
+    return { path: agentsPath, status: "created", skillCount: skillList ? skillList.split("\n").length : 0 };
   }
 }

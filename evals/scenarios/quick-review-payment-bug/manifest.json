@@ -1,0 +1,90 @@
+{
+  "name": "quick-review-payment-bug",
+  "skill": "quick-review",
+  "description": "Review a branch diff that removes a null guard from invoice total calculation.",
+  "workdir": "repo",
+  "setupCommands": [
+    "cp -R ../setup/base/. .",
+    "git init",
+    "git branch -M main",
+    "git config user.email 'eval@example.com'",
+    "git config user.name 'Arcana Eval'",
+    "git add .",
+    "git commit -m 'base'",
+    "git checkout -b feature/remove-invoice-guard",
+    "cp -R ../setup/head/. .",
+    "git add .",
+    "git commit -m 'simplify invoice total calculation'"
+  ],
+  "prompt": "Review the current branch diff against main. Report only concrete runtime or data-integrity issues, include severity and file:line references, provide a concrete suggested fix, and stay read-only.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "needs-changes-verdict",
+      "description": "Returns a needs-changes verdict for the concrete runtime bug",
+      "dimension": "route",
+      "type": "output-contains",
+      "outputIncludes": [
+        "NEEDS CHANGES"
+      ]
+    },
+    {
+      "id": "structured-fix-block",
+      "description": "Includes a structured finding block with a concrete location and suggested code fix",
+      "dimension": "process",
+      "type": "reported-context",
+      "file": "src/services/invoices.js",
+      "contextMatches": [
+        "/src\\/services\\/invoices\\.js:2\\b/i",
+        "/suggestion/i"
+      ],
+      "contextMatchesAny": [
+        "/```[\\s\\S]+```/"
+      ]
+    },
+    {
+      "id": "null-risk-identified",
+      "description": "Calls out the removed null guard as the concrete runtime failure",
+      "dimension": "outcome",
+      "type": "reported-context",
+      "file": "src/services/invoices.js",
+      "contextMatches": [
+        "/src\\/services\\/invoices\\.js:2\\b/i"
+      ],
+      "contextIncludesAny": [
+        "invoice.items",
+        "invoice"
+      ],
+      "contextMatchesAny": [
+        "/\\bhigh\\b/i",
+        "/\\bcritical\\b/i",
+        "/null/i",
+        "/undefined/i",
+        "/crash/i"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "workspace-clean",
+      "description": "Should stay read-only during review",
+      "dimension": "process",
+      "type": "workspace-clean"
+    },
+    {
+      "id": "no-pass",
+      "description": "Should not pass a diff with a concrete null-dereference risk",
+      "dimension": "outcome",
+      "type": "output-contains",
+      "outputIncludes": [
+        "PASS"
+      ]
+    }
+  ]
+}

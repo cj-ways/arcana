@@ -2,68 +2,178 @@
   "name": "sql-injection-express",
   "skill": "security-check",
   "description": "Express API with SQL injection, hardcoded secrets, and path traversal. Also includes safe code that should NOT be flagged.",
+  "prompt": "Audit this codebase for concrete security issues. Report specific findings with file:line references and severity labels, keep the scan read-only, and avoid false positives on safe code.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
   "expected": [
+    {
+      "id": "report-format",
+      "description": "Uses the security report format",
+      "dimension": "route",
+      "type": "output-contains",
+      "outputIncludes": [
+        "## Security Check Report"
+      ]
+    },
+    {
+      "id": "severity-and-file-lines",
+      "description": "Includes severity language and file:line references in the audit output",
+      "dimension": "process",
+      "type": "output-contains",
+      "outputMatches": [
+        "/[A-Za-z0-9_./-]+\\.[a-z]+:\\d+/"
+      ],
+      "outputMatchesAny": [
+        "/\\bcritical\\b/i",
+        "/\\bhigh\\b/i"
+      ]
+    },
     {
       "id": "sql-inject-raw",
       "description": "Raw SQL with string interpolation in users.js",
+      "dimension": "outcome",
+      "type": "reported-context",
       "file": "src/routes/users.js",
-      "line": 8,
+      "line": 7,
       "severity": "critical",
-      "mustFind": true
+      "contextMatches": [
+        "/src\\/routes\\/users\\.js:7\\b/i",
+        "/\\bcritical\\b/i"
+      ],
+      "contextMatchesAny": [
+        "/sql injection/i",
+        "/string concatenation/i",
+        "/raw sql/i"
+      ]
     },
     {
       "id": "sql-inject-template",
       "description": "Template literal in SQL query in users.js",
+      "dimension": "outcome",
+      "type": "reported-context",
       "file": "src/routes/users.js",
-      "line": 16,
+      "line": 17,
       "severity": "critical",
-      "mustFind": true
+      "contextMatches": [
+        "/src\\/routes\\/users\\.js:17\\b/i",
+        "/\\bcritical\\b/i"
+      ],
+      "contextMatchesAny": [
+        "/sql injection/i",
+        "/template literal/i",
+        "/interpolation/i"
+      ]
     },
     {
       "id": "hardcoded-api-key",
       "description": "Hardcoded API key in config/index.js",
+      "dimension": "outcome",
+      "type": "reported-context",
       "file": "src/config/index.js",
       "line": 2,
       "severity": "high",
-      "mustFind": true
+      "contextMatches": [
+        "/src\\/config\\/index\\.js:2\\b/i",
+        "/\\bhigh\\b/i"
+      ],
+      "contextMatchesAny": [
+        "/api key/i",
+        "/hardcoded/i",
+        "/secret/i"
+      ]
     },
     {
       "id": "hardcoded-db-password",
       "description": "Hardcoded database password in config/index.js",
+      "dimension": "outcome",
+      "type": "reported-context",
       "file": "src/config/index.js",
       "line": 6,
       "severity": "high",
-      "mustFind": true
+      "contextMatches": [
+        "/src\\/config\\/index\\.js:6\\b/i",
+        "/\\bhigh\\b/i"
+      ],
+      "contextMatchesAny": [
+        "/password/i",
+        "/hardcoded/i",
+        "/credential/i"
+      ]
     },
     {
       "id": "path-traversal",
       "description": "User input used directly in file path in files.js",
+      "dimension": "outcome",
+      "type": "reported-context",
       "file": "src/routes/files.js",
       "line": 7,
       "severity": "critical",
-      "mustFind": true
+      "contextMatches": [
+        "/src\\/routes\\/files\\.js:7\\b/i",
+        "/\\bcritical\\b/i"
+      ],
+      "contextMatchesAny": [
+        "/path traversal/i",
+        "/directory traversal/i",
+        "/file path/i"
+      ]
     },
     {
       "id": "xss-reflected",
       "description": "User input rendered directly in HTML response in search.js",
+      "dimension": "outcome",
+      "type": "reported-context",
       "file": "src/routes/search.js",
       "line": 5,
       "severity": "high",
-      "mustFind": true
+      "contextMatches": [
+        "/src\\/routes\\/search\\.js:5\\b/i",
+        "/\\bhigh\\b/i"
+      ],
+      "contextMatchesAny": [
+        "/xss/i",
+        "/reflected/i",
+        "/html/i"
+      ]
     }
   ],
   "falsePositives": [
     {
+      "id": "workspace-clean",
+      "description": "Should stay read-only during the security scan",
+      "dimension": "process",
+      "type": "workspace-clean"
+    },
+    {
       "id": "fp-parameterized",
       "description": "Parameterized query in posts.js is safe",
+      "dimension": "outcome",
+      "type": "reported-context",
       "file": "src/routes/posts.js",
-      "mustNotFlag": true
+      "contextMatchesAny": [
+        "/sql injection/i",
+        "/\\bcritical\\b/i",
+        "/\\bhigh\\b/i",
+        "/vulnerability/i"
+      ]
     },
     {
       "id": "fp-env-var",
       "description": "API key from environment variable in config/safe.js",
+      "dimension": "outcome",
+      "type": "reported-context",
       "file": "src/config/safe.js",
-      "mustNotFlag": true
+      "contextMatchesAny": [
+        "/hardcoded/i",
+        "/secret/i",
+        "/\\bcritical\\b/i",
+        "/\\bhigh\\b/i"
+      ]
     }
   ]
 }

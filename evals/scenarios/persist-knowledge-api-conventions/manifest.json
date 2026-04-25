@@ -1,0 +1,46 @@
+{
+  "name": "persist-knowledge-api-conventions",
+  "skill": "persist-knowledge",
+  "description": "Persist a confirmed project-wide API naming convention into CLAUDE.md without polluting MEMORY.md.",
+  "prompt": "Persist the stable convention from session-notes.md. It is already confirmed by src/api/users.js and src/api/orders.js. Update the right knowledge file and report what changed.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "claude-updated",
+      "description": "Stores the convention in CLAUDE.md",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "CLAUDE.md",
+      "mustBeModified": true,
+      "contentIncludes": [
+        "camelCase",
+        "never snake_case"
+      ]
+    },
+    {
+      "id": "summary-table",
+      "description": "Reports the persisted learning in the manual output format",
+      "dimension": "route",
+      "type": "output-contains",
+      "outputIncludes": [
+        "## Session Learnings",
+        "CLAUDE.md"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "memory-unchanged",
+      "description": "Does not store a stable project-wide convention in MEMORY.md instead",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "MEMORY.md"
+    }
+  ]
+}

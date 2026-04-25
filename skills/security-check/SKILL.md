@@ -4,6 +4,9 @@ description: 'Quick security scan — hardcoded secrets, common vulnerabilities,
 argument-hint: '[scope: secrets|vulns|deps|all]'
 allowed-tools: Grep, Read, Glob, Bash, WebSearch, WebFetch
 effort: medium
+phase: utility
+feedback-profile: diagnostic
+catalog-order: 110
 disable-model-invocation: true
 ---
 
@@ -193,4 +196,3 @@ Not all pattern matches are equal. Before reporting a finding, assess its contex
 - **INFO**: Informational only, not exploitable in current context. Examples: deprecated patterns, test fixtures, dev-only code paths.
 
 When unsure, classify at WARNING (not CRITICAL) to avoid alarm fatigue, but do not suppress to INFO.
-

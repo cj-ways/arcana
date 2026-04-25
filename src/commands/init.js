@@ -9,13 +9,12 @@ import {
   getAvailableAgents,
   getPackageRulesDir,
 } from "../utils/paths.js";
-import { copySkills, copyAgents, mirrorSkills, renameExistingSkill, renameExistingAgent } from "../utils/copy.js";
+import { copySkills, copyAgents, mirrorSkills, renameExistingSkill, renameExistingAgent, isArcanaManaged } from "../utils/copy.js";
 import fsExtra from "fs-extra";
 const { copySync: fsCopySync, ensureDirSync } = fsExtra;
 import { appendAgentsMdBlock } from "../utils/agents-md.js";
 
-export function hasArcanaSkills() {
-  const cwd = process.cwd();
+export function hasArcanaSkills(cwd = process.cwd()) {
   const dirs = [
     join(cwd, ".claude", "skills"),
     join(cwd, ".agents", "skills"),
@@ -23,7 +22,10 @@ export function hasArcanaSkills() {
   for (const dir of dirs) {
     if (existsSync(dir)) {
       const entries = readdirSync(dir);
-      if (entries.some((e) => existsSync(join(dir, e, "SKILL.md")))) {
+      if (entries.some((e) => {
+        const skillFile = join(dir, e, "SKILL.md");
+        return existsSync(skillFile) && isArcanaManaged(skillFile);
+      })) {
         return true;
       }
     }
@@ -31,33 +33,37 @@ export function hasArcanaSkills() {
   return false;
 }
 
-export function copyRules(targetDir) {
+export function copyRules(targetDir, { dryRun = false } = {}) {
   const rulesDir = getPackageRulesDir();
   if (!existsSync(rulesDir)) return [];
   const results = [];
   const arcanaRuleNames = readdirSync(rulesDir).filter((f) => f.endsWith(".md"));
-  ensureDirSync(targetDir);
+  if (!dryRun) {
+    ensureDirSync(targetDir);
+  }
   for (const file of arcanaRuleNames) {
     const src = join(rulesDir, file);
     const dest = join(targetDir, file);
 
-    // Conflict detection: if file exists at destination, check if it's ours
+    // Conflict detection: preserve any user-modified rule content.
     if (existsSync(dest)) {
       const sourceContent = readFileSync(src, "utf-8");
       const destContent = readFileSync(dest, "utf-8");
-      if (sourceContent !== destContent && !file.startsWith("arcana-")) {
+      if (sourceContent !== destContent) {
         results.push({ name: file, status: "conflict" });
         continue;
       }
     }
 
-    fsCopySync(src, dest, { overwrite: true });
+    if (!dryRun) {
+      fsCopySync(src, dest, { overwrite: true });
+    }
     results.push({ name: file, status: "installed" });
   }
   return results;
 }
 
-async function resolveConflicts(conflicts, dirs) {
+async function resolveConflicts(conflicts, dirs, { dryRun = false } = {}) {
   console.log(chalk.yellow(`\n⚠ ${conflicts.length} name conflict(s) detected:`));
   for (const c of conflicts) {
     console.log(chalk.yellow(`  ${c.name} (${c.type}) — you have a custom ${c.type} with this name`));
@@ -83,19 +89,19 @@ async function resolveConflicts(conflicts, dirs) {
     const agentConflicts = conflicts.filter((c) => c.type === "agent").map((c) => c.name);
 
     if (skillConflicts.length > 0) {
-      const results = copySkills(skillConflicts, dirs.skills, { force: true });
+      const results = copySkills(skillConflicts, dirs.skills, { force: true, dryRun });
       for (const r of results) {
-        if (r.status === "installed") {
-          console.log(chalk.green(`  ✓ ${r.name} (overwritten)`));
+        if (r.status === "installed" || r.status === "updated") {
+          console.log(chalk.green(`  ${dryRun ? "↳ Would overwrite" : "✓"} ${r.name}${dryRun ? "" : " (overwritten)"}`));
           installed++;
         }
       }
     }
     if (agentConflicts.length > 0 && dirs.agents) {
-      const results = copyAgents(agentConflicts, dirs.agents, { force: true });
+      const results = copyAgents(agentConflicts, dirs.agents, { force: true, dryRun });
       for (const r of results) {
-        if (r.status === "installed") {
-          console.log(chalk.green(`  ✓ ${r.name} (agent, overwritten)`));
+        if (r.status === "installed" || r.status === "updated") {
+          console.log(chalk.green(`  ${dryRun ? "↳ Would overwrite" : "✓"} ${r.name}${dryRun ? " (agent)" : " (agent, overwritten)"}`));
           installed++;
         }
       }
@@ -128,12 +134,14 @@ async function resolveConflicts(conflicts, dirs) {
         },
       ]);
 
-      const renamed = c.type === "skill"
-        ? renameExistingSkill(targetDir, c.name, newName.trim())
-        : renameExistingAgent(targetDir, c.name, newName.trim());
+      const renamed = dryRun
+        ? true
+        : c.type === "skill"
+          ? renameExistingSkill(targetDir, c.name, newName.trim())
+          : renameExistingAgent(targetDir, c.name, newName.trim());
 
       if (renamed) {
-        console.log(chalk.dim(`  ↳ ${c.name} → ${newName.trim()}`));
+        console.log(chalk.dim(`  ↳ ${dryRun ? "Would rename" : "Renamed"} ${c.name} → ${newName.trim()}`));
       } else {
         console.log(chalk.red(`  ✗ Failed to rename ${c.name} — skipping Arcana install for this name`));
         failedRenames.add(c.name);
@@ -145,19 +153,19 @@ async function resolveConflicts(conflicts, dirs) {
     const agentConflicts = conflicts.filter((c) => c.type === "agent" && !failedRenames.has(c.name)).map((c) => c.name);
 
     if (skillConflicts.length > 0) {
-      const results = copySkills(skillConflicts, dirs.skills);
+      const results = copySkills(skillConflicts, dirs.skills, { dryRun });
       for (const r of results) {
-        if (r.status === "installed") {
-          console.log(chalk.green(`  ✓ ${r.name}`));
+        if (r.status === "installed" || r.status === "updated") {
+          console.log(chalk.green(`  ${dryRun ? "↳ Would install" : "✓"} ${r.name}`));
           installed++;
         }
       }
     }
     if (agentConflicts.length > 0 && dirs.agents) {
-      const results = copyAgents(agentConflicts, dirs.agents);
+      const results = copyAgents(agentConflicts, dirs.agents, { dryRun });
       for (const r of results) {
-        if (r.status === "installed") {
-          console.log(chalk.green(`  ✓ ${r.name} (agent)`));
+        if (r.status === "installed" || r.status === "updated") {
+          console.log(chalk.green(`  ${dryRun ? "↳ Would install" : "✓"} ${r.name} (agent)`));
           installed++;
         }
       }
@@ -168,7 +176,8 @@ async function resolveConflicts(conflicts, dirs) {
   return installed;
 }
 
-export async function runInit() {
+export async function runInit(opts = {}) {
+  const dryRun = Boolean(opts.dryRun);
   console.log(chalk.bold("\n✦ Arcana — Agent Skills Setup\n"));
 
   // Detect existing installation
@@ -296,15 +305,28 @@ export async function runInit() {
   console.log(
     chalk.dim(`\nSetting up for ${agentLabel} at ${scopeLabel}...\n`)
   );
+  if (dryRun) {
+    console.log(chalk.dim("Dry run mode: previewing changes only. No files will be written.\n"));
+  }
 
   // Copy skills to primary target
-  const skillResults = copySkills(selectedSkills, dirs.skills);
+  const skillResults = copySkills(selectedSkills, dirs.skills, { dryRun });
   const conflicts = [];
   for (const r of skillResults) {
     if (r.status === "installed") {
-      console.log(chalk.green(`  ✓ ${r.name}`));
+      console.log(chalk.green(`  ${dryRun ? "↳ Would install" : "✓"} ${r.name}`));
+    } else if (r.status === "updated") {
+      console.log(chalk.green(`  ${dryRun ? "↳ Would update" : "✓"} ${r.name}${dryRun ? "" : " updated"}`));
+    } else if (r.status === "current") {
+      console.log(chalk.dim(`  · ${r.name} already current`));
     } else if (r.status === "conflict") {
       console.log(chalk.yellow(`  ⚠ ${r.name} — name conflict`));
+      conflicts.push({ name: r.name, type: "skill" });
+    } else if (r.status === "modified") {
+      console.log(chalk.yellow(`  ⚠ ${r.name} — local Arcana edits detected`));
+      conflicts.push({ name: r.name, type: "skill" });
+    } else if (r.status === "legacy") {
+      console.log(chalk.yellow(`  ⚠ ${r.name} — legacy Arcana install cannot be safely diffed`));
       conflicts.push({ name: r.name, type: "skill" });
     } else {
       console.log(chalk.red(`  ✗ ${r.name} — ${r.status}`));
@@ -314,13 +336,24 @@ export async function runInit() {
   // Copy agents
   let agentInstalled = 0;
   if (dirs.agents && selectedAgents.length > 0) {
-    const agentResults = copyAgents(selectedAgents, dirs.agents);
+    const agentResults = copyAgents(selectedAgents, dirs.agents, { dryRun });
     for (const r of agentResults) {
       if (r.status === "installed") {
-        console.log(chalk.green(`  ✓ ${r.name} (agent)`));
+        console.log(chalk.green(`  ${dryRun ? "↳ Would install" : "✓"} ${r.name} (agent)`));
         agentInstalled++;
+      } else if (r.status === "updated") {
+        console.log(chalk.green(`  ${dryRun ? "↳ Would update" : "✓"} ${r.name} (agent)${dryRun ? "" : " updated"}`));
+        agentInstalled++;
+      } else if (r.status === "current") {
+        console.log(chalk.dim(`  · ${r.name} (agent) already current`));
       } else if (r.status === "conflict") {
         console.log(chalk.yellow(`  ⚠ ${r.name} — name conflict (agent)`));
+        conflicts.push({ name: r.name, type: "agent" });
+      } else if (r.status === "modified") {
+        console.log(chalk.yellow(`  ⚠ ${r.name} — local Arcana agent edits detected`));
+        conflicts.push({ name: r.name, type: "agent" });
+      } else if (r.status === "legacy") {
+        console.log(chalk.yellow(`  ⚠ ${r.name} — legacy Arcana agent cannot be safely diffed`));
         conflicts.push({ name: r.name, type: "agent" });
       } else {
         console.log(chalk.red(`  ✗ ${r.name} — ${r.status}`));
@@ -331,21 +364,25 @@ export async function runInit() {
   // Handle conflicts interactively
   let conflictResolved = 0;
   if (conflicts.length > 0) {
-    conflictResolved = await resolveConflicts(conflicts, dirs);
+    conflictResolved = await resolveConflicts(conflicts, dirs, { dryRun });
   }
 
   // Multi-agent: mirror to agent-specific dirs
   if (agent === "multi" && dirs.mirrors) {
-    const mirrorResults = mirrorSkills(dirs.skills, dirs.mirrors);
+    const mirrorResults = mirrorSkills(dirs.skills, dirs.mirrors, { dryRun });
     for (const r of mirrorResults) {
-      console.log(chalk.dim(`  ↳ Mirrored to ${r.dir}`));
+      console.log(chalk.dim(`  ↳ ${dryRun ? "Would mirror" : "Mirrored"} to ${r.dir}`));
     }
   }
 
   // Codex/Multi: append AGENTS.md block
   if ((agent === "codex" || agent === "multi") && scope === "project") {
-    appendAgentsMdBlock(process.cwd());
-    console.log(chalk.dim("  ↳ Updated AGENTS.md with skill discovery block"));
+    const agentsMdResult = appendAgentsMdBlock(process.cwd(), { dryRun });
+    if (agentsMdResult?.status === "current") {
+      console.log(chalk.dim("  ↳ AGENTS.md already has the Arcana discovery block"));
+    } else {
+      console.log(chalk.dim(`  ↳ ${dryRun ? "Would update" : "Updated"} AGENTS.md with skill discovery block`));
+    }
   }
 
   // Copy rules if requested
@@ -363,12 +400,12 @@ export async function runInit() {
       : [];
     const nonArcanaRules = existingRuleFiles.filter((f) => !arcanaRuleNames.includes(f));
 
-    const rulesResults = copyRules(rulesTargetDir);
+    const rulesResults = copyRules(rulesTargetDir, { dryRun });
     rulesCount = rulesResults.filter((r) => r.status === "installed").length;
 
     for (const r of rulesResults) {
       if (r.status === "installed") {
-        console.log(chalk.green(`  ✓ ${r.name} (rule)`));
+        console.log(chalk.green(`  ${dryRun ? "↳ Would install" : "✓"} ${r.name} (rule)`));
       } else {
         console.log(chalk.red(`  ✗ ${r.name} — ${r.status}`));
       }
@@ -389,15 +426,20 @@ export async function runInit() {
   }
 
   // Summary
-  const installed = skillResults.filter((r) => r.status === "installed").length + conflictResolved;
+  const installed = skillResults.filter((r) => r.status === "installed" || r.status === "updated").length + conflictResolved;
   const agentCount = agentInstalled;
 
   const rulesSuffix = rulesCount > 0 ? ` + ${rulesCount} rules` : "";
   console.log(
     chalk.bold(
-      `\n✦ Done. ${installed} skills + ${agentCount} agent${rulesSuffix} installed.\n`
+      `\n✦ ${dryRun ? "Dry run complete" : "Done"}. ${installed} skills + ${agentCount} agent${rulesSuffix} ${dryRun ? "would be installed" : "installed"}.\n`
     )
   );
+
+  if (dryRun) {
+    console.log(chalk.dim("  Re-run without --dry-run to apply these changes.\n"));
+    return;
+  }
 
   console.log(chalk.dim("  Try it now: make a code change, then ask Claude to /quick-review\n"));
 

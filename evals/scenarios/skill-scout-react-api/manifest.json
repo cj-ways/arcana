@@ -1,0 +1,82 @@
+{
+  "name": "skill-scout-react-api",
+  "skill": "skill-scout",
+  "description": "Recommend external skills for a React + API project using local provider snapshots instead of live catalogs.",
+  "prompt": "You are offline. Use only the provider snapshots under providers/ as the available catalogs. Analyze this repo and recommend the best external skills to add. Write the recommendation memo to artifacts/skill-scout-report.md, cite codebase evidence, include the arcana import command for each recommendation, and do not modify the existing repo files.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.3,
+      "outcome": 0.5
+    }
+  },
+  "expected": [
+    {
+      "id": "report-file-created",
+      "description": "Writes the recommendation memo into a deterministic artifact file",
+      "dimension": "route",
+      "type": "file-created",
+      "file": "artifacts/skill-scout-report.md"
+    },
+    {
+      "id": "summary-section",
+      "description": "Uses the Skill Scout summary format",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": "artifacts/skill-scout-report.md",
+      "contentIncludes": [
+        "## Skill Scout Summary"
+      ]
+    },
+    {
+      "id": "contract-audit-recommended",
+      "description": "Recommends the API contract audit skill for the repo's API surface",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/skill-scout-report.md",
+      "contentIncludes": [
+        "contract-audit",
+        "arcana import acme/skill-pack contract-audit"
+      ],
+      "contentMatchesAny": [
+        "/recommend/i"
+      ]
+    },
+    {
+      "id": "codebase-evidence",
+      "description": "Cites local codebase evidence for the recommendation",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": "artifacts/skill-scout-report.md",
+      "contentIncludesAny": [
+        "src/api/routes/users.ts",
+        "openapi.yaml",
+        "package.json"
+      ],
+      "contentMatchesAny": [
+        "/API/i",
+        "/OpenAPI/i",
+        "/route/i"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "no-repo-edits",
+      "description": "Should not rewrite repo source files while producing the memo",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "openapi.yaml"
+    },
+    {
+      "id": "no-empty-result",
+      "description": "Should not say no additional skills are needed when the repo has clear gaps",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": "artifacts/skill-scout-report.md",
+      "contentIncludes": [
+        "no additional skills needed"
+      ]
+    }
+  ]
+}

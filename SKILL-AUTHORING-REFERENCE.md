@@ -178,6 +178,65 @@ description: [what + when + boundaries]
 [See references/advanced.md for details]
 ```
 
+For first-party Arcana skills, frontmatter also includes catalog metadata used by docs, feedback routing, and drift checks:
+
+```yaml
+phase: plan|analyze|design|test|fix|refactor|review|release|utility
+feedback-profile: diagnostic|execution|advisory
+catalog-order: 10
+```
+
+- `phase` drives lifecycle grouping in generated docs
+- `feedback-profile` drives structured feedback reasons without a separate hardcoded map
+- `catalog-order` is the single source of truth for skill display order in generated docs
+
+### First-Party Skill Workflow
+
+Start new first-party skills from the scaffold instead of copying an old skill by hand:
+
+```bash
+npm run new:skill -- my-skill --phase test --feedback-profile execution --summary "One-sentence summary."
+```
+
+The scaffold:
+- creates `skills/<name>/SKILL.md` with the required Arcana frontmatter fields
+- creates `evals/scenarios/<name>-primary/` with a starter `manifest.json`, guidance README, and minimal fixture
+- picks the next catalog order for the chosen phase
+- regenerates the doc sections that are derived from the skill catalog
+
+Before a new skill is considered complete:
+- replace every `TODO:` placeholder from both the skill and eval scaffold
+- tighten `allowed-tools`, `argument-hint`, and `Validation` to the real workflow
+- replace the eval fixture with the smallest realistic scenario and convert placeholder assertions into deterministic checks across `route`, `process`, and `outcome`
+- for report-style skills, make the eval artifact-backed by telling the model exactly which report/checklist/memo file to write and grading that file instead of relying only on chat output
+- when a skill should not edit repo files, add at least one `file-unchanged` trap to prove the workflow stayed read-only
+- when the entire workflow must stay read-only, prefer a `workspace-clean` trap so the eval catches any created, modified, or deleted files
+- when a read-only skill emits a structured report in chat, prefer contextual finding assertions (severity + file/line + issue type) over loose keyword checks
+- if the skill explicitly forbids writing files before approval, keep the eval output-based but make the output rules as specific as possible
+- run `node evals/run-eval.js --scenario <name>-primary --run --runs 3`
+- before shipping first-party skill changes, prefer `npm run eval:gate` so regressions fail without overwriting the stored scorecard baseline
+- keep at least one non-placeholder runnable eval scenario for every shipped first-party skill
+- run `npm test`
+- confirm generated docs only changed in the expected catalog sections
+
+### Runtime Effort Modes
+
+Only add runtime effort modes when the skill's cost and depth change materially with scope.
+
+Use this pattern for expensive advisory or research skills:
+- support `auto|low|medium|high` or `auto|low|medium|high|extra` when the top-end path truly needs an additional level
+- keep the evidence bar constant across all modes
+- use effort to control research breadth, agent usage, and output size, not whether the skill should stay rigorous
+- make `auto` choose the cheapest defensible mode, not the most exhaustive one
+
+If a first-party skill supports runtime effort modes:
+- document the accepted decorator syntax in `SKILL.md`
+- explain how `auto` resolves
+- cap web research and agent usage per effort level
+- add at least one explicit-effort eval scenario
+- add at least one auto-resolution eval scenario
+- if `extra` exists, ensure `high` still remains a strong deep mode and `extra` adds real coverage instead of just more words
+
 ### How to Write Steps LLMs Follow Reliably
 
 1. **Use numbered steps with strict chronological sequence**
@@ -332,6 +391,7 @@ Source: thecaio.ai
 **Step 1: Create eval queries (20 total)**
 - 8-10 should-trigger queries (varied phrasing, explicitness, detail, complexity)
 - 8-10 should-not-trigger queries (near-misses, not obviously irrelevant)
+- Store them in `evals/triggers/<skill>.json` as 10 `shouldTrigger` + 10 `shouldNotTrigger` entries split into 6 `train` and 4 `validation` prompts per side.
 
 **Step 2: Make queries realistic**
 - Include file paths, personal context, column names, backstory
@@ -342,11 +402,37 @@ Source: thecaio.ai
 - Compute trigger rate = (triggers / runs)
 - should-trigger passes if trigger rate > 0.5
 - should-not-trigger passes if trigger rate < 0.5
+- Arcana runner: `node evals/run-trigger-eval.js --skill <name> --run --runs 3`
 
 **Step 4: Split into train/validation sets**
 - Train set (~60%): guides description improvements
 - Validation set (~40%): checks if improvements generalize
 - NEVER use validation failures to guide changes (prevents overfitting)
+
+**Arcana file format**
+
+```json
+{
+  "skill": "pressure-test",
+  "description": "Routing boundary under test",
+  "shouldTrigger": [
+    {
+      "id": "should-trigger-1",
+      "set": "train",
+      "prompt": "Pressure-test this rollout plan before we ship it.",
+      "reason": "Explicit request for adversarial analysis of one proposal."
+    }
+  ],
+  "shouldNotTrigger": [
+    {
+      "id": "should-not-trigger-1",
+      "set": "train",
+      "prompt": "Audit this feature across competitors, roadmap, and UX gaps.",
+      "reason": "This is a feature-audit request, not a one-proposal pressure test."
+    }
+  ]
+}
+```
 
 **Step 5: Optimization loop (5 iterations max)**
 1. Evaluate current description on both sets

@@ -1,0 +1,168 @@
+{
+  "skill": "pressure-test",
+  "description": "Layer 1 trigger pack for deliberate adversarial analysis of a specific idea, proposal, plan, or claim. It should trigger for explicit requests to stress-test something and stay off broad audits, project scaffolding, code review, and release workflows.",
+  "shouldTrigger": [
+    {
+      "id": "should-trigger-1",
+      "set": "train",
+      "prompt": "Pressure-test this rollout plan for default transcript uploads. I want the real holes before we ship, not a polite summary.",
+      "reason": "Explicit pressure-test request on a specific proposal.",
+      "expectedSkills": ["pressure-test"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-2",
+      "set": "train",
+      "prompt": "Give me the strongest case for and against blocking releases on a single not-helpful rating, then tell me what would change your mind.",
+      "reason": "Requests weighted pros and cons on one concrete policy choice.",
+      "expectedSkills": ["pressure-test"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-3",
+      "set": "train",
+      "prompt": "I think splitting Arcana into 4 packages next sprint is obviously right. Stress test that claim and keep only material objections.",
+      "reason": "Asks to challenge a specific claim while suppressing low-value criticism.",
+      "expectedSkills": ["pressure-test"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-4",
+      "set": "train",
+      "prompt": "Judge this vendor proposal like a skeptical staff engineer. I need the real risks, the upside, and a proceed or don't proceed verdict.",
+      "reason": "Matches the skill's decision memo and recommendation pattern.",
+      "expectedSkills": ["pressure-test"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-5",
+      "set": "train",
+      "prompt": "can you pressure test this? wanna auto-upload convo summaries by default so we learn faster. tell me what actually matters vs bs nitpicks",
+      "reason": "Casual phrasing and typos still clearly request a pressure test.",
+      "expectedSkills": ["pressure-test"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-6",
+      "set": "train",
+      "prompt": "Before we commit, tear through this architecture memo and tell me which assumptions would actually break the decision.",
+      "reason": "Implicitly asks for assumption-focused adversarial analysis of one memo.",
+      "expectedSkills": ["pressure-test"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-7",
+      "set": "validation",
+      "prompt": "Critique this ADR hard, but only on decision-relevant risks. If it mostly holds up, say that.",
+      "reason": "Near-minimal prompt that still asks for balanced skeptical analysis.",
+      "expectedSkills": ["pressure-test"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-8",
+      "set": "validation",
+      "prompt": "What are we missing in this rollout memo? I want the strongest disconfirming case before we approve it.",
+      "reason": "Focuses on missing assumptions and the strongest counter-case.",
+      "expectedSkills": ["pressure-test"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-9",
+      "set": "validation",
+      "prompt": "Pressure test this pricing change proposal and weight the tradeoffs instead of listing random concerns.",
+      "reason": "Explicitly asks for weighted tradeoffs and false-positive suppression.",
+      "expectedSkills": ["pressure-test"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-10",
+      "set": "validation",
+      "prompt": "Tell me whether this plan survives scrutiny. I want what holds up, the biggest risks, and the smallest unanswered questions.",
+      "reason": "Matches the skill's exact memo shape without naming the skill.",
+      "expectedSkills": ["pressure-test"],
+      "allowAdditionalSkills": false
+    }
+  ],
+  "shouldNotTrigger": [
+    {
+      "id": "should-not-trigger-1",
+      "set": "train",
+      "prompt": "Audit our upgrade funnel end to end: competitor patterns, product gaps, UX friction, and a roadmap for what to build next.",
+      "reason": "Broad multi-perspective feature analysis should route to feature-audit, not pressure-test.",
+      "expectedSkills": ["feature-audit"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-2",
+      "set": "train",
+      "prompt": "Be brutally honest about this startup idea, and if it survives, scaffold the project plan and CLAUDE.md for me.",
+      "reason": "This is an idea-audit request because it includes project viability plus scaffolding.",
+      "expectedSkills": ["idea-audit"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-3",
+      "set": "train",
+      "prompt": "Review this diff for runtime bugs, security issues, and broken logic. Keep false positives low.",
+      "reason": "Shares skepticism language but is a code review workflow for quick-review or deep-review.",
+      "expectedSkills": ["quick-review"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-4",
+      "set": "train",
+      "prompt": "Analyze this branch diff and give me a deploy checklist: env vars, migrations, new workers, and breaking changes.",
+      "reason": "This is release-check, not adversarial decision analysis.",
+      "expectedSkills": ["release-check"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-5",
+      "set": "train",
+      "prompt": "Scout the best external skills for this repo and explain which ones we should import first.",
+      "reason": "This is skill-scout because it is catalog matching, not pressure-testing a proposal.",
+      "expectedSkills": ["skill-scout"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-6",
+      "set": "train",
+      "prompt": "Audit our Claude Code agent setup against latest best practices and give me the implementation plan.",
+      "reason": "This is agent-audit because the target is agent configuration compliance.",
+      "expectedSkills": ["agent-audit"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-7",
+      "set": "validation",
+      "prompt": "Help me design the approval workflow for enterprise invites and compare two viable directions before implementation.",
+      "reason": "This is feature-design because the user wants collaborative solution design, not adversarial critique of one proposal.",
+      "expectedSkills": ["feature-design"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-8",
+      "set": "validation",
+      "prompt": "Give me a v0.dev prompt for redesigning the admin dashboard with a clearer information hierarchy.",
+      "reason": "This is a design prompt request, not a decision stress test.",
+      "expectedSkills": ["v0-design"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-9",
+      "set": "validation",
+      "prompt": "Find the real bug in this flaky payment flow, prove the root cause, fix it, and add a regression test.",
+      "reason": "The tone is skeptical, but the workflow is deep-fix.",
+      "expectedSkills": ["deep-fix"],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-10",
+      "set": "validation",
+      "prompt": "We keep debating our search feature. I want a full audit across user value, competitors, risks, and roadmap options.",
+      "reason": "This is broader than one proposal and should route to feature-audit.",
+      "expectedSkills": ["feature-audit"],
+      "allowAdditionalSkills": false
+    }
+  ]
+}

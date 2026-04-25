@@ -5,6 +5,9 @@ argument-hint: '<skill-name>'
 disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 effort: medium
+phase: utility
+feedback-profile: execution
+catalog-order: 140
 ---
 
 # Import Skill — Quality Adaptation Pipeline

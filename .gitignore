@@ -5,3 +5,11 @@ node_modules/
 .npmrc
 .env
 .claude/settings.local.json
+.arcana/feedback/
+evals/results/
+evals/trigger-results/
+evals/trigger-boundary-results/
+evals/import-adaptation/results/latest.json
+evals/import-adaptation/results/latest.md
+evals/release-quality/latest.json
+evals/release-quality/latest.md

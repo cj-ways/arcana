@@ -1,7 +1,17 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { join } from "path";
 import fsExtra from "fs-extra";
-import { copySkills, copyAgents, renameExistingSkill, renameExistingAgent, mirrorSkills } from "../src/utils/copy.js";
+import {
+  copySkills,
+  copyAgents,
+  renameExistingSkill,
+  renameExistingAgent,
+  mirrorSkills,
+  parseArcanaMarker,
+  markArcanaManaged,
+  getManagedContentHash,
+  stripArcanaMarker,
+} from "../src/utils/copy.js";
 import { getPackageSkillsDir, getPackageAgentsDir } from "../src/utils/paths.js";
 import { parseFrontmatter } from "../src/utils/frontmatter.js";
 
@@ -30,7 +40,10 @@ describe("copySkills", () => {
     copySkills(["deep-fix"], target);
 
     const content = fsExtra.readFileSync(join(target, "deep-fix", "SKILL.md"), "utf-8");
-    expect(content).toContain("<!-- arcana-managed -->");
+    expect(parseArcanaMarker(content)).toMatchObject({
+      version: expect.any(String),
+      hash: expect.any(String),
+    });
   });
 
   it("marker is placed after frontmatter, not inside it", () => {
@@ -39,7 +52,7 @@ describe("copySkills", () => {
 
     const content = fsExtra.readFileSync(join(target, "deep-fix", "SKILL.md"), "utf-8");
     const fmEnd = content.indexOf("---", content.indexOf("---") + 3);
-    const markerPos = content.indexOf("<!-- arcana-managed -->");
+    const markerPos = content.indexOf("<!-- arcana-managed");
     expect(markerPos).toBeGreaterThan(fmEnd);
   });
 
@@ -67,16 +80,16 @@ describe("copySkills", () => {
     fsExtra.writeFileSync(join(customDir, "SKILL.md"), "---\nname: my-custom-skill\n---\n# Custom");
 
     const results = copySkills(["deep-fix"], target, { force: true });
-    expect(results[0].status).toBe("installed");
+    expect(results[0].status).toBe("updated");
   });
 
-  it("overwrites arcana-managed skill without conflict", () => {
+  it("reports current when the installed Arcana skill already matches package source", () => {
     const target = join(TMP, "skills");
     // First install
     copySkills(["deep-fix"], target);
     // Second install should not conflict
     const results = copySkills(["deep-fix"], target);
-    expect(results[0].status).toBe("installed");
+    expect(results[0].status).toBe("current");
   });
 
   it("handles multiple skills at once", () => {
@@ -87,6 +100,14 @@ describe("copySkills", () => {
     expect(results[0].status).toBe("installed");
     expect(results[1].status).toBe("installed");
     expect(results[2].status).toBe("not found");
+  });
+
+  it("supports dry-run without writing files", () => {
+    const target = join(TMP, "skills");
+    const results = copySkills(["deep-fix"], target, { dryRun: true });
+
+    expect(results).toEqual([{ name: "deep-fix", status: "installed" }]);
+    expect(fsExtra.existsSync(join(target, "deep-fix", "SKILL.md"))).toBe(false);
   });
 });
 
@@ -105,7 +126,10 @@ describe("copyAgents", () => {
     copyAgents(["code-reviewer"], target);
 
     const content = fsExtra.readFileSync(join(target, "code-reviewer.md"), "utf-8");
-    expect(content).toContain("<!-- arcana-managed -->");
+    expect(parseArcanaMarker(content)).toMatchObject({
+      version: expect.any(String),
+      hash: expect.any(String),
+    });
   });
 
   it("returns empty array when targetAgentsDir is null", () => {
@@ -118,6 +142,14 @@ describe("copyAgents", () => {
     const results = copyAgents(["nonexistent-agent"], target);
     expect(results).toEqual([{ name: "nonexistent-agent", status: "not found" }]);
   });
+
+  it("supports dry-run without writing agent files", () => {
+    const target = join(TMP, "agents");
+    const results = copyAgents(["code-reviewer"], target, { dryRun: true });
+
+    expect(results).toEqual([{ name: "code-reviewer", status: "installed" }]);
+    expect(fsExtra.existsSync(join(target, "code-reviewer.md"))).toBe(false);
+  });
 });
 
 describe("addMarker (via copySkills)", () => {
@@ -127,7 +159,7 @@ describe("addMarker (via copySkills)", () => {
     copySkills(["deep-fix"], target);
 
     const content = fsExtra.readFileSync(join(target, "deep-fix", "SKILL.md"), "utf-8");
-    const markerCount = (content.match(/<!-- arcana-managed -->/g) || []).length;
+    const markerCount = (content.match(/<!-- arcana-managed\b/g) || []).length;
     expect(markerCount).toBe(1);
   });
 
@@ -137,7 +169,7 @@ describe("addMarker (via copySkills)", () => {
 
     const content = fsExtra.readFileSync(join(target, "release-check", "SKILL.md"), "utf-8");
     // Should have marker
-    expect(content).toContain("<!-- arcana-managed -->");
+    expect(parseArcanaMarker(content)).not.toBeNull();
     // Frontmatter should still be valid (name field present)
     expect(content).toMatch(/^---\nname: release-check/);
   });
@@ -192,7 +224,7 @@ describe("copyAgents — conflict detection", () => {
     fsExtra.writeFileSync(join(target, "code-reviewer.md"), "---\nname: my-custom-reviewer\n---\n# Custom");
 
     const results = copyAgents(["code-reviewer"], target, { force: true });
-    expect(results[0].status).toBe("installed");
+    expect(results[0].status).toBe("updated");
   });
 
   it("marker is placed after frontmatter in agent files", () => {
@@ -200,23 +232,123 @@ describe("copyAgents — conflict detection", () => {
     copyAgents(["code-reviewer"], target);
 
     const content = fsExtra.readFileSync(join(target, "code-reviewer.md"), "utf-8");
-    expect(content).toContain("<!-- arcana-managed -->");
+    expect(parseArcanaMarker(content)).not.toBeNull();
     // Frontmatter should still start at line 1
     expect(content).toMatch(/^---\n/);
   });
 });
 
-describe("legacy name-match detection (known limitation)", () => {
-  it("treats skill with matching arcana name but no marker as arcana-managed", () => {
+describe("ownership detection", () => {
+  it("treats same-name custom skills without a marker as conflicts", () => {
     const target = join(TMP, "skills");
     const customDir = join(target, "deep-fix");
     fsExtra.ensureDirSync(customDir);
-    // Name matches an Arcana skill name — legacy detection fires
     fsExtra.writeFileSync(join(customDir, "SKILL.md"), "---\nname: deep-fix\n---\n# User custom content");
 
     const results = copySkills(["deep-fix"], target);
-    // Known behavior: treated as arcana-managed, gets overwritten
-    expect(results[0].status).toBe("installed");
+    expect(results[0].status).toBe("conflict");
+  });
+
+  it("treats unmarked Arcana content as managed for legacy installs", () => {
+    const target = join(TMP, "skills");
+    const customDir = join(target, "deep-fix");
+    fsExtra.ensureDirSync(customDir);
+
+    const packageContent = fsExtra
+      .readFileSync(join(getPackageSkillsDir(), "deep-fix", "SKILL.md"), "utf-8")
+      .replace(/<!-- arcana-managed(?:\s+version:[^\s>]+)?(?:\s+hash:[a-f0-9]{64})?\s*-->\n?/g, "");
+
+    fsExtra.writeFileSync(join(customDir, "SKILL.md"), packageContent);
+
+    const results = copySkills(["deep-fix"], target);
+    expect(results[0].status).toBe("updated");
+  });
+});
+
+describe("version-aware managed updates", () => {
+  it("upgrades an older Arcana-managed skill when the stored hash still matches installed content", () => {
+    const target = join(TMP, "skills");
+    const skillDir = join(target, "deep-fix");
+    fsExtra.ensureDirSync(skillDir);
+
+    const oldContent = "---\nname: deep-fix\ndescription: old\n---\n# Old packaged content\n";
+    fsExtra.writeFileSync(
+      join(skillDir, "SKILL.md"),
+      markArcanaManaged(oldContent, {
+        version: "1.8.0",
+        hash: getManagedContentHash(oldContent),
+      })
+    );
+
+    const results = copySkills(["deep-fix"], target);
+    expect(results[0].status).toBe("updated");
+
+    const installed = fsExtra.readFileSync(join(skillDir, "SKILL.md"), "utf-8");
+    const marker = parseArcanaMarker(installed);
+    expect(marker?.hash).toBe(getManagedContentHash(installed));
+    expect(stripArcanaMarker(installed)).toBe(
+      fsExtra.readFileSync(join(getPackageSkillsDir(), "deep-fix", "SKILL.md"), "utf-8")
+    );
+  });
+
+  it("skips locally modified Arcana-managed skills without force", () => {
+    const target = join(TMP, "skills");
+    const skillDir = join(target, "deep-fix");
+    fsExtra.ensureDirSync(skillDir);
+
+    const sourceContent = fsExtra.readFileSync(
+      join(getPackageSkillsDir(), "deep-fix", "SKILL.md"),
+      "utf-8"
+    );
+    const customized = `${sourceContent}\n## Local Notes\nCustom local edit\n`;
+
+    fsExtra.writeFileSync(
+      join(skillDir, "SKILL.md"),
+      markArcanaManaged(customized, {
+        version: "1.8.0",
+        hash: getManagedContentHash(sourceContent),
+      })
+    );
+
+    const results = copySkills(["deep-fix"], target);
+    expect(results[0].status).toBe("modified");
+    expect(stripArcanaMarker(fsExtra.readFileSync(join(skillDir, "SKILL.md"), "utf-8"))).toBe(customized);
+  });
+
+  it("refreshes legacy markers when content already matches package source", () => {
+    const target = join(TMP, "skills");
+    const skillDir = join(target, "deep-fix");
+    fsExtra.ensureDirSync(skillDir);
+
+    const sourceContent = fsExtra.readFileSync(
+      join(getPackageSkillsDir(), "deep-fix", "SKILL.md"),
+      "utf-8"
+    );
+    fsExtra.writeFileSync(
+      join(skillDir, "SKILL.md"),
+      sourceContent.replace(/^---\n[\s\S]*?\n---\n?/, (match) => `${match}<!-- arcana-managed -->\n`)
+    );
+
+    const results = copySkills(["deep-fix"], target);
+    expect(results[0].status).toBe("updated");
+
+    const marker = parseArcanaMarker(fsExtra.readFileSync(join(skillDir, "SKILL.md"), "utf-8"));
+    expect(marker?.version).toBeTruthy();
+    expect(marker?.hash).toBeTruthy();
+  });
+
+  it("treats legacy managed installs with changed content as unsafe without force", () => {
+    const target = join(TMP, "skills");
+    const skillDir = join(target, "deep-fix");
+    fsExtra.ensureDirSync(skillDir);
+
+    fsExtra.writeFileSync(
+      join(skillDir, "SKILL.md"),
+      "---\nname: deep-fix\n---\n<!-- arcana-managed -->\n# Legacy content\n"
+    );
+
+    const results = copySkills(["deep-fix"], target);
+    expect(results[0].status).toBe("legacy");
   });
 });
 
@@ -317,6 +449,18 @@ describe("mirrorSkills", () => {
     mirrorSkills(canonical, [mirror]);
     const content = fsExtra.readFileSync(join(mirror, "test-skill", "SKILL.md"), "utf-8");
     expect(content).toBe("---\nname: test-skill\n---\n# Content here");
+  });
+
+  it("supports dry-run without creating mirror directories", () => {
+    const canonical = join(TMP, "canonical");
+    const mirror = join(TMP, "mirror");
+
+    fsExtra.ensureDirSync(join(canonical, "test-skill"));
+    fsExtra.writeFileSync(join(canonical, "test-skill", "SKILL.md"), "# test");
+
+    const results = mirrorSkills(canonical, [mirror], { dryRun: true });
+    expect(results).toEqual([{ dir: mirror, status: "synced" }]);
+    expect(fsExtra.existsSync(mirror)).toBe(false);
   });
 });
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { join } from "path";
 import fsExtra from "fs-extra";
-import { execSync } from "child_process";
+import { spawnSync } from "child_process";
 
 const TMP = join(import.meta.dirname, ".tmp-test-sync");
 const BIN = join(import.meta.dirname, "..", "bin", "arcana.js");
@@ -15,19 +15,17 @@ afterEach(() => {
 });
 
 function run(args) {
-  try {
-    const output = execSync(`node "${BIN}" ${args}`, {
-      encoding: "utf-8",
-      timeout: 15000,
-      cwd: TMP,
-    });
-    return { output, status: 0 };
-  } catch (err) {
-    return {
-      output: (err.stdout || "") + (err.stderr || ""),
-      status: err.status || 1,
-    };
-  }
+  const result = spawnSync(`"${process.execPath}" "${BIN}" ${args}`, {
+    shell: true,
+    encoding: "utf-8",
+    timeout: 15000,
+    cwd: TMP,
+    stdio: "pipe",
+  });
+  return {
+    output: (result.stdout || "") + (result.stderr || ""),
+    status: result.status ?? 1,
+  };
 }
 
 describe("arcana sync", () => {
