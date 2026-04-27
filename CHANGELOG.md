@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.11.0 (2026-04-27)
+
+### Added
+- **`orchestrate` skill** — Orchestrates large feature implementation across phases and manual worker sessions: persists canonical state in markdown so compaction loses nothing, splits work into phased worker packets, ingests worker outputs and blockers, and enforces review gates before phase closure. For features too large or risky for one clean implementation session.
+- **`feature-orchestrator` agent** — Persistent thin-wrapper agent that loads the `orchestrate` skill and keeps one orchestration thread alive across follow-up turns (effort: max).
+- **`implement` phase** — New phase in the Plan → Analyze → Design → Implement → Test → Fix → Refactor → Review → Release lifecycle. Wired through `src/utils/catalog.js` (`SKILL_PHASE_ORDER`, `SKILL_PHASE_LABELS`), `src/utils/skill-scaffold.js` (`PHASE_EVAL_LABELS`, default `execution` feedback profile), and `scripts/new-skill.js` phase validation.
+- **Orchestrate eval coverage** — Layer 1 trigger pack at `evals/triggers/orchestrate.json` (6 train + 4 validation prompts per side), three Layer 2 scenarios under `evals/scenarios/orchestrate-team-invite-{init,advance,blocker}/`, and `feature-delivery-taxonomy` boundary set to keep `/orchestrate` from poaching `/feature-design`, `/feature-audit`, `/refactor-plan`, and `/deep-fix` triggers.
+- **Orchestrate references** — `skills/orchestrate/references/{orchestrator-state,review-loop,worker-files}.md` for canonical state file format, review loop protocol, and worker packet conventions.
+
+### Changed
+- **Skill total: 17 → 18, agent total: 4 → 5** — `orchestrate` joins the catalog at `catalog-order: 38` (between Design phase 35 and Test phase 40).
+- **WORKFLOW.md** — Renumbered phases (Test 5→6, Fix 6→7, Refactor 7→8, Review 8→9, Release 9→10) and added Phase 5: Implement section.
+- **`feature-audit` and `feature-design`** — Trigger packs and boundary docs updated to redirect large multi-phase implementation requests to `/orchestrate` rather than absorbing them.
+
+## v1.10.0 (2026-04-25)
+
+### Added
+- **Eval infrastructure overhaul** — `evals/run-eval.js` rewritten with explicit `route`, `process`, and `outcome` dimensions and weighted scoring; new runners for trigger boundaries (`run-trigger-boundary.js`), trigger-pack Layer 1 (`run-trigger-eval.js`), and import adaptation (`run-import-adaptation.js`); release summary builder (`build-release-summary.js`); scorecard gating via `npm run eval:gate`.
+- **`feature-auditor` and `feature-designer` agents** — Persistent thin-wrapper agents that keep one audit/design thread active across follow-up turns.
+- **`OWNER-GUIDE.md`** — End-to-end owner playbook (~800 lines) covering architecture, release flow, evals, and maintenance.
+- **Scenario library expansion** — Added scenarios for `agent-audit-config`, `create-pr-draft`, `import-adaptation` fixtures, and release-quality coverage.
+- **Generated content markers in CLAUDE.md** — `<!-- generated:... -->` blocks for current version, CLI summary, content inventory, workflow skills, and utility skills, kept in sync via `npm run generate:docs`.
+
+### Changed
+- **`SKILL-AUTHORING-REFERENCE.md`** — Expanded with Layer 1/Layer 2 eval guidance, trigger-pack storage rules, eval dimensions, and release gating workflow.
+- **`README.md` and `WORKFLOW.md`** — Quality and feature-workflow framing updated.
+
 ## v1.9.0 (2026-03-21)
 
 ### Added

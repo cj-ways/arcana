@@ -5,7 +5,7 @@ How to use Arcana's skills through a real development lifecycle.
 ## The Flow
 
 ```
-Plan → Analyze → Design → Test → Fix → Refactor → Review → Release
+Plan → Analyze → Design → Implement → Test → Fix → Refactor → Review → Release
 ```
 
 Each phase has a skill. You don't need all of them every time — pick what fits.
@@ -89,7 +89,27 @@ What it does:
 
 **When to skip:** Backend-only work, or you're designing manually.
 
-## Phase 5: Test
+## Phase 5: Implement
+
+**Skill:** `/orchestrate <feature-or-initiative>`
+
+The feature is too large for one clean session. Break it into phases, worker packets, and review gates before implementation drifts.
+
+```
+/orchestrate "team invite approvals"
+/orchestrate "subscription recovery rollout"
+```
+
+What it does:
+- Reads the feature brief, audit, and repo context
+- Persists a canonical orchestration state file so context survives compaction
+- Splits the feature into phased worker packets with explicit ownership and output paths
+- Writes handoff files for manual worker sessions and resume files for blocker resolution
+- Forces a review loop with `/deep-review`, local standards, and project-specific drift checks when available
+
+**When to skip:** Small changes that one focused implementation session can finish safely.
+
+## Phase 6: Test
 
 **Skill:** `/generate-tests`
 
@@ -108,7 +128,7 @@ What it does:
 
 **When to skip:** You prefer writing tests manually, or TDD (write tests first).
 
-## Phase 6: Fix
+## Phase 7: Fix
 
 **Skill:** `/deep-fix`
 
@@ -126,7 +146,7 @@ What it does:
 
 **When to skip:** Trivial typo fixes where the cause is already obvious.
 
-## Phase 7: Refactor
+## Phase 8: Refactor
 
 **Skill:** `/refactor-plan`
 
@@ -144,7 +164,7 @@ What it does:
 
 **When to skip:** Small, local refactors with no cross-file dependency risk.
 
-## Phase 8: Review
+## Phase 9: Review
 
 **Skills:** `/quick-review` or `/deep-review`
 
@@ -166,7 +186,7 @@ Launches 3 parallel specialist reviewers (security, correctness, architecture). 
 - Routine changes, small PRs → `/quick-review`
 - Security-critical code, major refactors, pre-release → `/deep-review`
 
-## Phase 9: Release
+## Phase 10: Release
 
 **Skills:** `/create-pr` then `/release-check`
 

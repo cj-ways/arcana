@@ -152,11 +152,12 @@ describe("getAvailableAgents", () => {
     );
   });
 
-  it("includes code-reviewer, feature-auditor, feature-designer, and review-team", () => {
+  it("includes code-reviewer, feature-auditor, feature-designer, feature-orchestrator, and review-team", () => {
     const agents = getAvailableAgents();
     expect(agents).toContain("code-reviewer");
     expect(agents).toContain("feature-auditor");
     expect(agents).toContain("feature-designer");
+    expect(agents).toContain("feature-orchestrator");
     expect(agents).toContain("review-team");
   });
 });

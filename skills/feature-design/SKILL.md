@@ -23,7 +23,7 @@ Use interactive design by default. Ask one focused question at a time when clari
 
 | Skill | Use it for | Do not use it for |
 | --- | --- | --- |
-| `/feature-design` | Designing one feature or workflow before coding: compare approaches, narrow scope, and produce a spec | Broad audits of current feature quality, startup idea validation, or one narrow critique of a single proposal |
+| `/feature-design` | Designing one feature or workflow before coding: compare approaches, narrow scope, and produce a spec | Broad audits of current feature quality, large feature implementation orchestration, startup idea validation, or one narrow critique of a single proposal |
 | `/feature-audit` | Broad analysis of an existing or proposed feature across many product and operational lanes | Narrowing a rough feature idea into one design direction |
 | `/pressure-test` | Stress-testing one concrete proposal, decision, or rollout plan | Collaborative solution design from a rough starting point |
 | `/idea-audit` | New project ideas that may turn into a full project scaffold | Feature work inside an existing product |
@@ -163,6 +163,7 @@ At minimum, cover:
 ### 7. Hand off cleanly
 After the design is stable:
 - move to implementation only if the user asks
+- if the next step is large multi-session delivery with worker packets, hand off to `/orchestrate`
 - if the next step is UI exploration, hand off to `/v0-design`
 - if the next step is broader gap discovery or reprioritization, use `/feature-audit`
 - if the next step is challenging a single proposal or rollout plan, use `/pressure-test`

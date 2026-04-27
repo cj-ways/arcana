@@ -7,6 +7,7 @@ const PHASE_EVAL_LABELS = Object.freeze({
   plan: "planning",
   analyze: "analysis",
   design: "design",
+  implement: "implementation",
   test: "test-generation",
   fix: "bug-fix",
   refactor: "refactor",
@@ -50,6 +51,7 @@ export function getDefaultFeedbackProfile(phase) {
     case "review":
       return "diagnostic";
     case "test":
+    case "implement":
     case "fix":
     case "refactor":
     case "release":

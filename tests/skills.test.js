@@ -110,6 +110,7 @@ describe("feature-audit effort contract", () => {
 
   it("keeps audit ownership separate from feature design", () => {
     expect(featureAudit).toContain("switch to `/feature-design`");
+    expect(featureAudit).toContain("suggest `/orchestrate`");
     expect(featureAudit).not.toContain("the user clearly wants brainstorming or debate");
   });
 });
@@ -119,6 +120,7 @@ describe("feature-design routing contract", () => {
 
   it("documents boundaries against nearby skills", () => {
     expect(featureDesign).toContain("/feature-audit");
+    expect(featureDesign).toContain("/orchestrate");
     expect(featureDesign).toContain("/pressure-test");
     expect(featureDesign).toContain("/idea-audit");
     expect(featureDesign).toContain("/v0-design");
@@ -137,6 +139,56 @@ describe("feature-design routing contract", () => {
 
   it("makes feature-audit the prerequisite when the current-state problem is still unknown", () => {
     expect(featureDesign).toContain("use `/feature-audit` first");
+  });
+
+  it("hands large multi-session delivery off to orchestrate", () => {
+    expect(featureDesign).toContain("hand off to `/orchestrate`");
+  });
+});
+
+describe("orchestrate workflow contract", () => {
+  const orchestrate = readFileSync(join(skillsDir, "orchestrate", "SKILL.md"), "utf-8");
+
+  it("documents the canonical markdown state and worker packet files", () => {
+    expect(orchestrate).toContain("orchestrator.state.md");
+    expect(orchestrate).toContain("packets/");
+    expect(orchestrate).toContain(".input.md");
+    expect(orchestrate).toContain(".output.md");
+    expect(orchestrate).toContain(".blocker.md");
+    expect(orchestrate).toContain(".resume.md");
+  });
+
+  it("uses progressive-disclosure references for state, worker files, and review loop", () => {
+    expect(orchestrate).toContain("references/orchestrator-state.md");
+    expect(orchestrate).toContain("references/worker-files.md");
+    expect(orchestrate).toContain("references/review-loop.md");
+    expect(
+      readFileSync(join(skillsDir, "orchestrate", "references", "orchestrator-state.md"), "utf-8"),
+    ).toContain("## State File Template");
+    expect(
+      readFileSync(join(skillsDir, "orchestrate", "references", "worker-files.md"), "utf-8"),
+    ).toContain("## Input Packet Template");
+    expect(
+      readFileSync(join(skillsDir, "orchestrate", "references", "review-loop.md"), "utf-8"),
+    ).toContain("## Review Skill Policy");
+  });
+
+  it("keeps orchestration ownership separate from design and debugging", () => {
+    expect(orchestrate).toContain("/feature-design");
+    expect(orchestrate).toContain("/deep-fix");
+    expect(orchestrate).toContain("It does not default to becoming the main coder");
+  });
+
+  it("uses max-effort and explicit cost-control language", () => {
+    expect(orchestrate).toContain("Prefer `max`");
+    expect(orchestrate).toContain("ultrathink");
+    expect(orchestrate).toContain("## Context And Cost Control");
+  });
+
+  it("documents explicit parallelization and subagent policy", () => {
+    expect(orchestrate).toContain("Parallelization policy:");
+    expect(orchestrate).toContain("Use Claude subagents");
+    expect(orchestrate).toContain("Do not use subagents for the long-lived implementation packets themselves");
   });
 });
 

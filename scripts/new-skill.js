@@ -87,7 +87,7 @@ if (!name) fail("Skill name must contain letters or numbers.");
 
 const phase = options.phase;
 if (!validatePhase(phase)) {
-  fail("Phase must be one of: plan, analyze, design, test, fix, refactor, review, release, utility.");
+  fail("Phase must be one of: plan, analyze, design, implement, test, fix, refactor, review, release, utility.");
 }
 const normalizedPhase = normalizeSkillPhase(phase);
 

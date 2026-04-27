@@ -197,10 +197,10 @@
     {
       "id": "should-not-trigger-10",
       "set": "validation",
-      "prompt": "Turn this imported skill into Arcana quality: rewrite the frontmatter, structure, and missing sections.",
-      "reason": "Routes to /import-skill: skill adaptation workflow, not feature design.",
+      "prompt": "The feature design is approved. Break the implementation into phases, worker packets, blockers, and review gates so multiple sessions can execute it safely.",
+      "reason": "Routes to /orchestrate: implementation delivery coordination after design is settled.",
       "expectedSkills": [
-        "import-skill"
+        "orchestrate"
       ],
       "allowAdditionalSkills": false
     }

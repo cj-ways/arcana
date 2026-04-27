@@ -127,7 +127,7 @@ This guide explains the structure, not just the current counts.
 Arcana ships four kinds of user-visible things:
 
 1. Workflow skills.
-   These map to the development lifecycle: plan, analyze, design, test, fix, refactor, review, and release.
+   These map to the development lifecycle: plan, analyze, design, implement, test, fix, refactor, review, and release.
 2. Utility skills.
    These are useful any time and are not tied to one lifecycle phase.
 3. Agent wrappers.

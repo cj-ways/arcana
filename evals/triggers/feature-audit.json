@@ -167,10 +167,10 @@
     {
       "id": "should-not-trigger-7",
       "set": "validation",
-      "prompt": "Create a draft PR for this branch with a concise title, summary, and affected areas.",
-      "reason": "Routes to /create-pr: Explicit request to open or draft a PR or MR.",
+      "prompt": "The design is approved. Break this feature into implementation phases, worker packets, blockers, and review gates so I can drive it across multiple sessions.",
+      "reason": "Routes to /orchestrate: this is delivery coordination, not broad feature diagnosis.",
       "expectedSkills": [
-        "create-pr"
+        "orchestrate"
       ],
       "allowAdditionalSkills": false
     },

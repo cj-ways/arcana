@@ -10,7 +10,7 @@ Curated developer workflow skills for **Claude Code** and **Codex CLI**.
 Project owner or maintainer? Start with [OWNER-GUIDE.md](OWNER-GUIDE.md).
 
 <!-- generated:README_STATS:start -->
-17 skills, 4 agents, 3 quality rules — all hand-authored against [SkillsBench](https://arxiv.org/abs/2602.12670) data (7,308 trajectories, +16.2pp improvement over no-skill baselines). Not scraped, not AI-generated.
+18 skills, 5 agents, 3 quality rules — all hand-authored against [SkillsBench](https://arxiv.org/abs/2602.12670) data (7,308 trajectories, +16.2pp improvement over no-skill baselines). Not scraped, not AI-generated.
 <!-- generated:README_STATS:end -->
 
 ## Why Arcana
@@ -43,6 +43,7 @@ Skills map to your development lifecycle:
 | Analyze | `/feature-audit` | Broad feature audit with runtime depth control - quick to exhaustive analysis across product, UX, ops, reliability, competitors, and roadmap decisions. |
 | Design | `/feature-design` | Design one feature or workflow before implementation - clarify the problem, compare approaches, ask one focused question at a time when needed, and turn the result into an approved design spec. |
 | Design | `/v0-design` | Generates optimized v0.dev prompts for UI design — full pages, single components, design systems, or redesigns. Analyzes the project, adapts questions to context, researches user-specified design references, and outputs ready-to-copy prompts following Vercel's three-part framework. |
+| Implement | `/orchestrate` | Orchestrate large feature implementation across phases and manual worker sessions: persist canonical state, write worker packet files, resolve blockers, and enforce review gates before phase closure. |
 | Test | `/generate-tests` | Generate unit tests for a file or function. Detects test framework and follows existing patterns. |
 | Fix | `/deep-fix` | Structured debugging for non-obvious bugs — reproduces, isolates root cause, verifies hypothesis before fixing, and adds regression tests. Prevents the shotgun-fix pattern where agents edit randomly until tests pass. |
 | Refactor | `/refactor-plan` | Plans and executes safe multi-file refactoring — maps dependency graph, batches changes into atomic commits, runs tests between batches. Prevents the cascading-breakage pattern where agents make sweeping changes that fail halfway. |
@@ -75,6 +76,7 @@ Use anytime, not tied to a specific phase:
 | `code-reviewer` | Single-pass code reviewer. Follow the quick-review skill instructions exactly. |
 | `feature-auditor` | Persistent feature audit agent. Follow the feature-audit skill instructions exactly, keep the same feature and effort in context across follow-up turns, and only exit audit mode when the user clearly changes topic or asks to stop. |
 | `feature-designer` | Persistent feature design agent. Follow the feature-design skill instructions exactly, keep the same feature and design decision in context across follow-up turns, and only exit design mode when the user clearly changes topic or asks to stop. |
+| `feature-orchestrator` | Persistent feature orchestration agent. Follow the orchestrate skill instructions exactly, keep the same feature state and packet plan in context across follow-up turns, and treat the markdown state file as canonical when chat history is incomplete. |
 | `review-team` | Multi-pass review orchestrator. Follow the deep-review skill instructions exactly. |
 <!-- generated:README_AGENTS:end -->
 

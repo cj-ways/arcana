@@ -1,0 +1,208 @@
+{
+  "skill": "orchestrate",
+  "description": "Layer 1 trigger pack for large feature implementation orchestration: persist canonical state, split work into phased worker packets, resolve blockers, and manage acceptance across manual worker sessions.",
+  "shouldTrigger": [
+    {
+      "id": "should-trigger-1",
+      "set": "train",
+      "prompt": "This feature is too big for one coding session. Orchestrate the implementation into phases, worker packets, and review gates.",
+      "reason": "Explicit request for phased implementation orchestration rather than direct coding or design.",
+      "expectedSkills": [
+        "orchestrate"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-2",
+      "set": "train",
+      "prompt": "Use /orchestrate for team invite approvals. I need a state file, the first worker packet, and a clean return protocol for blockers.",
+      "reason": "Explicit invocation of the orchestration skill with the canonical markdown file workflow.",
+      "expectedSkills": [
+        "orchestrate"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-3",
+      "set": "train",
+      "prompt": "Break this subscription recovery initiative into implementation phases and write the input files I can hand to separate agent sessions.",
+      "reason": "Manual worker-session packetization is a direct orchestrate trigger.",
+      "expectedSkills": [
+        "orchestrate"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-4",
+      "set": "train",
+      "prompt": "I already have the feature design. Now I need an orchestrator to own delivery, blockers, and acceptance across several sessions.",
+      "reason": "Positions the task after design and before implementation, with persistent coordination needs.",
+      "expectedSkills": [
+        "orchestrate"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-5",
+      "set": "train",
+      "prompt": "Create a persistent orchestration plan for rolling out delegated workspace access across API, admin, mobile, and notifications.",
+      "reason": "Cross-surface rollout with persistent planning and coordination should route to orchestrate.",
+      "expectedSkills": [
+        "orchestrate"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-6",
+      "set": "train",
+      "prompt": "I need the main agent to stay as orchestrator, keep a markdown state file, and respond to worker blocker files as they come in.",
+      "reason": "Explicit persistent orchestrator mode with markdown blocker handling.",
+      "expectedSkills": [
+        "orchestrate"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-7",
+      "set": "validation",
+      "prompt": "Set up a feature delivery loop for invite approvals: write orchestrator.state.md, phase packets, and resume files for future blocker handling.",
+      "reason": "Matches the exact markdown protocol owned by orchestrate.",
+      "expectedSkills": [
+        "orchestrate"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-8",
+      "set": "validation",
+      "prompt": "This rollout is too risky to just code through. I want phased implementation packets, deep review gates, and one orchestrator state file.",
+      "reason": "Risk-managed delivery orchestration with explicit review gates is a strong orchestrate signal.",
+      "expectedSkills": [
+        "orchestrate"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-9",
+      "set": "validation",
+      "prompt": "Plan the implementation program for our permissions rewrite and give me the exact launcher prompt each worker session should use.",
+      "reason": "Launcher-prompt generation for worker sessions is specific to orchestrate.",
+      "expectedSkills": [
+        "orchestrate"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-trigger-10",
+      "set": "validation",
+      "prompt": "Read the existing packet output file, accept or reject it, update the orchestration state, and produce the next worker input file.",
+      "reason": "Ingesting worker outputs and generating the next packet is core orchestrate behavior.",
+      "expectedSkills": [
+        "orchestrate"
+      ],
+      "allowAdditionalSkills": false
+    }
+  ],
+  "shouldNotTrigger": [
+    {
+      "id": "should-not-trigger-1",
+      "set": "train",
+      "prompt": "Audit our team invite approvals end to end: gaps, trust issues, cross-surface problems, and roadmap priorities.",
+      "reason": "Routes to /feature-audit: broad diagnosis and prioritization, not implementation orchestration.",
+      "expectedSkills": [
+        "feature-audit"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-2",
+      "set": "train",
+      "prompt": "Design how team invite approvals should work before implementation. Compare approaches and turn the winner into a spec.",
+      "reason": "Routes to /feature-design: deciding how the feature should work comes before orchestration.",
+      "expectedSkills": [
+        "feature-design"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-3",
+      "set": "train",
+      "prompt": "Find the real bug in our invite acceptance flow, prove the root cause, fix it, and add a regression test.",
+      "reason": "Routes to /deep-fix: one bug plus verified fix, not a feature delivery program.",
+      "expectedSkills": [
+        "deep-fix"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-4",
+      "set": "train",
+      "prompt": "Plan a safe refactor for extracting provider billing logic into separate modules without breaking the repo midway.",
+      "reason": "Routes to /refactor-plan: structural sequencing rather than feature delivery orchestration.",
+      "expectedSkills": [
+        "refactor-plan"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-5",
+      "set": "train",
+      "prompt": "Generate unit tests for src/invites/service.ts and match the repo's Vitest style.",
+      "reason": "Routes to /generate-tests: targeted test generation request.",
+      "expectedSkills": [
+        "generate-tests"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-6",
+      "set": "train",
+      "prompt": "Pressure-test this rollout proposal for invite approvals before we commit to it.",
+      "reason": "Routes to /pressure-test: challenge one proposal, not coordinate the entire implementation program.",
+      "expectedSkills": [
+        "pressure-test"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-7",
+      "set": "validation",
+      "prompt": "Run a deep review of this branch with security, correctness, and architecture lenses before release.",
+      "reason": "Routes to /deep-review: review workflow, not feature orchestration.",
+      "expectedSkills": [
+        "deep-review"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-8",
+      "set": "validation",
+      "prompt": "Analyze this diff and give me the deploy checklist: migrations, env vars, workers, and breaking changes.",
+      "reason": "Routes to /release-check: release-readiness checklist request.",
+      "expectedSkills": [
+        "release-check"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-9",
+      "set": "validation",
+      "prompt": "Create a draft PR for the current branch with the right title, summary, and affected areas.",
+      "reason": "Routes to /create-pr: PR generation is downstream of orchestration.",
+      "expectedSkills": [
+        "create-pr"
+      ],
+      "allowAdditionalSkills": false
+    },
+    {
+      "id": "should-not-trigger-10",
+      "set": "validation",
+      "prompt": "The change is tiny: update the invite-expiry copy and one button label, then commit it.",
+      "reason": "Small direct changes should not trigger orchestration at all.",
+      "forbiddenSkills": [
+        "orchestrate"
+      ],
+      "allowAdditionalSkills": true
+    }
+  ]
+}

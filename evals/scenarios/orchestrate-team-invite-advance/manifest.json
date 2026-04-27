@@ -1,0 +1,79 @@
+{
+  "name": "orchestrate-team-invite-advance",
+  "skill": "orchestrate",
+  "description": "Accept a completed worker packet, update the canonical orchestration state, and write the next packet for the remaining cross-surface work.",
+  "prompt": "Use /orchestrate to evaluate `.arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.output.md`. Read that output file, the existing orchestration state, `CLAUDE.md`, `design.md`, and the changed surface under `src/invites/`. Accept the packet only if the output matches the code and review evidence. Then update `.arcana/orchestrate/team-invite-approvals/orchestrator.state.md` and write `.arcana/orchestrate/team-invite-approvals/packets/phase-02-cross-surface.input.md` for the remaining admin, notifications, and acceptance-surface work. Leave the existing output file unchanged.",
+  "scoring": {
+    "weights": {
+      "route": 0.2,
+      "process": 0.35,
+      "outcome": 0.45
+    }
+  },
+  "expected": [
+    {
+      "id": "next-packet-created",
+      "description": "Creates the next worker packet after accepting the completed foundation packet.",
+      "dimension": "route",
+      "type": "file-created",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-02-cross-surface.input.md"
+    },
+    {
+      "id": "state-promoted-to-next-phase",
+      "description": "Updates the orchestration state to mark phase 1 complete and phase 2 active.",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/orchestrator.state.md",
+      "mustBeModified": true,
+      "contentIncludes": [
+        "Completed Packets",
+        "phase-01-foundation",
+        "phase-02-cross-surface"
+      ]
+    },
+    {
+      "id": "next-packet-cross-surface-scope",
+      "description": "Next packet targets the remaining admin, notification, and acceptance surfaces.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-02-cross-surface.input.md",
+      "contentIncludesAny": [
+        "admin",
+        "notification",
+        "acceptance screen",
+        "invite email"
+      ]
+    },
+    {
+      "id": "next-packet-review-gates",
+      "description": "Next packet preserves the review loop and standards checks.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-02-cross-surface.input.md",
+      "contentIncludes": [
+        "## Review Gates",
+        "/deep-review",
+        "CLAUDE.md"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "output-unchanged",
+      "description": "Does not rewrite the completed worker output file.",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.output.md"
+    },
+    {
+      "id": "not-back-to-design",
+      "description": "Next packet should not drift back into design-spec language.",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-02-cross-surface.input.md",
+      "contentIncludes": [
+        "## Approaches"
+      ]
+    }
+  ]
+}

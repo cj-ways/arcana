@@ -1,0 +1,92 @@
+{
+  "name": "feature-delivery-taxonomy",
+  "description": "Cross-skill boundary suite for the same feature topics. Verifies that audit, design, orchestration, and proposal challenge requests on overlapping domains route to different Arcana skills for the right reason.",
+  "topics": [
+    {
+      "id": "invite-approvals-delivery",
+      "set": "train",
+      "description": "Team invite approvals measured as diagnosis, design, implementation orchestration, and proposal challenge on the same domain.",
+      "cases": [
+        {
+          "id": "audit-current-state",
+          "prompt": "Audit our team invite approval flow end to end: trust gaps, admin friction, cross-surface issues, and the highest-leverage improvements.",
+          "reason": "Broad current-state analysis across multiple lanes should route to feature-audit.",
+          "expectedSkills": [
+            "feature-audit"
+          ],
+          "allowAdditionalSkills": false
+        },
+        {
+          "id": "design-future-state",
+          "prompt": "Design how team invite approvals should work in our product before implementation. Compare approaches and turn the winner into a spec.",
+          "reason": "Solution design and approach comparison for one feature should route to feature-design.",
+          "expectedSkills": [
+            "feature-design"
+          ],
+          "allowAdditionalSkills": false
+        },
+        {
+          "id": "orchestrate-delivery",
+          "prompt": "The design is approved. Orchestrate the implementation of team invite approvals across phases, worker packets, blockers, and review gates.",
+          "reason": "Large feature delivery with phased worker coordination should route to orchestrate.",
+          "expectedSkills": [
+            "orchestrate"
+          ],
+          "allowAdditionalSkills": false
+        },
+        {
+          "id": "challenge-proposal",
+          "prompt": "Pressure-test this proposal for team invite approvals: managers auto-approve invites under 5 seats, and everything else waits 7 days before expiring.",
+          "reason": "Adversarial review of one concrete proposal should route to pressure-test.",
+          "expectedSkills": [
+            "pressure-test"
+          ],
+          "allowAdditionalSkills": false
+        }
+      ]
+    },
+    {
+      "id": "subscription-recovery-delivery",
+      "set": "validation",
+      "description": "Subscription recovery measured as diagnosis, design, implementation orchestration, and proposal challenge on the same domain.",
+      "cases": [
+        {
+          "id": "audit-current-state",
+          "prompt": "Run a full audit of our subscription recovery flow: user trust, support load, competitive expectations, and roadmap priorities.",
+          "reason": "Broad diagnosis and prioritization of the existing feature should route to feature-audit.",
+          "expectedSkills": [
+            "feature-audit"
+          ],
+          "allowAdditionalSkills": false
+        },
+        {
+          "id": "design-future-state",
+          "prompt": "Help me decide how the subscription recovery flow should work before implementation. Compare viable directions and write the recommended design spec.",
+          "reason": "Behavior design before implementation should route to feature-design.",
+          "expectedSkills": [
+            "feature-design"
+          ],
+          "allowAdditionalSkills": false
+        },
+        {
+          "id": "orchestrate-delivery",
+          "prompt": "The recovery design is already settled. I need phased implementation packets, a persistent orchestration state file, and blocker handling for the rollout.",
+          "reason": "Implementation coordination across sessions should route to orchestrate.",
+          "expectedSkills": [
+            "orchestrate"
+          ],
+          "allowAdditionalSkills": false
+        },
+        {
+          "id": "challenge-proposal",
+          "prompt": "Pressure-test this recovery proposal: add an account hold after two failed retries and delay user messaging until the next billing cycle.",
+          "reason": "One concrete proposal under challenge should route to pressure-test.",
+          "expectedSkills": [
+            "pressure-test"
+          ],
+          "allowAdditionalSkills": false
+        }
+      ]
+    }
+  ]
+}

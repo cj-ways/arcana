@@ -1,0 +1,79 @@
+{
+  "name": "orchestrate-team-invite-blocker",
+  "skill": "orchestrate",
+  "description": "Resolve a worker blocker from canonical state and design evidence, then write a resume packet and update the orchestration state.",
+  "prompt": "Use /orchestrate to process `.arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.blocker.md`. Read the existing orchestration state, design.md, and docs/adr/ADR-012-invite-seats.md. Do not ask follow-up questions. Resolve the blocker from the available evidence, write `.arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.resume.md`, and update `.arcana/orchestrate/team-invite-approvals/orchestrator.state.md` with the decision and blocker status. Leave the blocker file unchanged.",
+  "scoring": {
+    "weights": {
+      "route": 0.25,
+      "process": 0.35,
+      "outcome": 0.4
+    }
+  },
+  "expected": [
+    {
+      "id": "resume-file-created",
+      "description": "Creates the matching resume file for the blocked packet.",
+      "dimension": "route",
+      "type": "file-created",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.resume.md"
+    },
+    {
+      "id": "state-updated",
+      "description": "Updates the orchestration state with the blocker decision.",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/orchestrator.state.md",
+      "mustBeModified": true,
+      "contentIncludes": [
+        "phase-01-foundation",
+        "seat",
+        "resolved"
+      ]
+    },
+    {
+      "id": "resume-decision",
+      "description": "Resume file answers the seat-consumption blocker from the documented evidence.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.resume.md",
+      "contentIncludesAny": [
+        "do not consume a paid seat",
+        "Pending invites do not consume a paid seat",
+        "seat consumption begins only after the invite is approved"
+      ]
+    },
+    {
+      "id": "resume-next-step",
+      "description": "Resume file tells the worker how to continue and where to return the result.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.resume.md",
+      "contentIncludes": [
+        "## Next Step",
+        "phase-01-foundation.output.md"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "blocker-unchanged",
+      "description": "Does not rewrite the worker blocker report.",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.blocker.md"
+    },
+    {
+      "id": "no-user-question-dump",
+      "description": "Resume file should not bounce the decision back to the user when the evidence is already clear.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.resume.md",
+      "contentIncludesAny": [
+        "Ask the user",
+        "Need user decision",
+        "I am not sure"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "name": "orchestrate-team-invite-init",
+  "skill": "orchestrate",
+  "description": "Initialize orchestration for a large team-invite-approval feature by writing the canonical state file and first worker packet.",
+  "prompt": "Use /orchestrate for the large feature described in design.md and audit.md. Treat this as implementation orchestration, not feature design and not direct coding. Do not ask follow-up questions. Create `.arcana/orchestrate/team-invite-approvals/orchestrator.state.md` and `.arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.input.md`. The packet must include a short launcher prompt, recommend `max` effort, include dependency and parallelization fields, require `/deep-review`, compare against `CLAUDE.md`, `docs/adr/ADR-012-invite-seats.md`, and the local `drift-check` skill when present. Leave design.md and audit.md unchanged.",
+  "scoring": {
+    "weights": {
+      "route": 0.25,
+      "process": 0.35,
+      "outcome": 0.4
+    }
+  },
+  "expected": [
+    {
+      "id": "state-file-created",
+      "description": "Creates the canonical orchestration state file.",
+      "dimension": "route",
+      "type": "file-created",
+      "file": ".arcana/orchestrate/team-invite-approvals/orchestrator.state.md"
+    },
+    {
+      "id": "first-packet-created",
+      "description": "Creates the first worker packet input file.",
+      "dimension": "route",
+      "type": "file-created",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.input.md"
+    },
+    {
+      "id": "state-structure",
+      "description": "State file uses the canonical orchestration structure.",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/orchestrator.state.md",
+      "contentIncludes": [
+        "## Feature Frame",
+        "## Canonical Sources",
+        "## Execution Strategy",
+        "## Phase Plan",
+        "## Active Packet",
+        "## Review Gates",
+        "## Next Actions"
+      ]
+    },
+    {
+      "id": "packet-launcher-and-return-contract",
+      "description": "Worker packet includes a launcher prompt and explicit return files.",
+      "dimension": "process",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.input.md",
+      "contentIncludes": [
+        "## Launcher Prompt",
+        "phase-01-foundation.output.md",
+        "phase-01-foundation.blocker.md",
+        "Read .arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.input.md and follow it exactly."
+      ]
+    },
+    {
+      "id": "packet-max-effort-and-review-gates",
+      "description": "Worker packet sets max effort and requires the review loop with deep review and drift checks.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.input.md",
+      "contentIncludes": [
+        "Recommended effort: max",
+        "## Review Gates",
+        "/deep-review",
+        "drift-check",
+        "CLAUDE.md",
+        "docs/adr/ADR-012-invite-seats.md"
+      ]
+    },
+    {
+      "id": "packet-dependencies-and-parallelization",
+      "description": "Worker packet includes dependency and parallelization metadata instead of leaving execution order implicit.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.input.md",
+      "contentIncludes": [
+        "Depends on:",
+        "Parallelizable with:",
+        "## Do Not Touch"
+      ]
+    },
+    {
+      "id": "state-captures-phase-plan",
+      "description": "State file captures the packetized phase plan and current active packet.",
+      "dimension": "outcome",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/orchestrator.state.md",
+      "contentIncludesAny": [
+        "Phase 1",
+        "phase-01-foundation",
+        "team-invite-approvals"
+      ]
+    }
+  ],
+  "falsePositives": [
+    {
+      "id": "design-unchanged",
+      "description": "Does not rewrite the source design brief.",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "design.md"
+    },
+    {
+      "id": "audit-unchanged",
+      "description": "Does not rewrite the audit input while initializing orchestration.",
+      "dimension": "process",
+      "type": "file-unchanged",
+      "file": "audit.md"
+    },
+    {
+      "id": "not-a-design-spec",
+      "description": "Worker packet should not collapse into a feature-design memo.",
+      "dimension": "route",
+      "type": "file-contains",
+      "file": ".arcana/orchestrate/team-invite-approvals/packets/phase-01-foundation.input.md",
+      "contentIncludes": [
+        "## Draft Spec"
+      ]
+    }
+  ]
+}

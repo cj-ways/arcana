@@ -1,6 +1,6 @@
 {
   "name": "arcana",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "Battle-tested Claude Code skills and agents for auditing, review, debugging, refactoring, PR creation, release checks, security scanning, test generation, UI design prompts, knowledge capture, and skill discovery. Works on any project.",
   "author": {
     "name": "cj-ways",

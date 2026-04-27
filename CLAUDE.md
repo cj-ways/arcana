@@ -5,7 +5,7 @@
 Arcana (`@cj-ways/arcana`) is a curated developer workflow skills CLI for Claude Code and Codex CLI. It ships hand-authored skills, agents, and quality rules backed by SkillsBench data. Published on npm under `@cj-ways/arcana`. GitHub: `cj-ways/arcana`. MIT licensed.
 
 <!-- generated:CLAUDE_CURRENT_VERSION:start -->
-**Current version:** 1.10.0 (17 skills + 4 agents + 3 quality rules)
+**Current version:** 1.11.0 (18 skills + 5 agents + 3 quality rules)
 <!-- generated:CLAUDE_CURRENT_VERSION:end -->
 
 ## Your Role
@@ -26,8 +26,8 @@ You are the project owner, solution architect, lead developer, and release manag
 ### Content (the actual product)
 
 <!-- generated:CLAUDE_CONTENT:start -->
-- `skills/*/SKILL.md` — 17 skills (the core value)
-- `agents/*.md` — 4 agents (`code-reviewer`, `feature-auditor`, `feature-designer`, `review-team`)
+- `skills/*/SKILL.md` — 18 skills (the core value)
+- `agents/*.md` — 5 agents (`code-reviewer`, `feature-auditor`, `feature-designer`, `feature-orchestrator`, `review-team`)
 - `rules/*.md` — 3 quality rules (`arcana-methodology`, `arcana-quality`, `arcana-research`)
 - `migrations.json` — skill rename/removal migrations across versions
 - `SKILL-AUTHORING-REFERENCE.md` — evidence-based authoring guide (22 sources, SkillsBench data)
@@ -43,6 +43,7 @@ You are the project owner, solution architect, lead developer, and release manag
 | Analyze | `/feature-audit` | Broad feature audit with runtime depth control - quick to exhaustive analysis across product, UX, ops, reliability, competitors, and roadmap decisions. |
 | Design | `/feature-design` | Design one feature or workflow before implementation - clarify the problem, compare approaches, ask one focused question at a time when needed, and turn the result into an approved design spec. |
 | Design | `/v0-design` | Generates optimized v0.dev prompts for UI design — full pages, single components, design systems, or redesigns. Analyzes the project, adapts questions to context, researches user-specified design references, and outputs ready-to-copy prompts following Vercel's three-part framework. |
+| Implement | `/orchestrate` | Orchestrate large feature implementation across phases and manual worker sessions: persist canonical state, write worker packet files, resolve blockers, and enforce review gates before phase closure. |
 | Test | `/generate-tests` | Generate unit tests for a file or function. Detects test framework and follows existing patterns. |
 | Fix | `/deep-fix` | Structured debugging for non-obvious bugs — reproduces, isolates root cause, verifies hypothesis before fixing, and adds regression tests. Prevents the shotgun-fix pattern where agents edit randomly until tests pass. |
 | Refactor | `/refactor-plan` | Plans and executes safe multi-file refactoring — maps dependency graph, batches changes into atomic commits, runs tests between batches. Prevents the cascading-breakage pattern where agents make sweeping changes that fail halfway. |
@@ -69,6 +70,7 @@ You are the project owner, solution architect, lead developer, and release manag
 - `code-reviewer` — Thin wrapper that loads `quick-review` skill. Triggers on conversational review requests (model: sonnet, tools: read-only)
 - `feature-auditor` — Thin wrapper that loads `feature-audit` skill. Keeps one feature audit thread active across follow-up turns.
 - `feature-designer` — Thin wrapper that loads `feature-design` skill. Keeps one feature design thread active across follow-up turns.
+- `feature-orchestrator` — Thin wrapper that loads `orchestrate` skill. Keeps one feature implementation orchestration thread active across follow-up turns (effort: max).
 - `review-team` — Thin wrapper that loads `deep-review` skill. Triggers on deep review requests (model: sonnet, effort: high)
 
 ### Supported Agents
@@ -122,7 +124,7 @@ SKILL-AUTHORING-REFERENCE.md — Authoring guide
 ### Skill Authoring (from SKILL-AUTHORING-REFERENCE.md)
 
 - **Description field**: Third person, includes what + when + boundaries, max 1024 chars
-- **New first-party skills**: Start with `npm run new:skill -- <name> --phase <phase> --feedback-profile <profile>` using `plan|analyze|design|test|fix|refactor|review|release|utility`; this now creates both `skills/<name>/SKILL.md` and `evals/scenarios/<name>-primary/`, and every `TODO:` placeholder in both must be replaced before commit
+- **New first-party skills**: Start with `npm run new:skill -- <name> --phase <phase> --feedback-profile <profile>` using `plan|analyze|design|implement|test|fix|refactor|review|release|utility`; this now creates both `skills/<name>/SKILL.md` and `evals/scenarios/<name>-primary/`, and every `TODO:` placeholder in both must be replaced before commit
 - **Body**: Third-person imperative, 1000-1200 words optimal, under 500 lines
 - **Section ordering**: Quick Start → Gotchas → Procedures → Decision Points → Output → Validation
 - **Gotchas go near the top** — instruction priority: early rules > late rules (confirmed by SkillsBench)

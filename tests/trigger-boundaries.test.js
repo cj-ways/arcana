@@ -14,6 +14,10 @@ describe("trigger boundary suites", () => {
     expect(suiteNames).toContain("feature-taxonomy");
   });
 
+  it("includes feature-delivery-taxonomy coverage", () => {
+    expect(suiteNames).toContain("feature-delivery-taxonomy");
+  });
+
   it("keeps every stored boundary suite valid and catalog-safe", () => {
     const catalogNames = getSkillCatalog().map((skill) => skill.name);
 
@@ -40,6 +44,19 @@ describe("trigger boundary suites", () => {
       expect(
         topic.cases.map((caseEntry) => caseEntry.expectedSkills[0]).sort(),
       ).toEqual(["feature-audit", "feature-design", "pressure-test"]);
+    }
+  });
+
+  it("keeps feature-delivery-taxonomy focused on audit, design, orchestrate, and pressure-test separation", () => {
+    const suite = readTriggerBoundarySuite("feature-delivery-taxonomy");
+
+    expect(suite.topics.length).toBeGreaterThanOrEqual(2);
+
+    for (const topic of suite.topics) {
+      expect(topic.cases).toHaveLength(4);
+      expect(
+        topic.cases.map((caseEntry) => caseEntry.expectedSkills[0]).sort(),
+      ).toEqual(["feature-audit", "feature-design", "orchestrate", "pressure-test"]);
     }
   });
 

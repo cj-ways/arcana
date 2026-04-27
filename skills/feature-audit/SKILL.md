@@ -28,6 +28,7 @@ The evidence bar does not change with effort. Only breadth, depth, research budg
 | --- | --- | --- |
 | `/feature-audit` | Broad feature analysis across product, UX, ops, reliability, risks, cross-surface behavior, and improvement paths | Turning one rough feature idea into a concrete solution spec |
 | `/feature-design` | Designing one feature or workflow before implementation: compare approaches and produce a spec | Broad auditing of an existing feature across many lanes |
+| `/orchestrate` | Running large feature delivery across phases, worker packets, blockers, and review gates | Deciding what is weak or missing in the feature overall |
 | `/pressure-test` | Stress-testing one idea, claim, rollout plan, or proposal | End-to-end feature analysis across many lanes |
 | `/idea-audit` | New project ideas that may turn into a full project setup | Existing feature work inside a known product |
 | `/quick-review` | Fast code review of a diff or branch | Product and roadmap analysis |
@@ -368,6 +369,8 @@ For `high` and `extra`, use:
 Do not include giant filler sections just because effort is high.
 
 If the user asks the audit to choose between solution shapes or define the future workflow in detail, stop the audit answer at the diagnosis and recommendation boundary, then suggest `/feature-design` for the next step.
+
+If the user already has the design direction and now needs phased implementation ownership across sessions, suggest `/orchestrate` for the next step instead of stretching the audit into delivery coordination.
 
 ## Documentation And Persistence
 

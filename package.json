@@ -1,6 +1,6 @@
 {
   "name": "@cj-ways/arcana",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "Curated developer workflow skills for Claude Code and Codex CLI — hand-authored skills backed by SkillsBench data.",
   "bin": {
     "arcana": "bin/arcana.js"

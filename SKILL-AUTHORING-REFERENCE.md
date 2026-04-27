@@ -181,7 +181,7 @@ description: [what + when + boundaries]
 For first-party Arcana skills, frontmatter also includes catalog metadata used by docs, feedback routing, and drift checks:
 
 ```yaml
-phase: plan|analyze|design|test|fix|refactor|review|release|utility
+phase: plan|analyze|design|implement|test|fix|refactor|review|release|utility
 feedback-profile: diagnostic|execution|advisory
 catalog-order: 10
 ```
